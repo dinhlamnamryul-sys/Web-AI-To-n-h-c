@@ -1,2 +1,3 @@
-streamlitdeep
-translator
+streamlit
+deep-translator
+google-generativeai
