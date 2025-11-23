@@ -121,12 +121,8 @@ def tao_de_toan(lop, bai_hoc):
             b = random.choice([-3, -2, 2, 3, 4])
             c = random.choice([-5, -4, -3, 2, 3, 4, 5])
             de_latex = f"Thực hiện phép tính: ${a}x( {b}x {c:+d} )$"
-            
             res_a, res_b = a * b, a * c
-            # Bọc đáp án trong $...$ để hiển thị công thức
             ans_correct = f"${res_a}x^2 {res_b:+d}x$"
-            
-            # CÁC ĐÁP ÁN NHIỄU CŨNG PHẢI CÓ $
             options = [
                 ans_correct, 
                 f"${res_a}x^2 {-res_b:+d}x$", 
@@ -140,11 +136,9 @@ def tao_de_toan(lop, bai_hoc):
         elif "Nhân đa thức" in bai_hoc:
             a, b = random.randint(1,5)*random.choice([-1,1]), random.randint(1,5)*random.choice([-1,1])
             de_latex = f"Thực hiện phép tính: $(x {a:+d})(x {b:+d})$"
-            
             term_x = a + b
             term_free = a * b
             ans_correct = f"$x^2 {term_x:+d}x {term_free:+d}$"
-            
             options = [
                 ans_correct, 
                 f"$x^2 {term_x:+d}x {-term_free:+d}$", 
@@ -228,9 +222,10 @@ def tao_de_toan(lop, bai_hoc):
             dap_an = 180 - g1 - g2
             goi_y_text = "Tổng ba góc trong một tam giác bằng $180^\\circ$."
 
-    # === LỚP 9 ===
+    # === LỚP 9 (ĐÃ SỬA LỖI LOGIC) ===
     elif "Lớp 9" in lop:
-        if "Hệ phương trình" in bai_hoc:
+        # Sửa lỗi logic: dùng 'in bai_lower' để bắt từ khóa thay vì so sánh chính xác tên bài
+        if "hệ phương trình" in bai_lower:
             x = random.randint(1, 5)
             y = random.randint(1, 5)
             a = x + y
@@ -239,7 +234,8 @@ def tao_de_toan(lop, bai_hoc):
             dap_an = x
             goi_y_text = "Cộng đại số hai phương trình để triệt tiêu y."
             goi_y_latex = f"(x+y) + (x-y) = {a} + {b} \\Rightarrow 2x = {a+b}"
-        elif "Phương trình bậc hai" in bai_hoc:
+        
+        elif "phương trình bậc hai" in bai_lower or "vi-ét" in bai_lower:
             x1 = random.randint(1, 5)
             x2 = random.randint(1, 5)
             S = x1 + x2
@@ -247,11 +243,21 @@ def tao_de_toan(lop, bai_hoc):
             de_latex = f"Tìm nghiệm lớn nhất của phương trình: $x^2 - {S}x + {P} = 0$"
             dap_an = max(x1, x2)
             goi_y_text = "Sử dụng công thức nghiệm hoặc nhẩm nghiệm theo Vi-ét."
-        elif "Căn thức" in bai_hoc:
+            
+        elif "căn" in bai_lower: # Bắt được cả 'Căn thức' và 'Căn bậc hai'
             a = random.randint(2, 5)
             de_latex = f"Rút gọn biểu thức: $\\sqrt{{{a}^2 \\cdot 3}}$ (Nhập hệ số đứng trước căn 3)"
             dap_an = a
             goi_y_text = "Đưa thừa số ra ngoài dấu căn: $\\sqrt{A^2B} = |A|\\sqrt{B}$"
+
+        elif "phương trình" in bai_lower: # Trường hợp còn lại (Phương trình quy về bậc nhất)
+            a = random.randint(2, 5)
+            b = random.randint(1, 10)
+            # ax - b = 0 => x = b/a
+            de_latex = f"Giải phương trình: ${a}x - {b} = 0$. (Kết quả làm tròn 2 chữ số thập phân)"
+            dap_an = round(b/a, 2)
+            goi_y_text = "Chuyển vế đổi dấu rồi chia cho hệ số."
+            goi_y_latex = f"{a}x = {b} \\Rightarrow x = \\frac{{{b}}}{{{a}}}"
 
     # === CẤP 1 (LỚP 1-5) ===
     else: 
