@@ -71,38 +71,26 @@ st.markdown("""
     .stApp { background: linear-gradient(to right, #f8f9fa, #e9ecef); }
     .school-header {
         background: linear-gradient(135deg, #0d47a1, #1976d2);
-        color: white; padding: 25px; border-radius: 15px; text-align: center;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 25px;
+        color: white; padding: 20px; border-radius: 15px; text-align: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 20px;
     }
     .problem-card {
-        background-color: white; padding: 30px; border-radius: 15px;
+        background-color: white; padding: 25px; border-radius: 15px;
         border-left: 8px solid #ff9800; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        font-size: 1.3rem; margin-bottom: 20px;
-        color: #333;
+        font-size: 1.4rem; margin-bottom: 20px;
+        color: #2c3e50; font-weight: 500;
     }
-    .hint-box {
-        background-color: #e3f2fd; padding: 15px; border-radius: 10px;
-        border: 1px dashed #2196f3; margin-top: 10px;
+    .hint-container {
+        background-color: #e8f5e9; padding: 15px; border-radius: 10px;
+        border: 1px solid #c8e6c9; margin-top: 15px;
     }
-    .success-msg { color: #2e7d32; font-weight: 700; font-size: 1.2rem; }
-    .error-msg { color: #c62828; font-weight: 700; }
-    .stButton>button { border-radius: 25px; font-weight: 600; padding: 0.5rem 1rem; }
+    .success-msg { color: #2e7d32; font-weight: bold; font-size: 1.2rem; }
+    .error-msg { color: #c62828; font-weight: bold; font-size: 1.1rem; }
+    .stButton>button { border-radius: 20px; font-weight: 600; width: 100%; }
 </style>
 """, unsafe_allow_html=True)
 
 # --- HELPER FUNCTIONS ---
-
-def format_bieu_thuc(so, truoc_co_so=True):
-    """
-    Hàm định dạng hiển thị số âm/dương gọn gàng.
-    Ví dụ: thay vì '+ -5', trả về '- 5'.
-    """
-    if so < 0:
-        return f"- {abs(so)}"
-    else:
-        if truoc_co_so:
-            return f"+ {so}"
-        return f"{so}"
 
 def sinh_so_ngau_nhien(lop):
     """Hàm phụ trợ sinh số phù hợp cấp độ"""
@@ -110,27 +98,30 @@ def sinh_so_ngau_nhien(lop):
     if "Lớp 2" in lop: return random.randint(10, 90), random.randint(1, 20)
     if "Lớp 3" in lop: return random.randint(100, 900), random.randint(2, 9)
     if "Lớp 4" in lop or "Lớp 5" in lop: return random.randint(1000, 9000), random.randint(10, 99)
-    # Lớp 6-9: Có thể có số âm
     if "Lớp 6" in lop: return random.randint(-50, 50), random.randint(-20, 20)
     return random.randint(-100, 100), random.randint(-100, 100)
 
 def tao_de_toan(lop, bai_hoc):
     """
-    Hàm Factory sinh đề dựa trên từ khóa trong Tên Bài Học.
-    Cập nhật: Tạo gợi ý chi tiết kèm công thức Toán học (LaTeX).
+    Hàm sinh đề và gợi ý chuẩn LaTeX.
+    goi_y_text: Lời giải thích ngắn gọn.
+    goi_y_latex: Công thức toán học để hiển thị bằng st.latex()
     """
     bai_hoc_lower = bai_hoc.lower()
-    de_bai, dap_an, goi_y = "", 0, ""
+    de_bai, dap_an = "", 0
+    goi_y_text, goi_y_latex = "", ""
 
     # --- 1. SỐ HỌC CƠ BẢN ---
     if any(x in bai_hoc_lower for x in ["cộng", "tổng", "thêm"]):
         a, b = sinh_so_ngau_nhien(lop)
         if b < 0:
             de_bai = f"Tính: {a} - {abs(b)} = ?"
-            goi_y = f"Đây là phép cộng số nguyên. Em hãy thực hiện: ${a} - {abs(b)}$"
+            goi_y_text = "Thực hiện phép trừ số nguyên:"
+            goi_y_latex = f"{a} - {abs(b)}"
         else:
             de_bai = f"Tính: {a} + {b} = ?"
-            goi_y = f"Đặt tính rồi tính: Lấy hàng đơn vị cộng hàng đơn vị, hàng chục cộng hàng chục.\\nVí dụ: ${a} + {b} = ...$"
+            goi_y_text = "Đặt tính rồi tính:"
+            goi_y_latex = f"{a} + {b}"
         dap_an = a + b
         
     elif any(x in bai_hoc_lower for x in ["trừ", "hiệu", "bớt", "ít hơn"]):
@@ -140,10 +131,12 @@ def tao_de_toan(lop, bai_hoc):
         
         if b < 0: 
             de_bai = f"Tính: {a} - ({b}) = ?"
-            goi_y = f"Trừ cho một số âm là cộng với số đối của nó: ${a} - ({b}) = {a} + {abs(b)}$"
+            goi_y_text = "Trừ cho số âm thành cộng số dương:"
+            goi_y_latex = f"{a} - ({b}) = {a} + {abs(b)}"
         else:
             de_bai = f"Tính: {a} - {b} = ?"
-            goi_y = f"Đặt tính rồi tính: Lấy hàng đơn vị trừ hàng đơn vị. Nếu không đủ thì mượn 1 ở hàng chục.\\n${a} - {b} = ...$"
+            goi_y_text = "Thực hiện phép trừ:"
+            goi_y_latex = f"{a} - {b}"
         dap_an = a - b
         
     elif any(x in bai_hoc_lower for x in ["nhân", "tích", "gấp"]):
@@ -151,12 +144,12 @@ def tao_de_toan(lop, bai_hoc):
         elif "Lớp 3" in lop: a, b = random.randint(2, 9), random.randint(2, 9)
         else: a, b = sinh_so_ngau_nhien(lop)
         
-        if b < 0:
-            de_bai = f"Tính: {a} x ({b}) = ?"
-        else:
-            de_bai = f"Tính: {a} x {b} = ?"
+        if b < 0: de_bai = f"Tính: {a} x ({b}) = ?"
+        else: de_bai = f"Tính: {a} x {b} = ?"
+        
         dap_an = a * b
-        goi_y = f"Em hãy nhớ lại bảng cửu chương hoặc thực hiện phép nhân:\\n${a} \\times {b} = ?$"
+        goi_y_text = "Thực hiện phép nhân:"
+        goi_y_latex = f"{a} \\times {b}"
 
     elif any(x in bai_hoc_lower for x in ["chia", "thương"]):
         if "Lớp 2" in lop: b = random.choice([2, 5])
@@ -165,29 +158,25 @@ def tao_de_toan(lop, bai_hoc):
         if b == 0: b = 2
         kq = random.randint(2, 10)
         a = b * kq
+        
         de_bai = f"Tính: {a} : {b} = ?"
         dap_an = kq
-        goi_y = f"Đặt tính chia: Số nào nhân với ${b}$ thì bằng ${a}$?\\n$\\frac{{{a}}}{{{b}}} = ?$"
+        goi_y_text = "Tìm số nhân với số chia ra số bị chia:"
+        goi_y_latex = f"\\frac{{{a}}}{{{b}}} = ?"
 
-    # --- 2. SO SÁNH ---
-    elif "so sánh" in bai_hoc_lower:
-        a, b = sinh_so_ngau_nhien(lop)
-        while a == b: b = sinh_so_ngau_nhien(lop)[1]
-        de_bai = f"Điền dấu (1 là >, 2 là <): {a} ... {b} (Nhập 1 nếu lớn hơn, 2 nếu nhỏ hơn)"
-        dap_an = 1 if a > b else 2
-        goi_y = f"So sánh từ hàng cao nhất (bên trái) sang hàng thấp nhất (bên phải).\\n${a}$ so với ${b}$ thế nào?"
-
-    # --- 3. HÌNH HỌC ---
+    # --- 2. HÌNH HỌC ---
     elif "vuông" in bai_hoc_lower and ("chu vi" in bai_hoc_lower or "diện tích" in bai_hoc_lower):
         canh = random.randint(2, 20)
         if "chu vi" in bai_hoc_lower:
             de_bai = f"Hình vuông cạnh {canh}cm. Tính Chu vi (cm)?"
             dap_an = canh * 4
-            goi_y = f"Công thức Chu vi hình vuông cạnh $a$: $P = a \\times 4$.\\nÁp dụng: $P = {canh} \\times 4$"
+            goi_y_text = "Chu vi = Cạnh nhân 4"
+            goi_y_latex = f"P = {canh} \\times 4"
         else:
             de_bai = f"Hình vuông cạnh {canh}cm. Tính Diện tích (cm²)?"
             dap_an = canh * canh
-            goi_y = f"Công thức Diện tích hình vuông cạnh $a$: $S = a \\times a$ (hoặc $a^2$).\\nÁp dụng: $S = {canh} \\times {canh}$"
+            goi_y_text = "Diện tích = Cạnh nhân Cạnh"
+            goi_y_latex = f"S = {canh} \\times {canh} = {canh}^2"
             
     elif "chữ nhật" in bai_hoc_lower and ("chu vi" in bai_hoc_lower or "diện tích" in bai_hoc_lower):
         d = random.randint(5, 20)
@@ -195,79 +184,82 @@ def tao_de_toan(lop, bai_hoc):
         if "chu vi" in bai_hoc_lower:
             de_bai = f"HCN có dài {d}cm, rộng {r}cm. Tính Chu vi (cm)?"
             dap_an = (d + r) * 2
-            goi_y = f"Công thức Chu vi HCN: $P = (dài + rộng) \\times 2$.\\nÁp dụng: $P = ({d} + {r}) \\times 2$"
+            goi_y_text = "Chu vi = (Dài + Rộng) nhân 2"
+            goi_y_latex = f"P = ({d} + {r}) \\times 2"
         else:
             de_bai = f"HCN có dài {d}cm, rộng {r}cm. Tính Diện tích (cm²)?"
             dap_an = d * r
-            goi_y = f"Công thức Diện tích HCN: $S = dài \\times rộng$.\\nÁp dụng: $S = {d} \\times {r}$"
+            goi_y_text = "Diện tích = Dài nhân Rộng"
+            goi_y_latex = f"S = {d} \\times {r}"
 
-    # --- 4. ĐẠI SỐ & GIẢI TÍCH ---
+    # --- 3. ĐẠI SỐ ---
     elif "lũy thừa" in bai_hoc_lower:
         base = random.randint(2, 5)
         exp = random.randint(2, 4)
         de_bai = f"Tính: {base}^{exp} = ?"
         dap_an = base ** exp
-        # Gợi ý chi tiết dạng a x a x ...
+        goi_y_text = f"Nhân số {base} với chính nó {exp} lần:"
+        # Tạo chuỗi nhân: 2 x 2 x 2
         expansion = " \\times ".join([str(base)] * exp)
-        goi_y = f"Lũy thừa bậc $n$ của $a$ là tích của $n$ thừa số $a$: \\n$${base}^{exp} = {expansion}$$"
+        goi_y_latex = f"{base}^{{{exp}}} = {expansion}"
         
     elif "làm tròn" in bai_hoc_lower:
         val = random.uniform(10, 100)
         de_bai = f"Làm tròn số {val:.3f} đến chữ số thập phân thứ nhất."
         dap_an = round(val, 1)
-        goi_y = f"Quy tắc làm tròn: Nếu chữ số ngay sau hàng làm tròn $\\ge 5$ thì cộng thêm 1, ngược lại giữ nguyên.\\nSố cần xét là chữ số thứ 2 sau dấu phẩy của ${val:.3f}$."
+        digit_2 = int((val * 100) % 10)
+        goi_y_text = f"Xét chữ số thứ 2 sau dấu phẩy là {digit_2}. Nếu >= 5 thì cộng 1 vào trước nó."
+        goi_y_latex = f"{val:.3f} \\approx ?"
         
     elif "phương trình" in bai_hoc_lower and "hệ" not in bai_hoc_lower:
         # ax + b = 0
         a = random.randint(2, 10)
         b = random.randint(1, 20) * random.choice([-1, 1])
-        dau_b = format_bieu_thuc(b)
         
-        de_bai = f"Tìm x biết: {a}x {dau_b} = 0 (Làm tròn 2 chữ số thập phân)"
+        # Hiển thị đề bài đẹp
+        dau_b = f"- {abs(b)}" if b < 0 else f"+ {b}"
+        de_bai = f"Tìm x biết: {a}x {dau_b} = 0"
         dap_an = round(-b/a, 2)
         
-        # Gợi ý từng bước giải phương trình
-        if b < 0:
-            buoc1 = f"{a}x = {abs(b)}"
-        else:
-            buoc1 = f"{a}x = -{b}"
-            
-        goi_y = f"**Bước 1:** Chuyển hệ số tự do sang vế phải và đổi dấu:\\n$${a}x {dau_b} = 0 \\Rightarrow {buoc1}$$ \\n**Bước 2:** Chia cả hai vế cho ${a}$ để tìm $x$:\\n$$x = \\frac{{{buoc1.split('=')[1].strip()}}}{{{a}}}$$"
+        # Gợi ý ngắn gọn
+        val_rhs = -b
+        goi_y_text = "Chuyển vế rồi chia:"
+        goi_y_latex = f"{a}x = {val_rhs} \\Rightarrow x = \\frac{{{val_rhs}}}{{{a}}}"
         
     elif "hệ phương trình" in bai_hoc_lower:
         x = random.randint(5, 20)
         y = random.randint(1, x)
         S = x + y
         D = x - y
-        de_bai = f"Cho hệ: x + y = {S} và x - y = {D}. Tìm giá trị của x?"
+        de_bai = f"Cho hệ: x + y = {S} và x - y = {D}. Tìm x?"
         dap_an = x
-        goi_y = f"Dùng phương pháp cộng đại số:\\nCộng hai phương trình vế theo vế:\\n$(x + y) + (x - y) = {S} + {D}$ \\n$\\Rightarrow 2x = {S + D} \\Rightarrow x = ?$"
+        goi_y_text = "Cộng hai vế phương trình:"
+        goi_y_latex = f"(x+y) + (x-y) = {S} + {D} \\Rightarrow 2x = {S+D}"
         
     elif "căn" in bai_hoc_lower:
         kq = random.randint(2, 15)
         n = kq**2
         de_bai = f"Tính căn bậc hai số học của {n}?"
         dap_an = kq
-        goi_y = f"Căn bậc hai số học của số không âm $a$ là số $x$ sao cho $x^2 = a$.\\nKí hiệu: $\\sqrt{{a}} = x$.\\nỞ đây em cần tìm số nào bình phương lên bằng ${n}$?\\n$$\\sqrt{{{n}}} = ? \\text{{ vì }} ?^2 = {n}$$"
+        goi_y_text = f"Tìm số dương bình phương lên bằng {n}:"
+        goi_y_latex = f"\\sqrt{{{n}}} = ? \\quad (\\text{{vì }} ?^2 = {n})"
 
-    # --- 5. FALLBACK ---
     else:
+        # Fallback
         a, b = sinh_so_ngau_nhien(lop)
-        de_bai = f"Bài toán ôn tập: Tính {a} + {b}"
+        de_bai = f"Tính: {a} + {b} = ?"
         dap_an = a + b
-        goi_y = f"Thực hiện phép tính cộng cơ bản: ${a} + {b}$"
+        goi_y_text = "Phép cộng cơ bản:"
+        goi_y_latex = f"{a} + {b}"
 
-    return de_bai, dap_an, goi_y
+    return de_bai, dap_an, goi_y_text, goi_y_latex
 
 # Hàm dịch thuật
 def dich_sang_mong(text):
     try:
-        # Loại bỏ các ký tự LaTeX ($) trước khi dịch để tránh lỗi, hoặc chỉ dịch phần text cơ bản
-        # Ở đây ta chỉ dịch đơn giản, Google Translate có thể không hiểu LaTeX
-        clean_text = text.replace("$", "").replace("\\", "") 
-        return GoogleTranslator(source='vi', target='hmn').translate(clean_text)
+        return GoogleTranslator(source='vi', target='hmn').translate(text)
     except:
-        return "Lỗi kết nối dịch thuật."
+        return "..."
 
 # --- GIAO DIỆN CHÍNH ---
 
@@ -280,103 +272,111 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# 2. Sidebar - MENU CHỌN BÀI HỌC
+# 2. Sidebar
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/3426/3426653.png", width=80)
-    st.header("📚 MỤC LỤC SÁCH GIÁO KHOA")
+    st.header("📚 SÁCH GIÁO KHOA")
     
-    # Cấp 1: Chọn Lớp
     ds_lop = list(CHUONG_TRINH_HOC.keys())
-    lop_chon = st.selectbox("1️⃣ Chọn Lớp:", ds_lop)
+    lop_chon = st.selectbox("Lớp:", ds_lop)
     
-    # Cấp 2: Chọn Chương (Dựa theo Lớp)
     du_lieu_lop = CHUONG_TRINH_HOC[lop_chon]
     ds_chuong = list(du_lieu_lop.keys())
-    chuong_chon = st.selectbox("2️⃣ Chọn Chương:", ds_chuong)
+    chuong_chon = st.selectbox("Chương:", ds_chuong)
     
-    # Cấp 3: Chọn Bài (Dựa theo Chương)
     ds_bai = du_lieu_lop[chuong_chon]
-    bai_chon = st.selectbox("3️⃣ Chọn Bài học:", ds_bai)
+    bai_chon = st.selectbox("Bài học:", ds_bai)
     
-    st.markdown("---")
-    st.info(f"📍 Đang học: **{lop_chon}**\n\n📂 **{chuong_chon}**\n\n📝 **{bai_chon}**")
-    
-    if st.button("🔄 Đặt lại trạng thái"):
+    if st.button("🔄 Đặt lại"):
         for key in list(st.session_state.keys()):
             del st.session_state[key]
         st.rerun()
 
 # 3. Khu vực chính
-col_trai, col_phai = st.columns([1.6, 1])
+col_trai, col_phai = st.columns([1.5, 1])
 
-# Khởi tạo Session State
+# Init Session
 if 'de_bai' not in st.session_state:
     st.session_state.de_bai = ""
     st.session_state.dap_an = 0
-    st.session_state.goi_y = ""
-    st.session_state.bai_hien_tai = ""
+    st.session_state.goi_y_text = ""
+    st.session_state.goi_y_latex = ""
 
-# Logic nút bấm sinh đề
 def click_sinh_de():
-    db, da, gy = tao_de_toan(lop_chon, bai_chon)
+    db, da, gyt, gyl = tao_de_toan(lop_chon, bai_chon)
     st.session_state.de_bai = db
     st.session_state.dap_an = da
-    st.session_state.goi_y = gy
-    st.session_state.bai_hien_tai = bai_chon
+    st.session_state.goi_y_text = gyt
+    st.session_state.goi_y_latex = gyl
     st.session_state.da_nop = False
+    st.session_state.show_hint = False # Ẩn gợi ý lúc đầu
 
 with col_trai:
     st.subheader(f"📖 {bai_chon}")
     
-    if st.button("✨ TẠO CÂU HỎI MỚI CHO BÀI NÀY", type="primary", on_click=click_sinh_de):
+    if st.button("✨ BÀI TẬP MỚI", type="primary", on_click=click_sinh_de):
         pass
     
-    # Hiển thị đề bài
     if st.session_state.de_bai:
         st.markdown(f"""
         <div class="problem-card">
-            <b>❓ Câu hỏi:</b> {st.session_state.de_bai}
+            ❓ {st.session_state.de_bai}
         </div>
         """, unsafe_allow_html=True)
+        
+        # Chỉ hiển thị công thức đề bài nếu cần (ví dụ cho bài căn bậc hai để đẹp hơn)
+        if "căn" in st.session_state.de_bai.lower():
+             # Trích xuất số để hiển thị latex đề bài
+             import re
+             num = re.findall(r'\d+', st.session_state.de_bai)
+             if num:
+                 st.latex(f"\\sqrt{{{num[0]}}} = ?")
 
         col_d1, col_d2 = st.columns(2)
         with col_d1:
-            if st.button("🗣️ Dịch sang tiếng H'Mông"):
+            if st.button("🗣️ Dịch H'Mông"):
                 bd = dich_sang_mong(st.session_state.de_bai)
                 st.info(f"**H'Mông:** {bd}")
 
 with col_phai:
-    st.subheader("✍️ Bảng làm bài")
+    st.subheader("✍️ Làm bài")
     
     if st.session_state.de_bai:
         with st.form("form_lam_bai"):
-            user_ans = st.number_input("Nhập đáp án của em:", step=0.01, format="%.2f")
-            btn_nop = st.form_submit_button("✅ Nộp bài")
+            user_ans = st.number_input("Nhập đáp án:", step=0.01, format="%.2f")
+            btn_nop = st.form_submit_button("✅ Kiểm tra")
             
             if btn_nop:
                 st.session_state.da_nop = True
-                if abs(user_ans - st.session_state.dap_an) <= 0.05: # Chấp nhận sai số nhỏ
-                    st.balloons()
-                    st.markdown(f'<p class="success-msg">CHÍNH XÁC! Em rất giỏi!</p>', unsafe_allow_html=True)
+                # So sánh: Nếu là số nguyên thì so sánh int, nếu float thì so sánh sai số
+                is_correct = False
+                if float(st.session_state.dap_an).is_integer():
+                    is_correct = round(user_ans, 2) == st.session_state.dap_an
                 else:
-                    st.markdown(f'<p class="error-msg">Sai rồi. Đáp án đúng là: {st.session_state.dap_an}</p>', unsafe_allow_html=True)
-                    
-                    # --- PHẦN GỢI Ý CHI TIẾT ---
-                    st.markdown("### 💡 Gợi ý chi tiết:")
-                    with st.container():
-                         # Sử dụng st.markdown để render LaTeX
-                         st.markdown(st.session_state.goi_y)
-                    
-                    with st.expander("Xem gợi ý tiếng H'Mông"):
-                         st.write(dich_sang_mong(st.session_state.goi_y))
+                    is_correct = abs(user_ans - st.session_state.dap_an) <= 0.05
+
+                if is_correct:
+                    st.balloons()
+                    st.success("CHÍNH XÁC! 👏")
+                else:
+                    st.error(f"Sai rồi. Đáp án đúng là: {st.session_state.dap_an}")
+                    st.session_state.show_hint = True
+        
+        # Hiển thị gợi ý nếu làm sai hoặc người dùng muốn xem
+        if st.session_state.get('show_hint', False):
+            st.markdown("---")
+            st.markdown("### 💡 Gợi ý:")
+            st.write(st.session_state.goi_y_text)
+            # DÙNG ST.LATEX ĐỂ HIỂN THỊ CÔNG THỨC CHUẨN ĐẸP KHÔNG LỖI
+            if st.session_state.goi_y_latex:
+                st.latex(st.session_state.goi_y_latex)
+                
+            with st.expander("Xem dịch gợi ý"):
+                 st.write(dich_sang_mong(st.session_state.goi_y_text))
+
     else:
-        st.info("👈 Hãy chọn bài học và nhấn nút 'Tạo câu hỏi mới' để bắt đầu.")
+        st.info("👈 Chọn bài học rồi nhấn nút tạo bài tập.")
 
 # Footer
 st.markdown("---")
-st.markdown("""
-<div style="text-align: center; color: #666;">
-    <small>© 2025 Dự án Chuyển đổi số - Trường PTDTBT TH&THCS Na Ư.<br>
-    Hệ thống hỗ trợ học tập bám sát chương trình Giáo dục phổ thông mới (2018).</small>
-</div>
-""", unsafe_allow_html=True)
+st.caption("© 2025 Trường PTDTBT TH&THCS Na Ư.")
