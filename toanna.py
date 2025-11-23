@@ -2,6 +2,7 @@ import streamlit as st
 import random
 import math
 import time
+import os # Thêm thư viện os để xử lý file
 from deep_translator import GoogleTranslator
 
 # --- CẤU HÌNH TRANG WEB ---
@@ -11,10 +12,39 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- GIẢ LẬP BỘ ĐẾM LƯỢT TRUY CẬP ---
+# --- BỘ ĐẾM LƯỢT TRUY CẬP THỰC TẾ (LƯU VÀO FILE) ---
+def update_visit_count():
+    count_file = "visit_count.txt"
+    
+    # Nếu file chưa tồn tại, tạo mới và bắt đầu từ 5000 (để trông đẹp hơn)
+    if not os.path.exists(count_file):
+        with open(count_file, "w") as f:
+            f.write("5000")
+            return 5000
+    
+    # Đọc số lượt truy cập hiện tại
+    try:
+        with open(count_file, "r") as f:
+            content = f.read().strip()
+            count = int(content) if content else 5000
+    except Exception:
+        count = 5000
+
+    # Tăng lượt truy cập lên 1
+    count += 1
+    
+    # Lưu lại vào file
+    try:
+        with open(count_file, "w") as f:
+            f.write(str(count))
+    except Exception:
+        pass # Bỏ qua lỗi nếu không ghi được file (ví dụ trên một số cloud read-only)
+        
+    return count
+
+# Chỉ tăng đếm khi người dùng mới vào (chưa có session)
 if 'visit_count' not in st.session_state:
-    # Khởi tạo một con số ngẫu nhiên để trông giống thật (ví dụ từ 5000 đến 8000)
-    st.session_state.visit_count = random.randint(5000, 8000)
+    st.session_state.visit_count = update_visit_count()
 
 # --- DỮ LIỆU CHƯƠNG TRÌNH HỌC (CHUẨN KẾT NỐI TRI THỨC) ---
 CHUONG_TRINH_HOC = {
