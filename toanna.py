@@ -1,174 +1,309 @@
 import streamlit as st
 import random
-from PIL import Image
-import google.generativeai as genai
+import math
+from deep_translator import GoogleTranslator
 
 # --- CẤU HÌNH TRANG WEB ---
 st.set_page_config(
-    page_title="Gia sư Toán AI - Na Ư (Phiên bản Dự thi)",
-    page_icon="🎓",
+    page_title="Gia sư Toán AI - Na Ư (Lớp 1-9)",
+    page_icon="📐",
     layout="wide"
 )
 
-# --- CẤU HÌNH AI (GOOGLE GEMINI) ---
-# Bạn hãy lấy key miễn phí tại: https://aistudio.google.com/app/apikey
-# Nếu chưa có key, hệ thống sẽ chạy chế độ cơ bản
-GOOGLE_API_KEY = st.sidebar.text_input("🔑 Nhập API Key Google Gemini (để mở khóa tính năng AI cao cấp):", type="password")
-
-if GOOGLE_API_KEY:
-    genai.configure(api_key=GOOGLE_API_KEY)
-    model = genai.GenerativeModel('gemini-1.5-flash') # Model nhanh và miễn phí
-
-# --- CSS LÀM ĐẸP (GIỮ NGUYÊN VÀ NÂNG CẤP) ---
+# --- CSS LÀM ĐẸP GIAO DIỆN ---
 st.markdown("""
 <style>
-    .stApp { background: linear-gradient(to bottom right, #f0f2f6, #c2e9fb); }
-    .school-header {
-        background: linear-gradient(90deg, #0052cc, #003366);
-        color: white; padding: 20px; border-radius: 15px; text-align: center;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 20px;
+    /* Màu nền Gradient đẹp mắt */
+    .stApp {
+        background: linear-gradient(to right, #e0eafc, #cfdef3);
     }
-    .success-card { background-color: #d4edda; color: #155724; padding: 15px; border-radius: 10px; border-left: 5px solid #28a745; }
-    .ai-response { background-color: #fff3cd; color: #856404; padding: 15px; border-radius: 10px; border-left: 5px solid #ffc107; margin-top: 10px;}
-    .stButton>button { border-radius: 25px; font-weight: bold; transition: 0.3s; }
-    .stButton>button:hover { transform: scale(1.05); }
+    /* Khung tiêu đề trường học */
+    .school-header {
+        background-color: #1a237e;
+        color: white;
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        margin-bottom: 20px;
+    }
+    /* Khung bài tập */
+    .problem-card {
+        background-color: white;
+        padding: 25px;
+        border-radius: 15px;
+        border-left: 10px solid #ff6f00;
+        box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+        font-size: 1.2rem;
+    }
+    /* Nút bấm xịn hơn */
+    .stButton>button {
+        border-radius: 20px;
+        font-weight: bold;
+        width: 100%;
+    }
+    .success-msg {
+        color: #2e7d32;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+    .error-msg {
+        color: #c62828;
+        font-weight: bold;
+    }
 </style>
 """, unsafe_allow_html=True)
 
-# --- HÀM HỖ TRỢ ---
+# --- LOGIC AI SINH ĐỀ THEO LỚP ---
 
-def ask_gemini(prompt, image=None):
-    """Hàm gọi AI để giải toán hoặc dịch thuật"""
-    if not GOOGLE_API_KEY:
-        return "⚠️ Vui lòng nhập API Key để kích hoạt Trí tuệ nhân tạo."
-    try:
-        if image:
-            response = model.generate_content([prompt, image])
+def sinh_de_tieu_hoc(lop):
+    """Sinh đề cho lớp 1 đến lớp 5"""
+    de_bai, dap_an, goi_y = "", 0, ""
+    
+    if lop in ["Lớp 1", "Lớp 2"]:
+        # Cộng trừ cơ bản
+        pheptoan = random.choice(['+', '-'])
+        if lop == "Lớp 1":
+            a = random.randint(1, 10)
+            b = random.randint(1, 10)
+        else: # Lớp 2 (phạm vi 100)
+            a = random.randint(10, 50)
+            b = random.randint(1, 40)
+            
+        if pheptoan == '+':
+            de_bai = f"Tính phép cộng: {a} + {b} = ?"
+            dap_an = a + b
+            goi_y = f"Em hãy đếm hoặc đặt tính rồi tính: {a} cộng thêm {b}."
         else:
-            response = model.generate_content(prompt)
-        return response.text
-    except Exception as e:
-        return f"Lỗi kết nối AI: {str(e)}"
+            # Đảm bảo trừ ra số dương
+            lon = max(a, b)
+            be = min(a, b)
+            de_bai = f"Tính phép trừ: {lon} - {be} = ?"
+            dap_an = lon - be
+            goi_y = f"Em hãy bớt đi {be} đơn vị từ số {lon}."
 
-def sinh_de_co_ban():
-    """Sinh đề bằng thuật toán (Chế độ Offline)"""
-    a = random.randint(2, 9)
-    b = random.randint(1, 20)
-    de = f"Tìm x biết: {a}x + {b} = 0"
-    dap_an = round(-b/a, 2)
-    return de, dap_an
+    elif lop == "Lớp 3":
+        # Nhân chia (Bảng cửu chương)
+        pheptoan = random.choice(['*', '/'])
+        if pheptoan == '*':
+            a = random.randint(2, 9)
+            b = random.randint(2, 9)
+            de_bai = f"Tính tích: {a} x {b} = ?"
+            dap_an = a * b
+            goi_y = f"Em hãy nhớ lại bảng cửu chương {a} hoặc {b}."
+        else:
+            b = random.randint(2, 9)
+            ket_qua = random.randint(2, 9)
+            a = b * ket_qua # Đảm bảo chia hết
+            de_bai = f"Tính thương: {a} : {b} = ?"
+            dap_an = ket_qua
+            goi_y = f"Số nào nhân với {b} thì bằng {a}?"
+
+    elif lop in ["Lớp 4", "Lớp 5"]:
+        # Hình học: Chu vi, Diện tích
+        dang = random.choice(["Hình chữ nhật", "Hình vuông"])
+        if dang == "Hình vuông":
+            canh = random.randint(5, 20)
+            loai_tinh = random.choice(["Chu vi", "Diện tích"])
+            if loai_tinh == "Chu vi":
+                de_bai = f"Một miếng bìa hình vuông có cạnh {canh}cm. Tính chu vi?"
+                dap_an = canh * 4
+                goi_y = "Chu vi hình vuông = Cạnh nhân 4."
+            else:
+                de_bai = f"Một viên gạch hình vuông có cạnh {canh}cm. Tính diện tích?"
+                dap_an = canh * canh
+                goi_y = "Diện tích hình vuông = Cạnh nhân Cạnh."
+        else: # Hình chữ nhật
+            dai = random.randint(10, 30)
+            rong = random.randint(2, dai - 5)
+            de_bai = f"Mảnh vườn hình chữ nhật có dài {dai}m, rộng {rong}m. Tính diện tích?"
+            dap_an = dai * rong
+            goi_y = "Diện tích hình chữ nhật = Dài nhân Rộng."
+
+    return de_bai, dap_an, goi_y
+
+def sinh_de_thcs(lop):
+    """Sinh đề cho lớp 6 đến lớp 9"""
+    de_bai, dap_an, goi_y = "", 0, ""
+
+    if lop == "Lớp 6":
+        # Lũy thừa và Số nguyên
+        dang = random.choice(["Lũy thừa", "Tìm x cơ bản"])
+        if dang == "Lũy thừa":
+            co_so = random.randint(2, 5)
+            so_mu = random.randint(2, 3)
+            de_bai = f"Tính giá trị lũy thừa: {co_so}^{so_mu} ( {co_so} mũ {so_mu} )"
+            dap_an = co_so ** so_mu
+            goi_y = f"Lấy số {co_so} nhân với chính nó {so_mu} lần."
+        else:
+            x = random.randint(2, 20)
+            a = random.randint(10, 50)
+            tong = x + a
+            de_bai = f"Tìm số tự nhiên x biết: x + {a} = {tong}"
+            dap_an = x
+            goi_y = f"Muốn tìm số hạng chưa biết, ta lấy Tổng ({tong}) trừ đi số hạng đã biết ({a})."
+
+    elif lop == "Lớp 7":
+        # Tỉ lệ thức hoặc Căn bậc hai cơ bản
+        dang = random.choice(["Tỉ lệ thức", "Làm tròn"])
+        if dang == "Tỉ lệ thức":
+            a = random.randint(2, 10)
+            b = random.randint(2, 10)
+            c = random.randint(2, 10)
+            # x/a = b/c => x = (a*b)/c. Chọn số sao cho đẹp
+            x = b * c 
+            # Đổi lại đề: x/a = c => x = a*c
+            de_bai = f"Tìm x biết: x / {a} = {c}"
+            dap_an = a * c
+            goi_y = f"Muốn tìm số bị chia x, ta lấy thương ({c}) nhân với số chia ({a})."
+        else:
+            so_thuc = random.uniform(10, 100)
+            de_bai = f"Làm tròn số {so_thuc:.3f} đến chữ số thập phân thứ nhất?"
+            dap_an = round(so_thuc, 1)
+            goi_y = "Nếu chữ số thập phân thứ hai >= 5 thì cộng thêm 1 vào số trước nó."
+
+    elif lop == "Lớp 8":
+        # Phương trình bậc nhất (Logic cũ nhưng hay)
+        a = random.randint(2, 10)
+        b = random.randint(1, 20) * random.choice([-1, 1])
+        if b < 0:
+            de_bai = f"Giải phương trình: {a}x - {abs(b)} = 0"
+        else:
+            de_bai = f"Giải phương trình: {a}x + {b} = 0"
+        dap_an = round(-b / a, 2)
+        goi_y = f"Chuyển {b} sang vế phải đổi dấu, rồi chia cho {a}."
+
+    elif lop == "Lớp 9":
+        # Căn bậc hai hoặc Hình học
+        dang = random.choice(["Căn bậc hai", "Pythagoras"])
+        if dang == "Căn bậc hai":
+            kq = random.randint(2, 15)
+            so = kq * kq
+            de_bai = f"Tính căn bậc hai số học của {so} (√{so})?"
+            dap_an = kq
+            goi_y = f"Số nào bình phương lên bằng {so}?"
+        else:
+            # Định lý Pythagoras tìm cạnh huyền
+            c1 = random.randint(3, 10)
+            c2 = random.randint(3, 10)
+            # Chọn bộ số Pythagoras
+            bo_so = random.choice([(3,4,5), (6,8,10), (5,12,13), (9,12,15)])
+            c1, c2, ch = bo_so
+            de_bai = f"Tam giác vuông có 2 cạnh góc vuông là {c1}cm và {c2}cm. Tính cạnh huyền?"
+            dap_an = ch
+            goi_y = f"Áp dụng định lý Pythagoras: Cạnh huyền = Căn bậc hai của ({c1}^2 + {c2}^2)."
+
+    return de_bai, dap_an, goi_y
+
+# Hàm dịch thuật
+def dich_sang_mong(text):
+    try:
+        translated = GoogleTranslator(source='vi', target='hmn').translate(text)
+        return translated
+    except:
+        return "Đang kết nối AI ngôn ngữ..."
 
 # --- GIAO DIỆN CHÍNH ---
 
-# 1. Header
+# 1. Header Trường học
 st.markdown("""
 <div class="school-header">
-    <h4>SỞ GIÁO DỤC VÀ ĐÀO TẠO TỈNH ĐIỆN BIÊN</h4>
-    <h1>🏫 TRƯỜNG PTDTBT THCS NA Ư</h1>
-    <h3>🚀 ỨNG DỤNG: TRỢ LÝ HỌC TẬP THÔNG MINH (AI TUTOR)</h3>
-    <p><i>Sản phẩm dự thi: "Sáng tạo AI trong giáo dục và đào tạo 2025-2026"</i></p>
+    <h3>SỞ GIÁO DỤC VÀ ĐÀO TẠO TỈNH ĐIỆN BIÊN</h3>
+    <h1>🏫 TRƯỜNG PTDTBT TH&THCS NA Ư</h1>
+    <p>ĐỊA CHỈ: XÃ SAM MỨN, HUYỆN ĐIỆN BIÊN</p>
+    <h2>🚀 SẢN PHẨM: GIA SƯ TOÁN HỌC AI TOÀN CẤP (LỚP 1-9)</h2>
 </div>
 """, unsafe_allow_html=True)
 
-# 2. Sidebar - Bảng điều khiển
+# 2. Sidebar (Thanh bên trái)
 with st.sidebar:
-    st.image("https://img.icons8.com/3d-fluency/94/graduation-cap.png", width=80)
-    st.header("🎛️ Trung tâm điều khiển")
+    st.image("https://cdn-icons-png.flaticon.com/512/4712/4712009.png", width=100)
+    st.header("📚 Cấu hình học tập")
     
-    mode = st.radio("Chọn chế độ học:", 
-        ["🎲 Luyện tập (Sinh đề ngẫu nhiên)", 
-         "📷 Mắt thần AI (Giải toán qua ảnh)"])
+    # Chọn cấp học
+    cap_hoc = st.radio("Chọn cấp học:", ["Tiểu học (Lớp 1-5)", "THCS (Lớp 6-9)"])
     
-    st.markdown("---")
-    st.caption("📊 **Thống kê phiên học:**")
-    if 'score' not in st.session_state: st.session_state.score = 0
-    st.write(f"Điểm tích lũy: **{st.session_state.score}** ⭐")
-
-# 3. Xử lý theo từng chế độ
-
-# --- CHẾ ĐỘ 1: LUYỆN TẬP (CẢI TIẾN) ---
-if mode == "🎲 Luyện tập (Sinh đề ngẫu nhiên)":
-    col1, col2 = st.columns([1, 1])
-    
-    with col1:
-        st.subheader("📝 Đề bài hôm nay")
-        st.info("Chuẩn kiến thức: Đại số lớp 8 - Chương trình GDPT 2018")
+    # Chọn lớp cụ thể dựa trên cấp học
+    if cap_hoc == "Tiểu học (Lớp 1-5)":
+        lop_hoc = st.selectbox("Chọn lớp:", ["Lớp 1", "Lớp 2", "Lớp 3", "Lớp 4", "Lớp 5"])
+    else:
+        lop_hoc = st.selectbox("Chọn lớp:", ["Lớp 6", "Lớp 7", "Lớp 8", "Lớp 9"])
         
-        if st.button("🔄 Tạo câu hỏi mới"):
-            de, da = sinh_de_co_ban()
-            st.session_state.current_prob = de
-            st.session_state.current_ans = da
-            st.session_state.ai_hint = "" # Reset gợi ý
-            
-        if 'current_prob' in st.session_state:
-            st.markdown(f"### {st.session_state.current_prob}")
-            
-            # Tính năng AI: Gợi ý phương pháp
-            if st.button("💡 Xin gợi ý từ AI (Không hiện đáp án)"):
-                prompt = f"Hãy đóng vai giáo viên Toán ân cần, gợi ý từng bước cách giải bài toán '{st.session_state.current_prob}' cho học sinh vùng cao dễ hiểu. Tuyệt đối không đưa ra đáp án cuối cùng."
-                st.session_state.ai_hint = ask_gemini(prompt)
-            
-            if 'ai_hint' in st.session_state and st.session_state.ai_hint:
-                st.markdown(f"<div class='ai-response'><b>👩‍🏫 Cô giáo AI gợi ý:</b><br>{st.session_state.ai_hint}</div>", unsafe_allow_html=True)
+    st.info(f"💡 Đang chọn chế độ ôn tập cho: **{lop_hoc}**")
+    
+    if st.button("🗑️ Xóa lịch sử làm bài"):
+        st.session_state.de_bai_hien_tai = ""
+        st.rerun()
 
-    with col2:
-        st.subheader("✍️ Nộp bài")
-        user_ans = st.number_input("Nhập kết quả (làm tròn 2 chữ số):", step=0.1)
+# 3. Khu vực chính
+col_trai, col_phai = st.columns([1.5, 1])
+
+# Khởi tạo Session State
+if 'de_bai_hien_tai' not in st.session_state:
+    st.session_state.de_bai_hien_tai = ""
+    st.session_state.dap_an_hien_tai = 0
+    st.session_state.goi_y_hien_tai = ""
+    st.session_state.lop_hien_tai = "" # Lưu lớp để tránh hiển thị đề cũ khi đổi lớp
+
+with col_trai:
+    st.subheader(f"📝 Đề bài Toán {lop_hoc}:")
+    
+    # Nút sinh đề
+    if st.button("🎲 TẠO ĐỀ BÀI MỚI (AI)", type="primary"):
+        # Reset trạng thái
+        st.session_state.da_nop = False
+        st.session_state.lop_hien_tai = lop_hoc
         
-        if st.button("Kiểm tra kết quả"):
-            if 'current_ans' in st.session_state:
-                if abs(user_ans - st.session_state.current_ans) < 0.1:
-                    st.markdown(f"<div class='success-card'>✅ CHÍNH XÁC! Em rất giỏi! (+1 điểm)</div>", unsafe_allow_html=True)
-                    st.session_state.score += 1
+        # Gọi hàm sinh đề tương ứng
+        if "Tiểu học" in cap_hoc:
+            db, da, gy = sinh_de_tieu_hoc(lop_hoc)
+        else:
+            db, da, gy = sinh_de_thcs(lop_hoc)
+        
+        st.session_state.de_bai_hien_tai = db
+        st.session_state.dap_an_hien_tai = da
+        st.session_state.goi_y_hien_tai = gy
+    
+    # Hiển thị đề bài
+    if st.session_state.de_bai_hien_tai:
+        st.markdown(f"""
+        <div class="problem-card">
+            <b>Đề bài:</b> {st.session_state.de_bai_hien_tai}
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Nút dịch
+        col_dich_1, col_dich_2 = st.columns(2)
+        with col_dich_1:
+            if st.button("🗣️ Dịch đề sang tiếng H'Mông"):
+                ban_dich = dich_sang_mong(st.session_state.de_bai_hien_tai)
+                st.success(f"**H'Mông:** {ban_dich}")
+
+with col_phai:
+    st.subheader("✍️ Khu vực làm bài")
+    
+    if st.session_state.de_bai_hien_tai:
+        # Form nhập liệu
+        with st.form("form_nop_bai"):
+            cau_tra_loi = st.number_input("Nhập kết quả của em:", step=0.01, format="%.2f")
+            da_nop = st.form_submit_button("✅ Kiểm tra kết quả")
+            
+            if da_nop:
+                # So sánh đáp án (sai số 0.1 cho phép tính xấp xỉ)
+                if abs(cau_tra_loi - st.session_state.dap_an_hien_tai) <= 0.1:
                     st.balloons()
+                    st.markdown(f'<p class="success-msg">TUYỆT VỜI! Em làm rất đúng!</p>', unsafe_allow_html=True)
+                    st.write(f"Đáp án chính xác là: **{st.session_state.dap_an_hien_tai}**")
                 else:
-                    st.error(f"Tiếc quá! Đáp án đúng là {st.session_state.current_ans}. Hãy thử xem gợi ý nhé!")
-
-# --- CHẾ ĐỘ 2: MẮT THẦN AI (TÍNH NĂNG ĐỘT PHÁ) ---
-elif mode == "📷 Mắt thần AI (Giải toán qua ảnh)":
-    st.subheader("📸 Chụp ảnh bài toán khó - AI sẽ giúp em!")
-    st.caption("Tính năng này sử dụng Thị giác máy tính để đọc đề bài từ sách giáo khoa hoặc vở viết tay.")
-    
-    # Cho phép nhập bằng Camera hoặc Upload file
-    tab1, tab2 = st.tabs(["📸 Chụp trực tiếp", "📂 Tải ảnh lên"])
-    
-    img_file = None
-    
-    with tab1:
-        cam_img = st.camera_input("Chụp ảnh đề bài tại đây")
-        if cam_img: img_file = cam_img
-            
-    with tab2:
-        up_img = st.file_uploader("Hoặc tải ảnh từ máy", type=['png', 'jpg', 'jpeg'])
-        if up_img: img_file = up_img
-
-    if img_file:
-        st.image(img_file, caption="Ảnh đề bài", width=300)
-        
-        if st.button("🚀 Gửi cho Gia sư AI phân tích"):
-            with st.spinner("Đang đọc đề bài và suy nghĩ..."):
-                # Xử lý ảnh
-                image = Image.open(img_file)
-                
-                # Prompt kỹ thuật cho AI
-                prompt = """
-                1. Hãy đọc đề bài toán trong bức ảnh này.
-                2. Giải bài toán này chi tiết, từng bước một.
-                3. Giải thích bằng ngôn ngữ đơn giản, thân thiện, phù hợp với học sinh trung học cơ sở.
-                4. Cuối cùng, hãy dịch tóm tắt lời giải sang tiếng H'Mông (nếu có thể) hoặc đưa ra lời động viên.
-                """
-                
-                # Gọi Gemini Vision
-                loi_giai = ask_gemini(prompt, image)
-                
-                st.markdown("### 🎓 Lời giải chi tiết:")
-                st.write(loi_giai)
+                    st.markdown(f'<p class="error-msg">Chưa đúng rồi, em thử lại nhé!</p>', unsafe_allow_html=True)
+                    
+                    # Hiện gợi ý
+                    st.warning("💡 **Gợi ý:** " + st.session_state.goi_y_hien_tai)
+                    
+                    # Tự động dịch gợi ý nếu cần
+                    with st.expander("Xem gợi ý tiếng H'Mông"):
+                         st.write(dich_sang_mong(st.session_state.goi_y_hien_tai))
 
 # Footer
 st.markdown("---")
-st.markdown("""
-<div style='text-align: center; color: #666;'>
-    © 2025 Đội thi Chuyển đổi số - Trường PTDTBT THCS Na Ư<br>
-    <i>Sản phẩm được hỗ trợ bởi công nghệ Google Gemini AI & Streamlit</i>
-</div>
-""", unsafe_allow_html=True)
+st.caption("© 2025 Nhóm tác giả Trường PTDTBT TH&THCS Na Ư - Điện Biên. Ứng dụng hỗ trợ học sinh vùng cao học Toán song ngữ.")
