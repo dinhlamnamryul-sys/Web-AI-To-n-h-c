@@ -130,7 +130,7 @@ def tao_de_toan(lop, bai_hoc):
                 f"${res_a+2}x^2 {res_b:+d}x$"
             ]
             dap_an = ans_correct
-            goi_y_text = "Nhân phân phối đơn thức vào đa thức: A(B+C) = AB + AC."
+            goi_y_text = "Nhân phân phối đơn thức vào đa thức: $A(B+C) = AB + AC$"
             goi_y_latex = f"{a}x \\cdot ({b}x {c:+d}) = {a}x \\cdot {b}x + {a}x \\cdot {c}"
             
         elif "Nhân đa thức" in bai_hoc:
@@ -164,19 +164,14 @@ def tao_de_toan(lop, bai_hoc):
         random.shuffle(options)
         return de_latex, question_type, dap_an, options, goi_y_text, goi_y_latex
 
-    # === LỚP 6 ===
+    # === LỚP 6: CẬP NHẬT CÔNG THỨC TOÁN CHO TRẮC NGHIỆM ===
     elif "Lớp 6" in lop:
-        # Bổ sung logic cho "Thứ tự thực hiện phép tính"
         if "thứ tự" in bai_lower or "phép tính" in bai_lower:
-            # Dạng bài a + b x c
             a, b, c = random.randint(2, 10), random.randint(2, 10), random.randint(2, 10)
             op1, op2 = random.choice(['+', '-']), '\\times'
             de_latex = f"Tính giá trị biểu thức: ${a} {op1} {b} {op2} {c} = ?$"
-            
-            # Tính toán kết quả
             if op1 == '+': dap_an = a + b * c
             else: dap_an = a - b * c
-            
             goi_y_text = "Thực hiện phép nhân chia trước, cộng trừ sau."
             goi_y_latex = f"{a} {op1} ({b} \\times {c}) = {a} {op1} {b*c}"
 
@@ -185,7 +180,7 @@ def tao_de_toan(lop, bai_hoc):
             exp = random.randint(2, 4)
             de_latex = f"Tính giá trị: ${base}^{exp} = ?$"
             dap_an = base ** exp
-            goi_y_text = f"Nhân {base} với chính nó {exp} lần."
+            goi_y_text = f"Nhân {base} với chính nó {exp} lần: $a^n = a \\times a \\dots$"
             goi_y_latex = f"{base}^{exp} = " + "\\times".join([str(base)]*exp)
             
         elif "số nguyên" in bai_lower:
@@ -211,24 +206,34 @@ def tao_de_toan(lop, bai_hoc):
                 de_latex = f"Tính: $\\frac{{{tu1}}}{{{mau}}} + \\frac{{{tu2}}}{{{mau}}} = ?$"
                 question_type = "mcq"
                 correct_tu = tu1 + tu2
-                ans_correct = f"${correct_tu}/{mau}$"
+                # CẬP NHẬT: Dùng \frac cho đáp án
+                ans_correct = f"$\\frac{{{correct_tu}}}{{{mau}}}$"
                 dap_an = ans_correct
-                options = [ans_correct, f"${abs(tu1-tu2)}/{mau}$", f"${correct_tu}/{mau*2}$", f"${tu1*tu2}/{mau}$"]
+                options = [
+                    ans_correct, 
+                    f"$\\frac{{{abs(tu1-tu2)}}}{{{mau}}}$", 
+                    f"$\\frac{{{correct_tu}}}{{{mau*2}}}$", 
+                    f"$\\frac{{{tu1*tu2}}}{{{mau}}}$"
+                ]
                 random.shuffle(options)
-                goi_y_text = "Cộng tử giữ nguyên mẫu."
+                goi_y_text = "Cộng tử số và giữ nguyên mẫu số: $\\frac{a}{m} + \\frac{b}{m} = \\frac{a+b}{m}$"
             elif "nhân" in bai_lower:
                 mau2 = random.randint(2, 6)
                 de_latex = f"Tính: $\\frac{{{tu1}}}{{{mau}}} \\cdot \\frac{{{tu2}}}{{{mau2}}} = ?$"
                 question_type = "mcq"
-                ans_correct = f"${tu1*tu2}/{mau*mau2}$"
+                ans_correct = f"$\\frac{{{tu1*tu2}}}{{{mau*mau2}}}$"
                 dap_an = ans_correct
-                options = [ans_correct, f"${tu1+tu2}/{mau+mau2}$", f"${tu1*mau2}/{mau*tu2}$", f"${tu1*tu2}/{mau+mau2}$"]
+                options = [
+                    ans_correct, 
+                    f"$\\frac{{{tu1+tu2}}}{{{mau+mau2}}}$", 
+                    f"$\\frac{{{tu1*mau2}}}{{{mau*tu2}}}$", 
+                    f"$\\frac{{{tu1*tu2}}}{{{mau+mau2}}}$"
+                ]
                 random.shuffle(options)
-                goi_y_text = "Tử nhân tử, mẫu nhân mẫu."
+                goi_y_text = "Tử nhân tử, mẫu nhân mẫu: $\\frac{a}{b} \\cdot \\frac{c}{d} = \\frac{a \\cdot c}{b \\cdot d}$"
 
-    # === LỚP 7 ===
+    # === LỚP 7: CẬP NHẬT CÔNG THỨC TOÁN CHO TRẮC NGHIỆM ===
     elif "Lớp 7" in lop:
-        # Bổ sung logic cho "Làm tròn số"
         if "làm tròn" in bai_lower:
             val = random.uniform(10, 100)
             precision = random.choice([1, 2])
@@ -240,13 +245,22 @@ def tao_de_toan(lop, bai_hoc):
             if "lũy thừa" in bai_lower:
                 base = random.randint(1, 3)
                 exp = 2
-                de_latex = f"Tính: $({base}/2)^{exp} = ?$"
+                # CẬP NHẬT: Dùng \left( \right) và \frac cho đề bài
+                de_latex = f"Tính: $\\left(\\frac{{{base}}}{{2}}\\right)^{{{exp}}} = ?$"
                 question_type = "mcq"
-                ans_correct = f"${base**2}/4$"
+                numerator = base**2
+                denominator = 4
+                # CẬP NHẬT: Dùng \frac cho đáp án
+                ans_correct = f"$\\frac{{{numerator}}}{{{denominator}}}$"
                 dap_an = ans_correct
-                options = [ans_correct, f"${base*2}/4$", f"${base}/4$", f"${base**2}/2$"]
+                options = [
+                    ans_correct, 
+                    f"$\\frac{{{base*2}}}{{{denominator}}}$", 
+                    f"$\\frac{{{base}}}{{{denominator}}}$", 
+                    f"$\\frac{{{numerator}}}{{2}}$"
+                ]
                 random.shuffle(options)
-                goi_y_text = "Lũy thừa của một thương bằng thương các lũy thừa."
+                goi_y_text = "Lũy thừa của một thương bằng thương các lũy thừa: $(\\frac{x}{y})^n = \\frac{x^n}{y^n}$"
             else:
                 a = round(random.uniform(-10, 10), 1)
                 b = round(random.uniform(-10, 10), 1)
@@ -290,25 +304,23 @@ def tao_de_toan(lop, bai_hoc):
             goi_y_text = "Sử dụng công thức nghiệm hoặc nhẩm nghiệm theo Vi-ét."
             
         elif "căn" in bai_lower:
-            # Random 1 trong 4 dạng bài
             dang_bai = random.randint(1, 4)
-            
-            if dang_bai == 1: # Rút gọn biểu thức
+            if dang_bai == 1:
                 a = random.randint(2, 5)
                 de_latex = f"Rút gọn biểu thức: $\\sqrt{{{a}^2 \\cdot 3}}$ (Nhập hệ số đứng trước căn 3)"
                 dap_an = a
                 goi_y_text = "Đưa thừa số ra ngoài dấu căn: $\\sqrt{A^2B} = |A|\\sqrt{B}$"
-            elif dang_bai == 2: # Tính căn bậc hai số học
+            elif dang_bai == 2:
                 res = random.randint(4, 15)
                 de_latex = f"Tính: $\\sqrt{{{res**2}}} = ?$"
                 dap_an = res
                 goi_y_text = "Tìm số dương mà bình phương lên bằng số trong căn."
-            elif dang_bai == 3: # Tổng hai căn
+            elif dang_bai == 3:
                 sq1, sq2 = random.choice([4, 9, 16, 25]), random.choice([4, 9, 16, 25])
                 de_latex = f"Tính: $\\sqrt{{{sq1}}} + \\sqrt{{{sq2}}} = ?$"
                 dap_an = math.sqrt(sq1) + math.sqrt(sq2)
                 goi_y_text = "Khai phương từng số hạng rồi cộng lại."
-            elif dang_bai == 4: # Tìm x
+            elif dang_bai == 4:
                 res = random.randint(2, 10)
                 de_latex = f"Tìm $x$ biết $\\sqrt{{x}} = {res}$"
                 dap_an = res**2
@@ -354,11 +366,11 @@ def tao_de_toan(lop, bai_hoc):
              
     return de_latex, question_type, dap_an, options, goi_y_text, goi_y_latex
 
-# Hàm dịch thuật
+# Hàm dịch thuật (ĐÃ SỬA ĐỂ GIỮ LẠI CÔNG THỨC TOÁN)
 def dich_sang_mong(text):
     try:
-        clean_text = text.replace("$", "").replace("\\", "").replace("{", "").replace("}", "")
-        return GoogleTranslator(source='vi', target='hmn').translate(clean_text)
+        # Không xóa các ký tự đặc biệt của LaTeX ($, \, {, }) để Google Translate giữ nguyên hoặc xử lý tốt hơn
+        return GoogleTranslator(source='vi', target='hmn').translate(text)
     except:
         return "..."
 
@@ -441,7 +453,7 @@ with col_phai:
             # --- XỬ LÝ GIAO DIỆN NHẬP LIỆU ---
             if st.session_state.q_type == "mcq":
                 st.markdown("**Chọn đáp án đúng:**")
-                # Đáp án bây giờ đã có dạng $...$ nên st.radio sẽ tự hiển thị dạng công thức
+                # Đáp án trắc nghiệm bây giờ đã là công thức LaTeX ($...$) nên sẽ hiển thị đẹp
                 user_ans = st.radio("Đáp án:", st.session_state.options, label_visibility="collapsed")
             else:
                 is_integer_answer = False
@@ -479,7 +491,7 @@ with col_phai:
                         st.markdown(f"Đáp án đúng là: **{ans_display}**")
                     st.session_state.show_hint = True
         
-        # --- HIỂN THỊ GỢI Ý VÀ DỊCH H'MÔNG (CHO MỌI KHỐI LỚP) ---
+        # --- HIỂN THỊ GỢI Ý VÀ DỊCH H'MÔNG ---
         if st.session_state.show_hint:
             st.markdown("---")
             st.markdown('<div class="hint-container">', unsafe_allow_html=True)
@@ -489,7 +501,7 @@ with col_phai:
                 st.latex(st.session_state.goi_y_latex)
             st.markdown('</div>', unsafe_allow_html=True)
                 
-            # THÊM PHẦN DỊCH GỢI Ý TIẾNG MÔNG (TỰ ĐỘNG HIỆN, KHÔNG CẦN BẤM XEM THÊM)
+            # THÊM PHẦN DỊCH GỢI Ý TIẾNG MÔNG
             translation = dich_sang_mong(st.session_state.goi_y_text)
             st.markdown('<div class="hmong-hint">', unsafe_allow_html=True)
             st.markdown(f"**🗣️ H'Mông:** {translation}")
