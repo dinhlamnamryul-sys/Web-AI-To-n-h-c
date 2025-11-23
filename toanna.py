@@ -2,7 +2,7 @@ import streamlit as st
 import random
 import math
 import time
-import os # Thêm thư viện os để xử lý file
+import os
 from deep_translator import GoogleTranslator
 
 # --- CẤU HÌNH TRANG WEB ---
@@ -16,13 +16,11 @@ st.set_page_config(
 def update_visit_count():
     count_file = "visit_count.txt"
     
-    # Nếu file chưa tồn tại, tạo mới và bắt đầu từ 5000 (để trông đẹp hơn)
     if not os.path.exists(count_file):
         with open(count_file, "w") as f:
             f.write("5000")
             return 5000
     
-    # Đọc số lượt truy cập hiện tại
     try:
         with open(count_file, "r") as f:
             content = f.read().strip()
@@ -30,19 +28,16 @@ def update_visit_count():
     except Exception:
         count = 5000
 
-    # Tăng lượt truy cập lên 1
     count += 1
     
-    # Lưu lại vào file
     try:
         with open(count_file, "w") as f:
             f.write(str(count))
     except Exception:
-        pass # Bỏ qua lỗi nếu không ghi được file (ví dụ trên một số cloud read-only)
+        pass
         
     return count
 
-# Chỉ tăng đếm khi người dùng mới vào (chưa có session)
 if 'visit_count' not in st.session_state:
     st.session_state.visit_count = update_visit_count()
 
@@ -94,7 +89,6 @@ st.markdown("""
     html, body, [class*="css"] { font-family: 'Nunito', sans-serif; }
     .stApp { background-color: #f0f4f8; background-image: radial-gradient(#dde1e7 1px, transparent 1px); background-size: 20px 20px; }
     
-    /* HEADER ĐƯỢC THIẾT KẾ LẠI */
     .hmong-header-container {
         background: white;
         border-radius: 20px;
@@ -135,7 +129,6 @@ st.markdown("""
         margin-top: 10px;
     }
     
-    /* HỌA TIẾT THỔ CẨM */
     .hmong-pattern {
         height: 12px;
         background: repeating-linear-gradient(
@@ -152,10 +145,9 @@ st.markdown("""
         width: 100%;
     }
 
-    /* COUNTER BADGE */
     .visit-counter {
         background-color: #263238;
-        color: #00e676; /* Màu xanh neon */
+        color: #00e676;
         padding: 5px 15px;
         border-radius: 15px;
         font-family: 'Courier New', monospace;
@@ -200,7 +192,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- LOGIC SINH ĐỀ (GIỮ NGUYÊN NHƯ BẠN YÊU CẦU) ---
+# --- LOGIC SINH ĐỀ ---
 
 def tao_de_toan(lop, bai_hoc):
     de_latex = ""
@@ -212,7 +204,10 @@ def tao_de_toan(lop, bai_hoc):
     
     bai_lower = bai_hoc.lower()
 
-    # === LỚP 8 ===
+    # ==========================================
+    # CẤP 2: LỚP 6, 7, 8, 9 (GIỮ NGUYÊN)
+    # ==========================================
+
     if "Lớp 8" in lop:
         question_type = "mcq"
         if "Nhân đơn thức" in bai_hoc:
@@ -242,7 +237,6 @@ def tao_de_toan(lop, bai_hoc):
             goi_y_text = "Sử dụng hằng đẳng thức $(A-B)^2 = A^2 - 2AB + B^2$"
         random.shuffle(options)
 
-    # === LỚP 9 ===
     elif "Lớp 9" in lop:
         if "hệ phương trình" in bai_lower:
             x, y = random.randint(1, 5), random.randint(1, 5)
@@ -284,7 +278,6 @@ def tao_de_toan(lop, bai_hoc):
             goi_y_text = "Chuyển vế đổi dấu rồi chia cho hệ số."
             goi_y_latex = f"{a}x = {b} \\Rightarrow x = \\frac{{{b}}}{{{a}}}"
 
-    # === LỚP 6 ===
     elif "Lớp 6" in lop:
         if "thứ tự" in bai_lower or "phép tính" in bai_lower:
             a, b, c = random.randint(2, 10), random.randint(2, 10), random.randint(2, 10)
@@ -330,7 +323,6 @@ def tao_de_toan(lop, bai_hoc):
                 random.shuffle(options)
                 goi_y_text = "Tử nhân tử, mẫu nhân mẫu."
 
-    # === LỚP 7 ===
     elif "Lớp 7" in lop:
         if "làm tròn" in bai_lower:
             val, prec = random.uniform(10, 100), random.choice([1, 2])
@@ -362,7 +354,10 @@ def tao_de_toan(lop, bai_hoc):
             dap_an = 180 - g1 - g2
             goi_y_text = "Tổng ba góc trong tam giác bằng $180^\\circ$."
 
-    # === CẤP 1: LỚP 5 ===
+    # ==========================================
+    # CẤP 1: LỚP 1, 2, 3, 4, 5 (CẬP NHẬT MỚI)
+    # ==========================================
+
     elif "Lớp 5" in lop:
         if "số thập phân" in bai_lower:
             a = round(random.uniform(1, 20), 1)
@@ -383,7 +378,6 @@ def tao_de_toan(lop, bai_hoc):
                 dap_an = round(a * b, 1)
                 goi_y_text = "Nhân như số tự nhiên, sau đó đặt dấu phẩy."
 
-    # === CẤP 1: LỚP 4 ===
     elif "Lớp 4" in lop:
         if "làm tròn" in bai_lower:
             base = random.randint(10000, 99999)
@@ -426,7 +420,6 @@ def tao_de_toan(lop, bai_hoc):
                 goi_y_latex = f"\\frac{{{tu1}}}{{{mau}}} \\times \\frac{{{tu2}}}{{{mau2}}} = \\frac{{{tu1} \\times {tu2}}}{{{mau} \\times {mau2}}}"
             random.shuffle(options)
 
-    # === CẤP 1: LỚP 3 ===
     elif "Lớp 3" in lop:
         if "nhân" in bai_lower:
             a, b = random.randint(10, 50), random.randint(2, 9)
@@ -455,7 +448,6 @@ def tao_de_toan(lop, bai_hoc):
                 goi_y_text = "Diện tích hình chữ nhật bằng dài nhân rộng."
                 goi_y_latex = f"S = a \\times b = {a} \\times {b}"
 
-    # === CẤP 1: LỚP 1, 2 ===
     elif "Lớp 1" in lop or "Lớp 2" in lop:
         a, b = random.randint(1, 10), random.randint(1, 10)
         if "Lớp 1" in lop: a, b = random.randint(1, 5), random.randint(0, 5)
