@@ -27,20 +27,20 @@ CHUONG_TRINH_HOC = {
     },
     "Lớp 3": {
         "Chương 1: Phép nhân và chia trong phạm vi 1000": ["Bảng nhân 3, 4, 6, 7, 8, 9", "Bảng chia 3, 4, 6, 7, 8, 9", "Tìm thành phần chưa biết"],
-        "Chương 2: Một số hình phẳng": ["Chu vi hình chữ nhật, hình vuông"], # Rút gọn hình học
+        "Chương 2: Một số hình phẳng": ["Chu vi hình chữ nhật, hình vuông"], 
         "Chương 3: Các số đến 10 000": ["Các số có 4 chữ số", "Phép cộng, trừ các số trong phạm vi 10 000"],
         "Chương 4: Diện tích": ["Diện tích hình chữ nhật", "Diện tích hình vuông"]
     },
     "Lớp 4": {
         "Chương 1: Số tự nhiên": ["Các số có nhiều chữ số", "So sánh số", "Làm tròn số"],
         "Chương 2: Bốn phép tính số tự nhiên": ["Phép cộng, phép trừ", "Phép nhân, phép chia", "Tính chất giao hoán, kết hợp", "Trung bình cộng"],
-        "Chương 3: Hình học và Đo lường": ["Đổi đơn vị đo"], # Rút gọn góc/đường thẳng
+        "Chương 3: Hình học và Đo lường": ["Đổi đơn vị đo"], 
         "Chương 4: Phân số": ["Khái niệm phân số", "Quy đồng mẫu số", "Cộng, trừ, nhân, chia phân số"]
     },
     "Lớp 5": {
         "Chương 1: Ôn tập phân số": ["Hỗn số", "Ôn tập phép tính phân số"],
         "Chương 2: Số thập phân": ["Khái niệm số thập phân", "So sánh số thập phân", "Cộng, trừ, nhân, chia số thập phân"],
-        "Chương 3: Hình học": ["Chu vi, Diện tích"], # Rút gọn
+        "Chương 3: Hình học": ["Chu vi, Diện tích"], 
         "Chương 4: Số đo thời gian, Vận tốc": ["Cộng trừ số đo thời gian", "Vận tốc, Quãng đường, Thời gian"]
     },
     "Lớp 6": {
@@ -80,6 +80,10 @@ st.markdown("""
         font-size: 1.3rem; margin-bottom: 20px;
         color: #333;
     }
+    .hint-box {
+        background-color: #e3f2fd; padding: 15px; border-radius: 10px;
+        border: 1px dashed #2196f3; margin-top: 10px;
+    }
     .success-msg { color: #2e7d32; font-weight: 700; font-size: 1.2rem; }
     .error-msg { color: #c62828; font-weight: 700; }
     .stButton>button { border-radius: 25px; font-weight: 600; padding: 0.5rem 1rem; }
@@ -110,24 +114,10 @@ def sinh_so_ngau_nhien(lop):
     if "Lớp 6" in lop: return random.randint(-50, 50), random.randint(-20, 20)
     return random.randint(-100, 100), random.randint(-100, 100)
 
-def giai_thich_goi_y(de_bai_type):
-    msg = {
-        "cong": "Em hãy cộng hàng đơn vị trước, rồi đến hàng chục.",
-        "tru": "Em hãy trừ hàng đơn vị trước, nếu không đủ thì mượn 1 ở hàng chục.",
-        "nhan": "Hãy nhớ lại bảng cửu chương hoặc đặt tính nhân.",
-        "chia": "Đặt tính chia từ trái sang phải.",
-        "hinh_hoc": "Áp dụng công thức Chu vi hoặc Diện tích.",
-        "phan_so": "Quy đồng mẫu số nếu cần, rồi thực hiện phép tính tử với tử.",
-        "phuong_trinh": "Chuyển vế đổi dấu: Chuyển số hạng từ vế này sang vế kia thì phải đổi dấu.",
-        "he_phuong_trinh": "Dùng phương pháp thế hoặc phương pháp cộng đại số.",
-        "can_bac_hai": "Số nào bình phương lên bằng số trong căn?"
-    }
-    return msg.get(de_bai_type, "Hãy đọc kỹ đề bài và áp dụng công thức đã học.")
-
 def tao_de_toan(lop, bai_hoc):
     """
     Hàm Factory sinh đề dựa trên từ khóa trong Tên Bài Học.
-    Đã loại bỏ các dạng hình học phức tạp, chỉ giữ lại tính toán số học và đại số.
+    Cập nhật: Tạo gợi ý chi tiết kèm công thức Toán học (LaTeX).
     """
     bai_hoc_lower = bai_hoc.lower()
     de_bai, dap_an, goi_y = "", 0, ""
@@ -135,50 +125,49 @@ def tao_de_toan(lop, bai_hoc):
     # --- 1. SỐ HỌC CƠ BẢN ---
     if any(x in bai_hoc_lower for x in ["cộng", "tổng", "thêm"]):
         a, b = sinh_so_ngau_nhien(lop)
-        # Format lại hiển thị cho đẹp
         if b < 0:
             de_bai = f"Tính: {a} - {abs(b)} = ?"
+            goi_y = f"Đây là phép cộng số nguyên. Em hãy thực hiện: ${a} - {abs(b)}$"
         else:
             de_bai = f"Tính: {a} + {b} = ?"
+            goi_y = f"Đặt tính rồi tính: Lấy hàng đơn vị cộng hàng đơn vị, hàng chục cộng hàng chục.\\nVí dụ: ${a} + {b} = ...$"
         dap_an = a + b
-        goi_y = giai_thich_goi_y("cong")
         
     elif any(x in bai_hoc_lower for x in ["trừ", "hiệu", "bớt", "ít hơn"]):
         a, b = sinh_so_ngau_nhien(lop)
-        # Cấp 1 không trừ ra số âm
         if "Lớp 6" not in lop and "Lớp 7" not in lop and "Lớp 8" not in lop and "Lớp 9" not in lop:
             a, b = max(a, b), min(a, b)
         
-        if b < 0: # Trừ cho số âm là cộng
-            de_bai = f"Tính: {a} - ({b}) = ?" # Để trong ngoặc cho rõ ràng: 5 - (-3)
+        if b < 0: 
+            de_bai = f"Tính: {a} - ({b}) = ?"
+            goi_y = f"Trừ cho một số âm là cộng với số đối của nó: ${a} - ({b}) = {a} + {abs(b)}$"
         else:
             de_bai = f"Tính: {a} - {b} = ?"
+            goi_y = f"Đặt tính rồi tính: Lấy hàng đơn vị trừ hàng đơn vị. Nếu không đủ thì mượn 1 ở hàng chục.\\n${a} - {b} = ...$"
         dap_an = a - b
-        goi_y = giai_thich_goi_y("tru")
         
     elif any(x in bai_hoc_lower for x in ["nhân", "tích", "gấp"]):
         if "Lớp 2" in lop: a, b = random.randint(2, 5), random.randint(1, 10)
         elif "Lớp 3" in lop: a, b = random.randint(2, 9), random.randint(2, 9)
         else: a, b = sinh_so_ngau_nhien(lop)
         
-        # Format phép nhân
         if b < 0:
             de_bai = f"Tính: {a} x ({b}) = ?"
         else:
             de_bai = f"Tính: {a} x {b} = ?"
         dap_an = a * b
-        goi_y = giai_thich_goi_y("nhan")
+        goi_y = f"Em hãy nhớ lại bảng cửu chương hoặc thực hiện phép nhân:\\n${a} \\times {b} = ?$"
 
     elif any(x in bai_hoc_lower for x in ["chia", "thương"]):
         if "Lớp 2" in lop: b = random.choice([2, 5])
         elif "Lớp 3" in lop: b = random.randint(2, 9)
         else: b = random.randint(2, 20)
-        if b == 0: b = 2 # Tránh chia cho 0
+        if b == 0: b = 2
         kq = random.randint(2, 10)
         a = b * kq
         de_bai = f"Tính: {a} : {b} = ?"
         dap_an = kq
-        goi_y = giai_thich_goi_y("chia")
+        goi_y = f"Đặt tính chia: Số nào nhân với ${b}$ thì bằng ${a}$?\\n$\\frac{{{a}}}{{{b}}} = ?$"
 
     # --- 2. SO SÁNH ---
     elif "so sánh" in bai_hoc_lower:
@@ -186,31 +175,31 @@ def tao_de_toan(lop, bai_hoc):
         while a == b: b = sinh_so_ngau_nhien(lop)[1]
         de_bai = f"Điền dấu (1 là >, 2 là <): {a} ... {b} (Nhập 1 nếu lớn hơn, 2 nếu nhỏ hơn)"
         dap_an = 1 if a > b else 2
-        goi_y = "So sánh các hàng từ trái sang phải."
+        goi_y = f"So sánh từ hàng cao nhất (bên trái) sang hàng thấp nhất (bên phải).\\n${a}$ so với ${b}$ thế nào?"
 
-    # --- 3. HÌNH HỌC (CHỈ GIỮ CHU VI/DIỆN TÍCH HCN/HV) ---
+    # --- 3. HÌNH HỌC ---
     elif "vuông" in bai_hoc_lower and ("chu vi" in bai_hoc_lower or "diện tích" in bai_hoc_lower):
         canh = random.randint(2, 20)
         if "chu vi" in bai_hoc_lower:
             de_bai = f"Hình vuông cạnh {canh}cm. Tính Chu vi (cm)?"
             dap_an = canh * 4
-            goi_y = "Chu vi hình vuông = Cạnh x 4"
+            goi_y = f"Công thức Chu vi hình vuông cạnh $a$: $P = a \\times 4$.\\nÁp dụng: $P = {canh} \\times 4$"
         else:
             de_bai = f"Hình vuông cạnh {canh}cm. Tính Diện tích (cm²)?"
             dap_an = canh * canh
-            goi_y = "Diện tích hình vuông = Cạnh x Cạnh"
+            goi_y = f"Công thức Diện tích hình vuông cạnh $a$: $S = a \\times a$ (hoặc $a^2$).\\nÁp dụng: $S = {canh} \\times {canh}$"
             
     elif "chữ nhật" in bai_hoc_lower and ("chu vi" in bai_hoc_lower or "diện tích" in bai_hoc_lower):
         d = random.randint(5, 20)
-        r = random.randint(1, d-1) # Đảm bảo Dài > Rộng
+        r = random.randint(1, d-1)
         if "chu vi" in bai_hoc_lower:
             de_bai = f"HCN có dài {d}cm, rộng {r}cm. Tính Chu vi (cm)?"
             dap_an = (d + r) * 2
-            goi_y = "Chu vi HCN = (Dài + Rộng) x 2"
+            goi_y = f"Công thức Chu vi HCN: $P = (dài + rộng) \\times 2$.\\nÁp dụng: $P = ({d} + {r}) \\times 2$"
         else:
             de_bai = f"HCN có dài {d}cm, rộng {r}cm. Tính Diện tích (cm²)?"
             dap_an = d * r
-            goi_y = "Diện tích HCN = Dài x Rộng"
+            goi_y = f"Công thức Diện tích HCN: $S = dài \\times rộng$.\\nÁp dụng: $S = {d} \\times {r}$"
 
     # --- 4. ĐẠI SỐ & GIẢI TÍCH ---
     elif "lũy thừa" in bai_hoc_lower:
@@ -218,58 +207,65 @@ def tao_de_toan(lop, bai_hoc):
         exp = random.randint(2, 4)
         de_bai = f"Tính: {base}^{exp} = ?"
         dap_an = base ** exp
-        goi_y = f"Lấy số {base} nhân với chính nó {exp} lần."
+        # Gợi ý chi tiết dạng a x a x ...
+        expansion = " \\times ".join([str(base)] * exp)
+        goi_y = f"Lũy thừa bậc $n$ của $a$ là tích của $n$ thừa số $a$: \\n$${base}^{exp} = {expansion}$$"
         
     elif "làm tròn" in bai_hoc_lower:
         val = random.uniform(10, 100)
         de_bai = f"Làm tròn số {val:.3f} đến chữ số thập phân thứ nhất."
         dap_an = round(val, 1)
-        goi_y = "Nếu số sau nó >= 5 thì cộng 1, ngược lại giữ nguyên."
+        goi_y = f"Quy tắc làm tròn: Nếu chữ số ngay sau hàng làm tròn $\\ge 5$ thì cộng thêm 1, ngược lại giữ nguyên.\\nSố cần xét là chữ số thứ 2 sau dấu phẩy của ${val:.3f}$."
         
     elif "phương trình" in bai_hoc_lower and "hệ" not in bai_hoc_lower:
         # ax + b = 0
         a = random.randint(2, 10)
         b = random.randint(1, 20) * random.choice([-1, 1])
-        
-        # XỬ LÝ DẤU: Thay vì "ax + -b", chuyển thành "ax - b"
         dau_b = format_bieu_thuc(b)
         
         de_bai = f"Tìm x biết: {a}x {dau_b} = 0 (Làm tròn 2 chữ số thập phân)"
         dap_an = round(-b/a, 2)
-        goi_y = "Chuyển hệ số tự do sang vế phải đổi dấu, rồi chia cho hệ số của x."
+        
+        # Gợi ý từng bước giải phương trình
+        if b < 0:
+            buoc1 = f"{a}x = {abs(b)}"
+        else:
+            buoc1 = f"{a}x = -{b}"
+            
+        goi_y = f"**Bước 1:** Chuyển hệ số tự do sang vế phải và đổi dấu:\\n$${a}x {dau_b} = 0 \\Rightarrow {buoc1}$$ \\n**Bước 2:** Chia cả hai vế cho ${a}$ để tìm $x$:\\n$$x = \\frac{{{buoc1.split('=')[1].strip()}}}{{{a}}}$$"
         
     elif "hệ phương trình" in bai_hoc_lower:
-        # x + y = S, x - y = D -> Tìm x
         x = random.randint(5, 20)
         y = random.randint(1, x)
         S = x + y
         D = x - y
         de_bai = f"Cho hệ: x + y = {S} và x - y = {D}. Tìm giá trị của x?"
         dap_an = x
-        goi_y = "Cộng hai phương trình lại: (x+y) + (x-y) = 2x."
+        goi_y = f"Dùng phương pháp cộng đại số:\\nCộng hai phương trình vế theo vế:\\n$(x + y) + (x - y) = {S} + {D}$ \\n$\\Rightarrow 2x = {S + D} \\Rightarrow x = ?$"
         
     elif "căn" in bai_hoc_lower:
         kq = random.randint(2, 15)
         n = kq**2
         de_bai = f"Tính căn bậc hai số học của {n}?"
         dap_an = kq
-        goi_y = "Số nào bình phương lên bằng số trong căn?"
+        goi_y = f"Căn bậc hai số học của số không âm $a$ là số $x$ sao cho $x^2 = a$.\\nKí hiệu: $\\sqrt{{a}} = x$.\\nỞ đây em cần tìm số nào bình phương lên bằng ${n}$?\\n$$\\sqrt{{{n}}} = ? \\text{{ vì }} ?^2 = {n}$$"
 
-    # --- 5. FALLBACK (MẶC ĐỊNH) ---
+    # --- 5. FALLBACK ---
     else:
-        # Nếu chọn bài hình học phức tạp hoặc bài không có trong logic
         a, b = sinh_so_ngau_nhien(lop)
-        # Mặc định sinh bài toán cộng/trừ để không bị lỗi
         de_bai = f"Bài toán ôn tập: Tính {a} + {b}"
         dap_an = a + b
-        goi_y = "Thực hiện phép tính số học."
+        goi_y = f"Thực hiện phép tính cộng cơ bản: ${a} + {b}$"
 
     return de_bai, dap_an, goi_y
 
 # Hàm dịch thuật
 def dich_sang_mong(text):
     try:
-        return GoogleTranslator(source='vi', target='hmn').translate(text)
+        # Loại bỏ các ký tự LaTeX ($) trước khi dịch để tránh lỗi, hoặc chỉ dịch phần text cơ bản
+        # Ở đây ta chỉ dịch đơn giản, Google Translate có thể không hiểu LaTeX
+        clean_text = text.replace("$", "").replace("\\", "") 
+        return GoogleTranslator(source='vi', target='hmn').translate(clean_text)
     except:
         return "Lỗi kết nối dịch thuật."
 
@@ -364,7 +360,13 @@ with col_phai:
                     st.markdown(f'<p class="success-msg">CHÍNH XÁC! Em rất giỏi!</p>', unsafe_allow_html=True)
                 else:
                     st.markdown(f'<p class="error-msg">Sai rồi. Đáp án đúng là: {st.session_state.dap_an}</p>', unsafe_allow_html=True)
-                    st.warning(f"💡 **Gợi ý:** {st.session_state.goi_y}")
+                    
+                    # --- PHẦN GỢI Ý CHI TIẾT ---
+                    st.markdown("### 💡 Gợi ý chi tiết:")
+                    with st.container():
+                         # Sử dụng st.markdown để render LaTeX
+                         st.markdown(st.session_state.goi_y)
+                    
                     with st.expander("Xem gợi ý tiếng H'Mông"):
                          st.write(dich_sang_mong(st.session_state.goi_y))
     else:
