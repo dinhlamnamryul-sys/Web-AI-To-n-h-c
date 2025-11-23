@@ -113,8 +113,122 @@ def tao_de_toan(lop, bai_hoc):
     
     bai_lower = bai_hoc.lower()
 
+    # === LỚP 3: CẬP NHẬT CÔNG THỨC & LOGIC ===
+    if "Lớp 3" in lop:
+        if "nhân" in bai_lower:
+            # Nhân số có 2 chữ số với số có 1 chữ số
+            a = random.randint(10, 50)
+            b = random.randint(2, 9)
+            de_latex = f"Tính: ${a} \\times {b} = ?$"
+            dap_an = a * b
+            goi_y_text = "Đặt tính rồi tính: Nhân lần lượt từ hàng đơn vị đến hàng chục."
+            goi_y_latex = f"{a} \\times {b} = {a*b}"
+        elif "chia" in bai_lower:
+            # Chia hết: b * kq = a
+            b = random.randint(2, 9)
+            kq = random.randint(10, 50)
+            a = b * kq
+            de_latex = f"Tính: ${a} : {b} = ?$"
+            dap_an = kq
+            goi_y_text = "Đặt tính rồi tính: Chia lần lượt từ hàng chục đến hàng đơn vị."
+            goi_y_latex = f"{a} : {b} = {kq}"
+        elif "diện tích" in bai_lower:
+            if "vuông" in bai_lower:
+                a = random.randint(3, 9)
+                de_latex = f"Tính diện tích hình vuông có cạnh ${a}cm$."
+                dap_an = a * a
+                goi_y_text = "Diện tích hình vuông bằng cạnh nhân cạnh."
+                goi_y_latex = f"S = {a} \\times {a} = {a*a} (cm^2)"
+            else: # Chữ nhật
+                a = random.randint(5, 10)
+                b = random.randint(2, a-1)
+                de_latex = f"Tính diện tích hình chữ nhật có chiều dài ${a}cm$, chiều rộng ${b}cm$."
+                dap_an = a * b
+                goi_y_text = "Diện tích hình chữ nhật bằng chiều dài nhân chiều rộng."
+                goi_y_latex = f"S = {a} \\times {b} = {a*b} (cm^2)"
+
+    # === LỚP 4: CẬP NHẬT CÔNG THỨC & LOGIC ===
+    elif "Lớp 4" in lop:
+        if "làm tròn" in bai_lower:
+            # Làm tròn đến hàng nghìn, chục nghìn
+            base = random.randint(10000, 99999)
+            de_latex = f"Làm tròn số ${base}$ đến hàng nghìn."
+            dap_an = round(base, -3)
+            goi_y_text = "Quan sát chữ số hàng trăm. Nếu >= 5 thì cộng 1 vào hàng nghìn, ngược lại giữ nguyên."
+        elif "phân số" in bai_lower:
+            # Dùng MCQ cho phân số đẹp như Lớp 6
+            question_type = "mcq"
+            mau = random.randint(3, 9)
+            tu1 = random.randint(1, mau-1)
+            tu2 = random.randint(1, mau-1)
+            
+            if "cộng" in bai_lower:
+                de_latex = f"Tính: $\\frac{{{tu1}}}{{{mau}}} + \\frac{{{tu2}}}{{{mau}}} = ?$"
+                correct_tu = tu1 + tu2
+                ans_correct = f"$\\frac{{{correct_tu}}}{{{mau}}}$"
+                dap_an = ans_correct
+                options = [
+                    ans_correct,
+                    f"$\\frac{{{abs(tu1-tu2)}}}{{{mau}}}$",
+                    f"$\\frac{{{correct_tu}}}{{{mau+mau}}}$", # Sai lầm cộng mẫu
+                    f"$\\frac{{{tu1*tu2}}}{{{mau}}}$"
+                ]
+                goi_y_text = "Cộng tử số, giữ nguyên mẫu số."
+                goi_y_latex = f"\\frac{{{tu1}}}{{{mau}}} + \\frac{{{tu2}}}{{{mau}}} = \\frac{{{tu1}+{tu2}}}{{{mau}}}"
+            elif "trừ" in bai_lower:
+                if tu1 < tu2: tu1, tu2 = tu2, tu1 # Đảm bảo dương
+                de_latex = f"Tính: $\\frac{{{tu1}}}{{{mau}}} - \\frac{{{tu2}}}{{{mau}}} = ?$"
+                correct_tu = tu1 - tu2
+                ans_correct = f"$\\frac{{{correct_tu}}}{{{mau}}}$"
+                dap_an = ans_correct
+                options = [
+                    ans_correct,
+                    f"$\\frac{{{tu1+tu2}}}{{{mau}}}$",
+                    f"$\\frac{{{correct_tu}}}{{{mau-mau}}}$", 
+                    f"$\\frac{{{tu1}}}{{{mau}}}$"
+                ]
+                goi_y_text = "Trừ tử số, giữ nguyên mẫu số."
+                goi_y_latex = f"\\frac{{{tu1}}}{{{mau}}} - \\frac{{{tu2}}}{{{mau}}} = \\frac{{{tu1}-{tu2}}}{{{mau}}}"
+            elif "nhân" in bai_lower:
+                mau2 = random.randint(2, 9)
+                de_latex = f"Tính: $\\frac{{{tu1}}}{{{mau}}} \\times \\frac{{{tu2}}}{{{mau2}}} = ?$"
+                ans_correct = f"$\\frac{{{tu1*tu2}}}{{{mau*mau2}}}$"
+                dap_an = ans_correct
+                options = [
+                    ans_correct,
+                    f"$\\frac{{{tu1+tu2}}}{{{mau+mau2}}}$",
+                    f"$\\frac{{{tu1*mau2}}}{{{mau*tu2}}}$",
+                    f"$\\frac{{{tu1}}}{{{mau}}}$"
+                ]
+                goi_y_text = "Lấy tử nhân tử, mẫu nhân mẫu."
+                goi_y_latex = f"\\frac{{{tu1}}}{{{mau}}} \\times \\frac{{{tu2}}}{{{mau2}}} = \\frac{{{tu1} \\times {tu2}}}{{{mau} \\times {mau2}}}"
+            
+            random.shuffle(options)
+
+    # === LỚP 5: CẬP NHẬT CÔNG THỨC & LOGIC ===
+    elif "Lớp 5" in lop:
+        if "số thập phân" in bai_lower:
+            a = round(random.uniform(1, 20), 1)
+            b = round(random.uniform(1, 20), 1)
+            if "cộng" in bai_lower:
+                de_latex = f"Tính: ${a} + {b} = ?$"
+                dap_an = round(a + b, 1)
+                goi_y_text = "Đặt tính thẳng hàng dấu phẩy rồi cộng như số tự nhiên."
+            elif "trừ" in bai_lower:
+                lon, be = max(a, b), min(a, b)
+                de_latex = f"Tính: ${lon} - {be} = ?$"
+                dap_an = round(lon - be, 1)
+                goi_y_text = "Đặt tính thẳng hàng dấu phẩy rồi trừ như số tự nhiên."
+            elif "nhân" in bai_lower:
+                # Nhân số thập phân đơn giản (1 chữ số thập phân)
+                a = round(random.uniform(1, 10), 1)
+                b = random.randint(2, 9) # Nhân với số tự nhiên cho dễ hoặc số thập phân nhỏ
+                de_latex = f"Tính: ${a} \\times {b} = ?$"
+                dap_an = round(a * b, 1)
+                goi_y_text = "Nhân như số tự nhiên, sau đó đếm phần thập phân để đặt dấu phẩy."
+
     # === LỚP 8: SỬ DỤNG LATEX CHO ĐÁP ÁN TRẮC NGHIỆM ===
-    if "Lớp 8" in lop:
+    elif "Lớp 8" in lop:
         question_type = "mcq"
         if "Nhân đơn thức" in bai_hoc:
             a = random.choice([-3, -2, 2, 3, 4])
@@ -162,7 +276,6 @@ def tao_de_toan(lop, bai_hoc):
             goi_y_text = "Sử dụng hằng đẳng thức $(A-B)^2 = A^2 - 2AB + B^2$"
         
         random.shuffle(options)
-        return de_latex, question_type, dap_an, options, goi_y_text, goi_y_latex
 
     # === LỚP 6: CẬP NHẬT CÔNG THỨC TOÁN CHO TRẮC NGHIỆM ===
     elif "Lớp 6" in lop:
@@ -334,14 +447,13 @@ def tao_de_toan(lop, bai_hoc):
             goi_y_text = "Chuyển vế đổi dấu rồi chia cho hệ số."
             goi_y_latex = f"{a}x = {b} \\Rightarrow x = \\frac{{{b}}}{{{a}}}"
 
-    # === CẤP 1 (LỚP 1-5) ===
+    # === CẤP 1 (LỚP 1, 2, CÁC TRƯỜNG HỢP MẶC ĐỊNH) ===
     else: 
         a = random.randint(1, 10)
         b = random.randint(1, 10)
         
         if "Lớp 1" in lop: a, b = random.randint(1, 5), random.randint(0, 5)
-        elif "Lớp 2" in lop or "Lớp 3" in lop: a, b = random.randint(10, 50), random.randint(1, 9)
-        elif "Lớp 4" in lop or "Lớp 5" in lop: a, b = random.randint(100, 900), random.randint(10, 99)
+        elif "Lớp 2" in lop: a, b = random.randint(10, 50), random.randint(1, 9)
 
         if "cộng" in bai_lower:
             de_latex = f"Tính: ${a} + {b} = ?$"
