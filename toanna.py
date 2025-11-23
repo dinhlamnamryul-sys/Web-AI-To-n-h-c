@@ -36,7 +36,7 @@ def update_visit_count():
 if 'visit_count' not in st.session_state:
     st.session_state.visit_count = update_visit_count()
 
-# --- DỮ LIỆU CHƯƠNG TRÌNH HỌC (CẬP NHẬT LỚP 8 MỚI) ---
+# --- DỮ LIỆU CHƯƠNG TRÌNH HỌC (LỚP 8 CHUẨN SGK MỚI) ---
 CHUONG_TRINH_HOC = {
     "Lớp 1": {
         "Chương 1: Các số từ 0 đến 10": ["Các số 0-10", "Tách - Gộp số", "So sánh số"],
@@ -203,25 +203,22 @@ def tao_de_toan(lop, bai_hoc):
     bai_lower = bai_hoc.lower()
 
     # ==========================================
-    # CẤP 2: LỚP 8 (NỘI DUNG MỚI ĐƯỢC CẬP NHẬT)
+    # CẤP 2: LỚP 8 (ĐÃ SỬA LỖI SINH CÂU HỎI)
     # ==========================================
     if "Lớp 8" in lop:
         question_type = "mcq" # Mặc định trắc nghiệm cho đại số phức tạp
         
+        # 1. PHẦN ĐA THỨC
         if "đa thức" in bai_lower:
             if "cộng trừ" in bai_lower:
                 a1, b1 = random.randint(2, 5), random.randint(1, 9)
                 a2, b2 = random.randint(2, 5), random.randint(1, 9)
                 op = random.choice(['+', '-'])
                 
-                poly1 = f"{a1}x^2 + {b1}xy"
-                poly2 = f"{a2}x^2 {op} {b2}xy" # op ở đây chỉ để hiển thị
-                
-                de_latex = f"Rút gọn biểu thức: $({a1}x^2 + {b1}xy) + ({a2}x^2 - {b2}xy)$"
                 if op == '+':
                     de_latex = f"Rút gọn: $({a1}x^2 + {b1}xy) + ({a2}x^2 + {b2}xy)$"
                     res_a, res_b = a1 + a2, b1 + b2
-                else: # Trừ
+                else:
                     de_latex = f"Rút gọn: $({a1}x^2 + {b1}xy) - ({a2}x^2 + {b2}xy)$"
                     res_a, res_b = a1 - a2, b1 - b2
                 
@@ -234,7 +231,7 @@ def tao_de_toan(lop, bai_hoc):
                     f"${res_a}x^2 + {res_b*2}xy$"
                 ]
                 goi_y_text = "Cộng/trừ các hạng tử đồng dạng (cùng phần biến)."
-                goi_y_latex = f"({a1}x^2 + {a2}x^2) + ({b1}xy - {b2}xy) = \\dots"
+                goi_y_latex = f"({a1}x^2 + {a2}x^2) {op} ({b1}xy {op} {b2}xy)"
 
             elif "nhân đơn thức" in bai_lower:
                 k = random.randint(2, 5) * random.choice([1, -1])
@@ -256,7 +253,6 @@ def tao_de_toan(lop, bai_hoc):
             elif "nhân đa thức" in bai_lower:
                 a, b = random.randint(1, 5), random.randint(1, 5)
                 de_latex = f"Khai triển: $(x + {a})(x - {b})$"
-                # (x+a)(x-b) = x^2 - bx + ax - ab = x^2 + (a-b)x - ab
                 mid = a - b
                 end = -a * b
                 ans_correct = f"$x^2 {mid:+d}x {end:+d}$"
@@ -268,86 +264,76 @@ def tao_de_toan(lop, bai_hoc):
                     f"$x^2 {-mid:+d}x {end:+d}$"
                 ]
                 goi_y_text = "Nhân mỗi hạng tử của đa thức này với từng hạng tử của đa thức kia."
-                goi_y_latex = f"x \\cdot x + x \\cdot (-{b}) + {a} \\cdot x + {a} \\cdot (-{b})"
 
             elif "chia" in bai_lower:
                 k = random.randint(2, 4)
                 exp = random.randint(2, 4)
                 de_latex = f"Chia đa thức: $({k*3}x^{exp+1} - {k*2}x^{exp}) : {k}x^{exp-1}$"
-                # (3k x^(n+1) - 2k x^n) : k x^(n-1)
-                # Term 1: 3x^2
-                # Term 2: -2x
                 ans_correct = f"$3x^2 - 2x$"
                 dap_an = ans_correct
                 options = [ans_correct, "$3x^2 + 2x$", "$3x - 2$", "$3x^2 - 2$"]
                 goi_y_text = "Chia từng hạng tử của đa thức cho đơn thức."
-                goi_y_latex = f"\\frac{{{k*3}x^{exp+1}}}{{{k}x^{exp-1}}} - \\frac{{{k*2}x^{exp}}}{{{k}x^{exp-1}}}"
 
-        elif "hằng đẳng thức" in bai_lower:
-            dang_bai = random.randint(1, 3)
-            if dang_bai == 1: # (A+B)^2
+        # 2. PHẦN HẰNG ĐẲNG THỨC (Cập nhật từ khóa nhận diện)
+        elif "hằng đẳng thức" in bai_lower or "bình phương" in bai_lower or "lập phương" in bai_lower or "hiệu hai" in bai_lower:
+            if "bình phương" in bai_lower and "tổng" in bai_lower: # (A+B)^2
                 a = random.randint(2, 6)
-                de_latex = f"Khai triển hằng đẳng thức: $(x + {a})^2$"
+                de_latex = f"Khai triển: $(x + {a})^2$"
                 ans_correct = f"$x^2 + {2*a}x + {a**2}$"
                 dap_an = ans_correct
                 options = [ans_correct, f"$x^2 + {a**2}$", f"$x^2 - {2*a}x + {a**2}$", f"$2x + {a**2}$"]
-                goi_y_text = "Áp dụng công thức: $(A+B)^2 = A^2 + 2AB + B^2$."
+                goi_y_text = "Áp dụng: $(A+B)^2 = A^2 + 2AB + B^2$."
                 goi_y_latex = f"x^2 + 2 \\cdot x \\cdot {a} + {a}^2"
             
-            elif dang_bai == 2: # A^2 - B^2
+            elif "hiệu" in bai_lower and "bình phương" in bai_lower: # A^2 - B^2
                 a = random.randint(2, 9)
                 de_latex = f"Viết dưới dạng tích: $x^2 - {a**2}$"
                 ans_correct = f"$(x - {a})(x + {a})$"
                 dap_an = ans_correct
                 options = [ans_correct, f"$(x - {a})^2$", f"$(x + {a})^2$", f"$(x - {a})(x - {a})$"]
-                goi_y_text = "Áp dụng công thức hiệu hai bình phương: $A^2 - B^2 = (A-B)(A+B)$."
-                goi_y_latex = f"x^2 - {a}^2 = (x-{a})(x+{a})"
+                goi_y_text = "Áp dụng: $A^2 - B^2 = (A-B)(A+B)$."
             
-            elif dang_bai == 3: # (A-B)^3
+            elif "lập phương" in bai_lower: # (A-B)^3
                 de_latex = f"Khai triển: $(x - 2)^3$"
                 ans_correct = f"$x^3 - 6x^2 + 12x - 8$"
                 dap_an = ans_correct
-                options = [
-                    ans_correct,
-                    "$x^3 - 8$",
-                    "$x^3 + 6x^2 + 12x + 8$",
-                    "$x^3 - 6x^2 - 12x - 8$"
-                ]
-                goi_y_text = "Áp dụng công thức lập phương của một hiệu."
-                goi_y_latex = "(A-B)^3 = A^3 - 3A^2B + 3AB^2 - B^3"
+                options = [ans_correct, "$x^3 - 8$", "$x^3 + 6x^2 + 12x + 8$", "$x^3 - 6x^2 - 12x - 8$"]
+                goi_y_text = "Áp dụng lập phương của một hiệu."
+            else:
+                # Fallback cho Hằng đẳng thức chung
+                a = random.randint(2, 5)
+                de_latex = f"Tính $(x-{a})^2$"
+                ans_correct = f"$x^2 - {2*a}x + {a**2}$"
+                dap_an = ans_correct
+                options = [ans_correct, f"$x^2+{a**2}$", f"$x^2- {a**2}$", f"$x^2 + {2*a}x + {a**2}$"]
+                goi_y_text = "Áp dụng hằng đẳng thức đáng nhớ."
 
+        # 3. PHẦN PHÂN THỨC
         elif "phân thức" in bai_lower:
             if "cộng trừ" in bai_lower:
                 tu1 = random.randint(1, 5)
                 tu2 = random.randint(1, 5)
-                de_latex = f"Cộng hai phân thức cùng mẫu: $\\frac{{x+{tu1}}}{{x-1}} + \\frac{{2x+{tu2}}}{{x-1}}$"
-                # Tu: x + tu1 + 2x + tu2 = 3x + (tu1+tu2)
+                de_latex = f"Cộng: $\\frac{{x+{tu1}}}{{x-1}} + \\frac{{2x+{tu2}}}{{x-1}}$"
                 ans_correct = f"$\\frac{{3x+{tu1+tu2}}}{{x-1}}$"
                 dap_an = ans_correct
-                options = [
-                    ans_correct,
-                    f"$\\frac{{3x+{tu1+tu2}}}{{2x-2}}$",
-                    f"$\\frac{{3x}}{{{x-1}}}$",
-                    f"$\\frac{{3x+{tu1-tu2}}}{{x-1}}$"
-                ]
-                goi_y_text = "Cộng tử thức với tử thức, giữ nguyên mẫu thức."
-                goi_y_latex = f"\\frac{{(x+{tu1}) + (2x+{tu2})}}{{x-1}}"
+                options = [ans_correct, f"$\\frac{{3x+{tu1+tu2}}}{{2x-2}}$", f"$\\frac{{3x}}{{{x-1}}}$", f"$\\frac{{3x+{tu1-tu2}}}{{x-1}}$" ]
+                goi_y_text = "Cộng tử thức, giữ nguyên mẫu thức."
             
-            elif "nhân chia" in bai_lower:
+            else: # Nhân chia
                 a = random.randint(2, 5)
-                de_latex = f"Rút gọn biểu thức: $\\frac{{x^2 - {a**2}}}{{x}} \\cdot \\frac{{x}}{{x+{a}}}$"
+                de_latex = f"Rút gọn: $\\frac{{x^2 - {a**2}}}{{x}} \\cdot \\frac{{x}}{{x+{a}}}$"
                 ans_correct = f"$x - {a}$"
                 dap_an = ans_correct
                 options = [ans_correct, f"$x + {a}$", f"$\\frac{{1}}{{x+{a}}}$", f"$x^2 - {a**2}$"]
-                goi_y_text = "Phân tích tử số thành nhân tử rồi rút gọn."
-                goi_y_latex = f"\\frac{{(x-{a})(x+{a})}}{{x}} \\cdot \\frac{{x}}{{x+{a}}} = x - {a}"
+                goi_y_text = "Phân tích tử thành nhân tử rồi rút gọn."
 
-        elif "hàm số" in bai_lower:
+        # 4. PHẦN HÀM SỐ (Cập nhật từ khóa nhận diện)
+        elif "hàm số" in bai_lower or "hệ số góc" in bai_lower:
             if "hệ số góc" in bai_lower:
                 a = random.randint(-5, 5)
                 b = random.randint(1, 10)
                 if a == 0: a = 2
-                de_latex = f"Hệ số góc của đường thẳng $y = {a}x + {b}$ là bao nhiêu?"
+                de_latex = f"Hệ số góc của đường thẳng $y = {a}x + {b}$ là?"
                 question_type = "number"
                 dap_an = a
                 goi_y_text = "Trong hàm số $y = ax + b$, hệ số góc là $a$."
@@ -355,16 +341,25 @@ def tao_de_toan(lop, bai_hoc):
                 a = random.randint(2, 5)
                 b = random.randint(1, 5)
                 x0 = random.randint(1, 3)
-                de_latex = f"Cho hàm số $y = {a}x - {b}$. Tính giá trị của $y$ khi $x = {x0}$."
+                de_latex = f"Cho $y = {a}x - {b}$. Tính $y$ khi $x = {x0}$."
                 question_type = "number"
                 dap_an = a * x0 - b
-                goi_y_text = "Thay giá trị của $x$ vào công thức hàm số."
-                goi_y_latex = f"y = {a} \\cdot {x0} - {b}"
-
+                goi_y_text = "Thay giá trị của $x$ vào công thức."
+        
+        # --- QUAN TRỌNG: CƠ CHẾ CHỐNG LỖI (FALLBACK) ---
+        # Nếu bài học được chọn nhưng chưa có logic cụ thể, sinh bài mặc định để không crash
+        if not de_latex: 
+            a = random.randint(2,5)
+            de_latex = f"Phân tích đa thức thành nhân tử: $x^2 - {a}x$"
+            ans_correct = f"$x(x-{a})$"
+            dap_an = ans_correct
+            options = [ans_correct, f"$x(x+{a})$", f"$x^2(1-{a})$", f"$(x-{a})^2$"]
+            goi_y_text = "Đặt nhân tử chung là x."
+            
         random.shuffle(options)
 
     # ==========================================
-    # CÁC LỚP CÒN LẠI (GIỮ NGUYÊN CODE CŨ)
+    # CÁC LỚP CÒN LẠI (GIỮ NGUYÊN)
     # ==========================================
     
     elif "Lớp 9" in lop:
@@ -706,7 +701,6 @@ with col_trai:
         col_d1, col_d2 = st.columns(2)
         with col_d1:
             if st.button("🗣️ Dịch H'Mông"):
-                # Dịch phần văn bản gợi ý
                 bd = dich_sang_mong(st.session_state.de_bai.replace("$", ""))
                 st.info(f"**H'Mông:** {bd}")
 
@@ -719,7 +713,10 @@ with col_phai:
             
             if st.session_state.q_type == "mcq":
                 st.markdown("**Chọn đáp án đúng:**")
-                user_ans = st.radio("Đáp án:", st.session_state.options, label_visibility="collapsed")
+                if st.session_state.options: # Đảm bảo options không rỗng
+                    user_ans = st.radio("Đáp án:", st.session_state.options, label_visibility="collapsed")
+                else:
+                     st.error("Lỗi: Không tìm thấy đáp án phù hợp.")
             else:
                 is_integer_answer = False
                 if isinstance(st.session_state.dap_an, int) or (isinstance(st.session_state.dap_an, float) and st.session_state.dap_an.is_integer()):
@@ -732,7 +729,7 @@ with col_phai:
 
             btn_nop = st.form_submit_button("✅ Kiểm tra")
             
-            if btn_nop:
+            if btn_nop and user_ans is not None:
                 st.session_state.submitted = True
                 is_correct = False
                 
@@ -767,7 +764,6 @@ with col_phai:
             translation = dich_sang_mong(st.session_state.goi_y_text)
             st.markdown('<div class="hmong-hint">', unsafe_allow_html=True)
             st.markdown(f"**🗣️ H'Mông:** {translation}")
-            # Nếu có công thức toán trong gợi ý, hiển thị lại ở phần tiếng Mông để học sinh dễ hiểu
             if st.session_state.goi_y_latex:
                 st.latex(st.session_state.goi_y_latex)
             st.markdown('</div>', unsafe_allow_html=True)
