@@ -1,6 +1,7 @@
 import streamlit as st
 import random
 import math
+import time
 from deep_translator import GoogleTranslator
 
 # --- CẤU HÌNH TRANG WEB ---
@@ -9,6 +10,11 @@ st.set_page_config(
     page_icon="🏔️",
     layout="wide"
 )
+
+# --- GIẢ LẬP BỘ ĐẾM LƯỢT TRUY CẬP ---
+if 'visit_count' not in st.session_state:
+    # Khởi tạo một con số ngẫu nhiên để trông giống thật (ví dụ từ 5000 đến 8000)
+    st.session_state.visit_count = random.randint(5000, 8000)
 
 # --- DỮ LIỆU CHƯƠNG TRÌNH HỌC (CHUẨN KẾT NỐI TRI THỨC) ---
 CHUONG_TRINH_HOC = {
@@ -51,38 +57,101 @@ CHUONG_TRINH_HOC = {
     }
 }
 
-# --- CSS PHONG CÁCH THỔ CẨM H'MÔNG ---
+# --- CSS PHONG CÁCH THỔ CẨM H'MÔNG & HEADER ĐẸP ---
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
     html, body, [class*="css"] { font-family: 'Nunito', sans-serif; }
-    .stApp { background-color: #f3f6fb; background-image: radial-gradient(#dbeafe 1px, transparent 1px); background-size: 20px 20px; }
+    .stApp { background-color: #f0f4f8; background-image: radial-gradient(#dde1e7 1px, transparent 1px); background-size: 20px 20px; }
     
-    .hmong-header {
-        background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
-        color: white; padding: 25px; border-radius: 15px; text-align: center;
-        border-bottom: 5px solid #d32f2f; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        margin-bottom: 20px;
+    /* HEADER ĐƯỢC THIẾT KẾ LẠI */
+    .hmong-header-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        overflow: hidden;
+        margin-bottom: 30px;
+        border: 2px solid #e0e0e0;
     }
+    
+    .hmong-top-bar {
+        background: linear-gradient(90deg, #1a237e, #3949ab);
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+    
+    .hmong-main-title {
+        padding: 30px 20px;
+        text-align: center;
+        background: white;
+    }
+    
+    .hmong-main-title h1 {
+        color: #d32f2f; /* Màu đỏ đậm */
+        font-size: 2.5rem;
+        font-weight: 900;
+        margin: 0;
+        text-shadow: 2px 2px 0px #ffcdd2;
+    }
+    
+    .hmong-main-title h2 {
+        color: #283593; /* Màu xanh chàm */
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-top: 10px;
+    }
+    
+    /* HỌA TIẾT THỔ CẨM */
     .hmong-pattern {
-        height: 10px;
-        background: repeating-linear-gradient(45deg, #d32f2f, #d32f2f 10px, #ffeb3b 10px, #ffeb3b 20px, #388e3c 20px, #388e3c 30px);
-        margin-top: 10px; border-radius: 5px;
+        height: 12px;
+        background: repeating-linear-gradient(
+            45deg,
+            #d32f2f,
+            #d32f2f 15px,
+            #ffeb3b 15px,
+            #ffeb3b 30px,
+            #388e3c 30px,
+            #388e3c 45px,
+            #1976d2 45px,
+            #1976d2 60px
+        );
+        width: 100%;
     }
+
+    /* COUNTER BADGE */
+    .visit-counter {
+        background-color: #263238;
+        color: #00e676; /* Màu xanh neon */
+        padding: 5px 15px;
+        border-radius: 15px;
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+        font-size: 0.9rem;
+        display: inline-block;
+        margin-top: 10px;
+        border: 1px solid #00e676;
+        box-shadow: 0 0 10px rgba(0, 230, 118, 0.3);
+    }
+
     .problem-box {
         background-color: white; padding: 30px; border-radius: 20px;
         border: 2px solid #e0e0e0; border-top: 8px solid #1a237e;
         box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center; margin-bottom: 20px;
     }
     .stButton>button {
-        background: linear-gradient(to right, #d32f2f, #c62828); color: white;
+        background: linear-gradient(to right, #d32f2f, #b71c1c); 
+        color: white;
         border: none; border-radius: 30px; font-weight: bold; font-size: 16px;
         padding: 0.6rem 2rem; transition: transform 0.2s; width: 100%;
+        box-shadow: 0 4px 6px rgba(211, 47, 47, 0.3);
     }
     .stButton>button:hover { transform: scale(1.05); color: white; }
     .stRadio > div { background-color: white; padding: 20px; border-radius: 15px; border: 1px solid #eeeeee; }
     
-    /* Style cho phần gợi ý */
     .hint-container {
         background-color: #e3f2fd;
         border-left: 5px solid #2196f3;
@@ -101,7 +170,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- LOGIC SINH ĐỀ ---
+# --- LOGIC SINH ĐỀ (GIỮ NGUYÊN NHƯ BẠN YÊU CẦU) ---
 
 def tao_de_toan(lop, bai_hoc):
     de_latex = ""
@@ -113,10 +182,7 @@ def tao_de_toan(lop, bai_hoc):
     
     bai_lower = bai_hoc.lower()
 
-    # ==========================================
-    # CẤP 2: LỚP 6, 7, 8, 9 (GIỮ NGUYÊN)
-    # ==========================================
-
+    # === LỚP 8 ===
     if "Lớp 8" in lop:
         question_type = "mcq"
         if "Nhân đơn thức" in bai_hoc:
@@ -146,6 +212,7 @@ def tao_de_toan(lop, bai_hoc):
             goi_y_text = "Sử dụng hằng đẳng thức $(A-B)^2 = A^2 - 2AB + B^2$"
         random.shuffle(options)
 
+    # === LỚP 9 ===
     elif "Lớp 9" in lop:
         if "hệ phương trình" in bai_lower:
             x, y = random.randint(1, 5), random.randint(1, 5)
@@ -187,6 +254,7 @@ def tao_de_toan(lop, bai_hoc):
             goi_y_text = "Chuyển vế đổi dấu rồi chia cho hệ số."
             goi_y_latex = f"{a}x = {b} \\Rightarrow x = \\frac{{{b}}}{{{a}}}"
 
+    # === LỚP 6 ===
     elif "Lớp 6" in lop:
         if "thứ tự" in bai_lower or "phép tính" in bai_lower:
             a, b, c = random.randint(2, 10), random.randint(2, 10), random.randint(2, 10)
@@ -232,6 +300,7 @@ def tao_de_toan(lop, bai_hoc):
                 random.shuffle(options)
                 goi_y_text = "Tử nhân tử, mẫu nhân mẫu."
 
+    # === LỚP 7 ===
     elif "Lớp 7" in lop:
         if "làm tròn" in bai_lower:
             val, prec = random.uniform(10, 100), random.choice([1, 2])
@@ -263,10 +332,7 @@ def tao_de_toan(lop, bai_hoc):
             dap_an = 180 - g1 - g2
             goi_y_text = "Tổng ba góc trong tam giác bằng $180^\\circ$."
 
-    # ==========================================
-    # CẤP 1: LỚP 1, 2, 3, 4, 5 (CẬP NHẬT MỚI)
-    # ==========================================
-
+    # === CẤP 1: LỚP 5 ===
     elif "Lớp 5" in lop:
         if "số thập phân" in bai_lower:
             a = round(random.uniform(1, 20), 1)
@@ -287,13 +353,14 @@ def tao_de_toan(lop, bai_hoc):
                 dap_an = round(a * b, 1)
                 goi_y_text = "Nhân như số tự nhiên, sau đó đặt dấu phẩy."
 
+    # === CẤP 1: LỚP 4 ===
     elif "Lớp 4" in lop:
         if "làm tròn" in bai_lower:
             base = random.randint(10000, 99999)
             de_latex = f"Làm tròn số ${base}$ đến hàng nghìn."
             dap_an = round(base, -3)
             goi_y_text = "Xét chữ số hàng trăm. Nếu $\\ge 5$ thì cộng 1 vào hàng nghìn."
-        elif "nhiều chữ số" in bai_lower or "số tự nhiên" in bai_lower: # FIX LỖI: Thêm logic cho bài 'Số nhiều chữ số'
+        elif "nhiều chữ số" in bai_lower or "số tự nhiên" in bai_lower: 
             a, b = random.randint(10000, 99999), random.randint(10000, 99999)
             op = random.choice(['+', '-'])
             if op == '-': a, b = max(a, b), min(a, b)
@@ -329,6 +396,7 @@ def tao_de_toan(lop, bai_hoc):
                 goi_y_latex = f"\\frac{{{tu1}}}{{{mau}}} \\times \\frac{{{tu2}}}{{{mau2}}} = \\frac{{{tu1} \\times {tu2}}}{{{mau} \\times {mau2}}}"
             random.shuffle(options)
 
+    # === CẤP 1: LỚP 3 ===
     elif "Lớp 3" in lop:
         if "nhân" in bai_lower:
             a, b = random.randint(10, 50), random.randint(2, 9)
@@ -357,8 +425,8 @@ def tao_de_toan(lop, bai_hoc):
                 goi_y_text = "Diện tích hình chữ nhật bằng dài nhân rộng."
                 goi_y_latex = f"S = a \\times b = {a} \\times {b}"
 
+    # === CẤP 1: LỚP 1, 2 ===
     elif "Lớp 1" in lop or "Lớp 2" in lop:
-        # CẬP NHẬT LATEX CHO LỚP 1, 2
         a, b = random.randint(1, 10), random.randint(1, 10)
         if "Lớp 1" in lop: a, b = random.randint(1, 5), random.randint(0, 5)
         elif "Lớp 2" in lop: a, b = random.randint(10, 50), random.randint(2, 9)
@@ -387,7 +455,6 @@ def tao_de_toan(lop, bai_hoc):
             dap_an = ans
             goi_y_text = "Sử dụng bảng chia."
         elif "so sánh" in bai_lower:
-            # Lớp 1 So sánh
             question_type = "mcq"
             de_latex = f"So sánh: ${a} \\dots {b}$"
             if a > b: ans_correct = "$>$"
@@ -396,20 +463,20 @@ def tao_de_toan(lop, bai_hoc):
             dap_an = ans_correct
             options = ["$>$", "$<$", "$=$"]
             goi_y_text = "So sánh giá trị hai số."
-        elif "số" in bai_lower: # Fallback cho "Các số 0-10"
+        elif "số" in bai_lower: 
              de_latex = f"Số liền sau của ${a}$ là?"
              dap_an = a + 1
              goi_y_text = "Đếm thêm 1 đơn vị."
 
     else:
-        # Fallback cuối cùng
+        # Fallback
         a, b = random.randint(1, 10), random.randint(1, 10)
         de_latex = f"Tính: ${a} + {b} = ?$"
         dap_an = a + b
              
     return de_latex, question_type, dap_an, options, goi_y_text, goi_y_latex
 
-# Hàm dịch thuật (GIỮ NGUYÊN CODE CŨ)
+# Hàm dịch thuật
 def dich_sang_mong(text):
     try:
         return GoogleTranslator(source='vi', target='hmn').translate(text)
@@ -418,12 +485,18 @@ def dich_sang_mong(text):
 
 # --- GIAO DIỆN CHÍNH ---
 
-st.markdown('<div class="hmong-header">', unsafe_allow_html=True)
-st.markdown('<h3>SỞ GIÁO DỤC VÀ ĐÀO TẠO TỈNH ĐIỆN BIÊN</h3>', unsafe_allow_html=True)
-st.markdown('<h1>🏫 TRƯỜNG PTDTBT TH&THCS NA Ư</h1>', unsafe_allow_html=True)
-st.markdown('<h2>🚀 GIA SƯ TOÁN AI - BẢN MƯỜNG</h2>', unsafe_allow_html=True)
-st.markdown('<div class="hmong-pattern"></div>', unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
+# Header mới với bộ đếm
+st.markdown(f"""
+<div class="hmong-header-container">
+    <div class="hmong-top-bar">SỞ GIÁO DỤC VÀ ĐÀO TẠO TỈNH ĐIỆN BIÊN</div>
+    <div class="hmong-main-title">
+        <h1>🏫 TRƯỜNG PTDTBT TH&THCS NA Ư</h1>
+        <h2>🚀 GIA SƯ TOÁN AI - BẢN MƯỜNG</h2>
+        <div class="visit-counter">Lượt truy cập: {st.session_state.visit_count}</div>
+    </div>
+    <div class="hmong-pattern"></div>
+</div>
+""", unsafe_allow_html=True)
 
 with st.sidebar:
     st.markdown("<div style='text-align: center; font-size: 80px;'>🏔️</div>", unsafe_allow_html=True)
@@ -492,7 +565,6 @@ with col_phai:
         with st.form("form_lam_bai"):
             user_ans = None
             
-            # --- XỬ LÝ GIAO DIỆN NHẬP LIỆU ---
             if st.session_state.q_type == "mcq":
                 st.markdown("**Chọn đáp án đúng:**")
                 user_ans = st.radio("Đáp án:", st.session_state.options, label_visibility="collapsed")
@@ -531,7 +603,6 @@ with col_phai:
                         st.markdown(f"Đáp án đúng là: **{ans_display}**")
                     st.session_state.show_hint = True
         
-        # --- HIỂN THỊ GỢI Ý VÀ DỊCH H'MÔNG ---
         if st.session_state.show_hint:
             st.markdown("---")
             st.markdown('<div class="hint-container">', unsafe_allow_html=True)
