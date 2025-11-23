@@ -203,12 +203,12 @@ def tao_de_toan(lop, bai_hoc):
     bai_lower = bai_hoc.lower()
 
     # ==========================================
-    # CẤP 2: LỚP 8 (ĐÃ SỬA LỖI SINH CÂU HỎI)
+    # CẤP 2: LỚP 8
     # ==========================================
     if "Lớp 8" in lop:
-        question_type = "mcq" # Mặc định trắc nghiệm cho đại số phức tạp
+        question_type = "mcq" # Mặc định trắc nghiệm cho đại số
         
-        # 1. PHẦN ĐA THỨC
+        # 1. ĐA THỨC
         if "đa thức" in bai_lower:
             if "cộng trừ" in bai_lower:
                 a1, b1 = random.randint(2, 5), random.randint(1, 9)
@@ -224,13 +224,8 @@ def tao_de_toan(lop, bai_hoc):
                 
                 ans_correct = f"${res_a}x^2 {res_b:+d}xy$"
                 dap_an = ans_correct
-                options = [
-                    ans_correct,
-                    f"${res_a}x^2 {-res_b:+d}xy$",
-                    f"${a1+a2}x^2 {b1+b2:+d}xy$",
-                    f"${res_a}x^2 + {res_b*2}xy$"
-                ]
-                goi_y_text = "Cộng/trừ các hạng tử đồng dạng (cùng phần biến)."
+                options = [ans_correct, f"${res_a}x^2 {-res_b:+d}xy$", f"${a1+a2}x^2 {b1+b2:+d}xy$", f"${res_a}x^2 + {res_b*2}xy$"]
+                goi_y_text = "Cộng/trừ các hạng tử đồng dạng."
                 goi_y_latex = f"({a1}x^2 + {a2}x^2) {op} ({b1}xy {op} {b2}xy)"
 
             elif "nhân đơn thức" in bai_lower:
@@ -241,14 +236,8 @@ def tao_de_toan(lop, bai_hoc):
                 c1, c2, c3 = k, -k*a, k*b
                 ans_correct = f"${c1}x^3 {c2:+d}x^2 {c3:+d}x$"
                 dap_an = ans_correct
-                options = [
-                    ans_correct,
-                    f"${c1}x^3 {c2:+d}x {c3:+d}$",
-                    f"${c1}x^3 {-c2:+d}x^2 {c3:+d}x$",
-                    f"${k}x^3 - {a}x + {b}$"
-                ]
-                goi_y_text = "Nhân đơn thức với từng hạng tử của đa thức: $A(B+C) = AB + AC$."
-                goi_y_latex = f"{k}x \\cdot x^2 + {k}x \\cdot (-{a}x) + {k}x \\cdot {b}"
+                options = [ans_correct, f"${c1}x^3 {c2:+d}x {c3:+d}$", f"${c1}x^3 {-c2:+d}x^2 {c3:+d}x$", f"${k}x^3 - {a}x + {b}$"]
+                goi_y_text = "Nhân phân phối: $A(B+C) = AB + AC$."
 
             elif "nhân đa thức" in bai_lower:
                 a, b = random.randint(1, 5), random.randint(1, 5)
@@ -257,77 +246,92 @@ def tao_de_toan(lop, bai_hoc):
                 end = -a * b
                 ans_correct = f"$x^2 {mid:+d}x {end:+d}$"
                 dap_an = ans_correct
-                options = [
-                    ans_correct,
-                    f"$x^2 {mid:+d}x {abs(end):+d}$",
-                    f"$x^2 {a+b:+d}x {end:+d}$",
-                    f"$x^2 {-mid:+d}x {end:+d}$"
-                ]
-                goi_y_text = "Nhân mỗi hạng tử của đa thức này với từng hạng tử của đa thức kia."
+                options = [ans_correct, f"$x^2 {mid:+d}x {abs(end):+d}$", f"$x^2 {a+b:+d}x {end:+d}$", f"$x^2 {-mid:+d}x {end:+d}$"]
+                goi_y_text = "Nhân đa thức với đa thức."
 
             elif "chia" in bai_lower:
                 k = random.randint(2, 4)
                 exp = random.randint(2, 4)
-                de_latex = f"Chia đa thức: $({k*3}x^{exp+1} - {k*2}x^{exp}) : {k}x^{exp-1}$"
+                de_latex = f"Chia: $({k*3}x^{exp+1} - {k*2}x^{exp}) : {k}x^{exp-1}$"
                 ans_correct = f"$3x^2 - 2x$"
                 dap_an = ans_correct
                 options = [ans_correct, "$3x^2 + 2x$", "$3x - 2$", "$3x^2 - 2$"]
-                goi_y_text = "Chia từng hạng tử của đa thức cho đơn thức."
+                goi_y_text = "Chia từng hạng tử cho đơn thức."
 
-        # 2. PHẦN HẰNG ĐẲNG THỨC (Cập nhật từ khóa nhận diện)
+        # 2. HẰNG ĐẲNG THỨC
         elif "hằng đẳng thức" in bai_lower or "bình phương" in bai_lower or "lập phương" in bai_lower or "hiệu hai" in bai_lower:
-            if "bình phương" in bai_lower and "tổng" in bai_lower: # (A+B)^2
+            if "bình phương" in bai_lower and "tổng" in bai_lower:
                 a = random.randint(2, 6)
                 de_latex = f"Khai triển: $(x + {a})^2$"
                 ans_correct = f"$x^2 + {2*a}x + {a**2}$"
                 dap_an = ans_correct
                 options = [ans_correct, f"$x^2 + {a**2}$", f"$x^2 - {2*a}x + {a**2}$", f"$2x + {a**2}$"]
-                goi_y_text = "Áp dụng: $(A+B)^2 = A^2 + 2AB + B^2$."
-                goi_y_latex = f"x^2 + 2 \\cdot x \\cdot {a} + {a}^2"
-            
-            elif "hiệu" in bai_lower and "bình phương" in bai_lower: # A^2 - B^2
+                goi_y_text = "$(A+B)^2 = A^2 + 2AB + B^2$"
+            elif "hiệu" in bai_lower and "bình phương" in bai_lower:
                 a = random.randint(2, 9)
-                de_latex = f"Viết dưới dạng tích: $x^2 - {a**2}$"
+                de_latex = f"Viết thành tích: $x^2 - {a**2}$"
                 ans_correct = f"$(x - {a})(x + {a})$"
                 dap_an = ans_correct
                 options = [ans_correct, f"$(x - {a})^2$", f"$(x + {a})^2$", f"$(x - {a})(x - {a})$"]
-                goi_y_text = "Áp dụng: $A^2 - B^2 = (A-B)(A+B)$."
-            
-            elif "lập phương" in bai_lower: # (A-B)^3
+                goi_y_text = "$A^2 - B^2 = (A-B)(A+B)$"
+            elif "lập phương" in bai_lower:
                 de_latex = f"Khai triển: $(x - 2)^3$"
                 ans_correct = f"$x^3 - 6x^2 + 12x - 8$"
                 dap_an = ans_correct
                 options = [ans_correct, "$x^3 - 8$", "$x^3 + 6x^2 + 12x + 8$", "$x^3 - 6x^2 - 12x - 8$"]
-                goi_y_text = "Áp dụng lập phương của một hiệu."
+                goi_y_text = "$(A-B)^3 = A^3 - 3A^2B + 3AB^2 - B^3$"
             else:
-                # Fallback cho Hằng đẳng thức chung
                 a = random.randint(2, 5)
                 de_latex = f"Tính $(x-{a})^2$"
                 ans_correct = f"$x^2 - {2*a}x + {a**2}$"
                 dap_an = ans_correct
                 options = [ans_correct, f"$x^2+{a**2}$", f"$x^2- {a**2}$", f"$x^2 + {2*a}x + {a**2}$"]
-                goi_y_text = "Áp dụng hằng đẳng thức đáng nhớ."
 
-        # 3. PHẦN PHÂN THỨC
+        # 3. PHÂN THỨC ĐẠI SỐ (ĐÃ SỬA LỖI)
         elif "phân thức" in bai_lower:
-            if "cộng trừ" in bai_lower:
+            question_type = "mcq" # Đảm bảo là trắc nghiệm
+            
+            # Trường hợp: Cộng trừ phân thức
+            if "cộng" in bai_lower or "trừ" in bai_lower:
                 tu1 = random.randint(1, 5)
                 tu2 = random.randint(1, 5)
-                de_latex = f"Cộng: $\\frac{{x+{tu1}}}{{x-1}} + \\frac{{2x+{tu2}}}{{x-1}}$"
-                ans_correct = f"$\\frac{{3x+{tu1+tu2}}}{{x-1}}$"
+                # Sinh bài: (x + tu1)/(x-1) + (2x + tu2)/(x-1)
+                de_latex = f"Cộng hai phân thức: $\\frac{{x+{tu1}}}{{x-1}} + \\frac{{2x+{tu2}}}{{x-1}}$"
+                
+                # Đáp án: (3x + tu1 + tu2) / (x-1)
+                res_num = tu1 + tu2
+                ans_correct = f"$\\frac{{3x+{res_num}}}{{x-1}}$"
                 dap_an = ans_correct
-                options = [ans_correct, f"$\\frac{{3x+{tu1+tu2}}}{{2x-2}}$", f"$\\frac{{3x}}{{{x-1}}}$", f"$\\frac{{3x+{tu1-tu2}}}{{x-1}}$" ]
-                goi_y_text = "Cộng tử thức, giữ nguyên mẫu thức."
-            
-            else: # Nhân chia
-                a = random.randint(2, 5)
-                de_latex = f"Rút gọn: $\\frac{{x^2 - {a**2}}}{{x}} \\cdot \\frac{{x}}{{x+{a}}}$"
+                
+                options = [
+                    ans_correct,
+                    f"$\\frac{{3x+{res_num}}}{{2x-2}}$", # Lỗi sai cộng mẫu
+                    f"$\\frac{{3x}}{{{x-1}}}$",
+                    f"$\\frac{{3x+{abs(tu1-tu2)}}}{{x-1}}$"
+                ]
+                goi_y_text = "Cộng tử thức với tử thức, giữ nguyên mẫu thức chung."
+                goi_y_latex = f"\\frac{{A}}{{M}} + \\frac{{B}}{{M}} = \\frac{{A+B}}{{M}}"
+
+            # Trường hợp: Nhân chia phân thức (hoặc mặc định)
+            else: 
+                a = random.randint(2, 6)
+                # Sinh bài: (x^2 - a^2)/x  * x/(x+a)
+                de_latex = f"Rút gọn biểu thức: $\\frac{{x^2 - {a**2}}}{{x}} \\cdot \\frac{{x}}{{x+{a}}}$"
+                
+                # Đáp án: x - a
                 ans_correct = f"$x - {a}$"
                 dap_an = ans_correct
-                options = [ans_correct, f"$x + {a}$", f"$\\frac{{1}}{{x+{a}}}$", f"$x^2 - {a**2}$"]
-                goi_y_text = "Phân tích tử thành nhân tử rồi rút gọn."
+                
+                options = [
+                    ans_correct,
+                    f"$x + {a}$",
+                    f"$\\frac{{1}}{{x+{a}}}$",
+                    f"$x^2 - {a**2}$"
+                ]
+                goi_y_text = "Phân tích tử thức thành nhân tử rồi rút gọn."
+                goi_y_latex = f"\\frac{{(x-{a})(x+{a})}}{{x}} \\cdot \\frac{{x}}{{x+{a}}} = x - {a}"
 
-        # 4. PHẦN HÀM SỐ (Cập nhật từ khóa nhận diện)
+        # 4. HÀM SỐ
         elif "hàm số" in bai_lower or "hệ số góc" in bai_lower:
             if "hệ số góc" in bai_lower:
                 a = random.randint(-5, 5)
@@ -336,7 +340,7 @@ def tao_de_toan(lop, bai_hoc):
                 de_latex = f"Hệ số góc của đường thẳng $y = {a}x + {b}$ là?"
                 question_type = "number"
                 dap_an = a
-                goi_y_text = "Trong hàm số $y = ax + b$, hệ số góc là $a$."
+                goi_y_text = "Hệ số góc là hệ số a đi liền với x."
             else:
                 a = random.randint(2, 5)
                 b = random.randint(1, 5)
@@ -344,10 +348,9 @@ def tao_de_toan(lop, bai_hoc):
                 de_latex = f"Cho $y = {a}x - {b}$. Tính $y$ khi $x = {x0}$."
                 question_type = "number"
                 dap_an = a * x0 - b
-                goi_y_text = "Thay giá trị của $x$ vào công thức."
+                goi_y_text = "Thay giá trị của x vào công thức."
         
-        # --- QUAN TRỌNG: CƠ CHẾ CHỐNG LỖI (FALLBACK) ---
-        # Nếu bài học được chọn nhưng chưa có logic cụ thể, sinh bài mặc định để không crash
+        # FALLBACK (Chống lỗi Crash nếu không khớp logic)
         if not de_latex: 
             a = random.randint(2,5)
             de_latex = f"Phân tích đa thức thành nhân tử: $x^2 - {a}x$"
@@ -713,7 +716,7 @@ with col_phai:
             
             if st.session_state.q_type == "mcq":
                 st.markdown("**Chọn đáp án đúng:**")
-                if st.session_state.options: # Đảm bảo options không rỗng
+                if st.session_state.options: 
                     user_ans = st.radio("Đáp án:", st.session_state.options, label_visibility="collapsed")
                 else:
                      st.error("Lỗi: Không tìm thấy đáp án phù hợp.")
