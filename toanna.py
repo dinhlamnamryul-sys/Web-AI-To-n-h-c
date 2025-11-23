@@ -11,7 +11,6 @@ st.set_page_config(
 )
 
 # --- DỮ LIỆU CHƯƠNG TRÌNH HỌC (CHUẨN KẾT NỐI TRI THỨC) ---
-# Đã cập nhật lại nội dung Lớp 6, 7, 9 theo mục lục SGK mới
 CHUONG_TRINH_HOC = {
     "Lớp 1": {
         "Chương 1: Các số từ 0 đến 10": ["Các số 0-10", "Tách - Gộp số", "So sánh số"],
@@ -43,7 +42,6 @@ CHUONG_TRINH_HOC = {
         "Chương 3: Góc và đường thẳng song song": ["Tổng ba góc trong một tam giác"]
     },
     "Lớp 8": {
-        # Giữ nguyên logic lớp 8 như bạn yêu cầu
         "Chương 1: Đa thức": ["Nhân đơn thức với đa thức", "Nhân đa thức với đa thức", "Hằng đẳng thức (Bình phương)", "Hằng đẳng thức (Hiệu hai bình phương)"],
     },
     "Lớp 9": {
@@ -83,10 +81,27 @@ st.markdown("""
     }
     .stButton>button:hover { transform: scale(1.05); color: white; }
     .stRadio > div { background-color: white; padding: 20px; border-radius: 15px; border: 1px solid #eeeeee; }
+    
+    /* Style cho phần gợi ý */
+    .hint-container {
+        background-color: #e3f2fd;
+        border-left: 5px solid #2196f3;
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 20px;
+    }
+    .hmong-hint {
+        background-color: #fce4ec;
+        border-left: 5px solid #e91e63;
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 10px;
+        font-style: italic;
+    }
 </style>
 """, unsafe_allow_html=True)
 
-# --- LOGIC SINH ĐỀ (CẬP NHẬT MỚI) ---
+# --- LOGIC SINH ĐỀ ---
 
 def tao_de_toan(lop, bai_hoc):
     de_latex = ""
@@ -98,7 +113,7 @@ def tao_de_toan(lop, bai_hoc):
     
     bai_lower = bai_hoc.lower()
 
-    # === LỚP 8 (GIỮ NGUYÊN CODE CŨ) ===
+    # === LỚP 8: SỬ DỤNG LATEX CHO ĐÁP ÁN TRẮC NGHIỆM ===
     if "Lớp 8" in lop:
         question_type = "mcq"
         if "Nhân đơn thức" in bai_hoc:
@@ -106,31 +121,56 @@ def tao_de_toan(lop, bai_hoc):
             b = random.choice([-3, -2, 2, 3, 4])
             c = random.choice([-5, -4, -3, 2, 3, 4, 5])
             de_latex = f"Thực hiện phép tính: ${a}x( {b}x {c:+d} )$"
+            
             res_a, res_b = a * b, a * c
-            ans_correct = f"{res_a}x^2 {res_b:+d}x"
-            options = [ans_correct, f"{res_a}x^2 {-res_b:+d}x", f"{res_a}x {res_b:+d}", f"{res_a+2}x^2 {res_b:+d}x"]
+            # Bọc đáp án trong $...$ để hiển thị công thức
+            ans_correct = f"${res_a}x^2 {res_b:+d}x$"
+            
+            # CÁC ĐÁP ÁN NHIỄU CŨNG PHẢI CÓ $
+            options = [
+                ans_correct, 
+                f"${res_a}x^2 {-res_b:+d}x$", 
+                f"${res_a}x {res_b:+d}$", 
+                f"${res_a+2}x^2 {res_b:+d}x$"
+            ]
             dap_an = ans_correct
-            goi_y_text = "Nhân phân phối đơn thức vào đa thức."
+            goi_y_text = "Nhân phân phối đơn thức vào đa thức: A(B+C) = AB + AC."
             goi_y_latex = f"{a}x \\cdot ({b}x {c:+d}) = {a}x \\cdot {b}x + {a}x \\cdot {c}"
+            
         elif "Nhân đa thức" in bai_hoc:
             a, b = random.randint(1,5)*random.choice([-1,1]), random.randint(1,5)*random.choice([-1,1])
             de_latex = f"Thực hiện phép tính: $(x {a:+d})(x {b:+d})$"
-            ans_correct = f"x^2 {a+b:+d}x {a*b:+d}"
-            options = [ans_correct, f"x^2 {a+b:+d}x {-a*b:+d}", f"x^2 {-(a+b):+d}x {a*b:+d}", f"x^2 {a*b:+d}x {a+b:+d}"]
+            
+            term_x = a + b
+            term_free = a * b
+            ans_correct = f"$x^2 {term_x:+d}x {term_free:+d}$"
+            
+            options = [
+                ans_correct, 
+                f"$x^2 {term_x:+d}x {-term_free:+d}$", 
+                f"$x^2 {-term_x:+d}x {term_free:+d}$", 
+                f"$x^2 {term_free:+d}x {term_x:+d}$"
+            ]
             dap_an = ans_correct
             goi_y_text = "Nhân từng hạng tử của đa thức này với đa thức kia."
+            
         elif "Hằng đẳng thức" in bai_hoc:
             a = random.randint(2, 5)
             de_latex = f"Khai triển: $(x - {a})^2$"
-            ans_correct = f"x^2 - {2*a}x + {a**2}"
-            options = [ans_correct, f"x^2 + {2*a}x + {a**2}", f"x^2 - {a**2}", f"x^2 - {2*a}x - {a**2}"]
+            ans_correct = f"$x^2 - {2*a}x + {a**2}$"
+            options = [
+                ans_correct, 
+                f"$x^2 + {2*a}x + {a**2}$", 
+                f"$x^2 - {a**2}$", 
+                f"$x^2 - {2*a}x - {a**2}$"
+            ]
             dap_an = ans_correct
             goi_y_text = "Sử dụng hằng đẳng thức $(A-B)^2 = A^2 - 2AB + B^2$"
         
         random.shuffle(options)
         return de_latex, question_type, dap_an, options, goi_y_text, goi_y_latex
 
-    # === LỚP 6 (CẬP NHẬT) ===
+    # === LỚP 6 ===
     elif "Lớp 6" in lop:
         if "Lũy thừa" in bai_hoc:
             base = random.randint(2, 5)
@@ -159,20 +199,17 @@ def tao_de_toan(lop, bai_hoc):
             tu2 = random.randint(1, 5)
             if "cộng" in bai_lower:
                 de_latex = f"Tính: $\\frac{{{tu1}}}{{{mau}}} + \\frac{{{tu2}}}{{{mau}}} = ?$"
-                # Để đơn giản cho nhập liệu, ta yêu cầu nhập kết quả dạng thập phân hoặc chọn bài trắc nghiệm
-                # Ở đây ta đổi sang trắc nghiệm cho phân số lớp 6 để dễ kiểm tra
                 question_type = "mcq"
                 correct_tu = tu1 + tu2
-                ans_correct = f"{correct_tu}/{mau}"
+                ans_correct = f"${correct_tu}/{mau}$"
                 dap_an = ans_correct
-                options = [ans_correct, f"{abs(tu1-tu2)}/{mau}", f"{correct_tu}/{mau*2}", f"{tu1*tu2}/{mau}"]
+                options = [ans_correct, f"${abs(tu1-tu2)}/{mau}$", f"${correct_tu}/{mau*2}$", f"${tu1*tu2}/{mau}$"]
                 random.shuffle(options)
                 goi_y_text = "Cộng tử giữ nguyên mẫu."
 
-    # === LỚP 7 (CẬP NHẬT) ===
+    # === LỚP 7 ===
     elif "Lớp 7" in lop:
         if "Số hữu tỉ" in bai_lower:
-            # Cộng trừ số hữu tỉ đơn giản (dạng thập phân)
             a = round(random.uniform(-10, 10), 1)
             b = round(random.uniform(-10, 10), 1)
             de_latex = f"Tính: ${a} + ({b}) = ?$"
@@ -191,13 +228,11 @@ def tao_de_toan(lop, bai_hoc):
             dap_an = 180 - g1 - g2
             goi_y_text = "Tổng ba góc trong một tam giác bằng $180^\\circ$."
 
-    # === LỚP 9 (CẬP NHẬT) ===
+    # === LỚP 9 ===
     elif "Lớp 9" in lop:
         if "Hệ phương trình" in bai_hoc:
-            # Giải hệ cơ bản tìm x
             x = random.randint(1, 5)
             y = random.randint(1, 5)
-            # x + y = a, x - y = b
             a = x + y
             b = x - y
             de_latex = f"Cho hệ phương trình: $\\begin{{cases}} x + y = {a} \\\\ x - y = {b} \\end{{cases}}$. Tìm giá trị của $x$?"
@@ -205,7 +240,6 @@ def tao_de_toan(lop, bai_hoc):
             goi_y_text = "Cộng đại số hai phương trình để triệt tiêu y."
             goi_y_latex = f"(x+y) + (x-y) = {a} + {b} \\Rightarrow 2x = {a+b}"
         elif "Phương trình bậc hai" in bai_hoc:
-            # Tìm nghiệm dương của x^2 - Sx + P = 0
             x1 = random.randint(1, 5)
             x2 = random.randint(1, 5)
             S = x1 + x2
@@ -214,36 +248,28 @@ def tao_de_toan(lop, bai_hoc):
             dap_an = max(x1, x2)
             goi_y_text = "Sử dụng công thức nghiệm hoặc nhẩm nghiệm theo Vi-ét."
         elif "Căn thức" in bai_hoc:
-            # Tính sqrt(a^2 * b)
             a = random.randint(2, 5)
             de_latex = f"Rút gọn biểu thức: $\\sqrt{{{a}^2 \\cdot 3}}$ (Nhập hệ số đứng trước căn 3)"
             dap_an = a
             goi_y_text = "Đưa thừa số ra ngoài dấu căn: $\\sqrt{A^2B} = |A|\\sqrt{B}$"
 
-    # === CẤP 1 (LỚP 1-5): ƯU TIÊN SỐ NGUYÊN ===
+    # === CẤP 1 (LỚP 1-5) ===
     else: 
-        # Logic mặc định cho Cấp 1
         a = random.randint(1, 10)
         b = random.randint(1, 10)
         
-        # Điều chỉnh độ khó theo lớp
-        if "Lớp 1" in lop:
-            a, b = random.randint(1, 5), random.randint(0, 5)
-        elif "Lớp 2" in lop or "Lớp 3" in lop:
-            a, b = random.randint(10, 50), random.randint(1, 9)
-        elif "Lớp 4" in lop or "Lớp 5" in lop:
-            a, b = random.randint(100, 900), random.randint(10, 99)
+        if "Lớp 1" in lop: a, b = random.randint(1, 5), random.randint(0, 5)
+        elif "Lớp 2" in lop or "Lớp 3" in lop: a, b = random.randint(10, 50), random.randint(1, 9)
+        elif "Lớp 4" in lop or "Lớp 5" in lop: a, b = random.randint(100, 900), random.randint(10, 99)
 
         if "cộng" in bai_lower:
             de_latex = f"Tính: ${a} + {b} = ?$"
             dap_an = a + b
         elif "trừ" in bai_lower:
-            # Đảm bảo trừ ra số dương cho cấp 1
             lon, be = max(a, b), min(a, b)
             de_latex = f"Tính: ${lon} - {be} = ?$"
             dap_an = lon - be
         elif "nhân" in bai_lower:
-             # Lớp 2, 3 bảng cửu chương
              a, b = random.randint(2, 9), random.randint(2, 9)
              de_latex = f"Tính: ${a} \\times {b} = ?$"
              dap_an = a * b
@@ -253,7 +279,7 @@ def tao_de_toan(lop, bai_hoc):
              a = b * ans
              de_latex = f"Tính: ${a} : {b} = ?$"
              dap_an = ans
-        else: # Fallback cộng
+        else:
              de_latex = f"Tính: ${a} + {b} = ?$"
              dap_an = a + b
              
@@ -343,22 +369,19 @@ with col_phai:
         with st.form("form_lam_bai"):
             user_ans = None
             
-            # --- XỬ LÝ GIAO DIỆN NHẬP LIỆU THÔNG MINH ---
+            # --- XỬ LÝ GIAO DIỆN NHẬP LIỆU ---
             if st.session_state.q_type == "mcq":
                 st.markdown("**Chọn đáp án đúng:**")
+                # Đáp án bây giờ đã có dạng $...$ nên st.radio sẽ tự hiển thị dạng công thức
                 user_ans = st.radio("Đáp án:", st.session_state.options, label_visibility="collapsed")
             else:
-                # KIỂM TRA: Nếu đáp án là số nguyên -> Hiển thị input số nguyên (không có .00)
-                # Đây là phần sửa lỗi "7.00" cho Cấp 1
                 is_integer_answer = False
                 if isinstance(st.session_state.dap_an, int) or (isinstance(st.session_state.dap_an, float) and st.session_state.dap_an.is_integer()):
                     is_integer_answer = True
                 
                 if is_integer_answer:
-                    # step=1 và format="%d" để chỉ hiện số nguyên
                     user_ans = st.number_input("Nhập đáp án (Số nguyên):", step=1, format="%d")
                 else:
-                    # Nếu là số thập phân thì giữ nguyên như cũ
                     user_ans = st.number_input("Nhập đáp án:", step=0.01, format="%.2f")
 
             btn_nop = st.form_submit_button("✅ Kiểm tra")
@@ -371,7 +394,6 @@ with col_phai:
                     if user_ans == st.session_state.dap_an:
                         is_correct = True
                 else:
-                    # So sánh số học
                     if abs(user_ans - float(st.session_state.dap_an)) <= 0.05:
                         is_correct = True
 
@@ -381,18 +403,28 @@ with col_phai:
                 else:
                     st.error(f"Chưa đúng rồi! (Tsis yog lawm)")
                     if st.session_state.q_type == "mcq":
-                        st.markdown(f"Đáp án đúng là: **${st.session_state.dap_an}$**")
+                        # Hiển thị đáp án đúng dạng LaTeX
+                        st.markdown(f"Đáp án đúng là: {st.session_state.dap_an}")
                     else:
-                        # Hiển thị đáp án đúng cũng theo định dạng số nguyên nếu cần
                         ans_display = int(st.session_state.dap_an) if float(st.session_state.dap_an).is_integer() else st.session_state.dap_an
                         st.markdown(f"Đáp án đúng là: **{ans_display}**")
                     st.session_state.show_hint = True
         
+        # --- HIỂN THỊ GỢI Ý VÀ DỊCH H'MÔNG (CHO MỌI KHỐI LỚP) ---
         if st.session_state.show_hint:
             st.markdown("---")
-            st.info(f"💡 **Gợi ý:** {st.session_state.goi_y_text}")
+            st.markdown('<div class="hint-container">', unsafe_allow_html=True)
+            st.markdown(f"**💡 Gợi ý:** {st.session_state.goi_y_text}")
+            
             if st.session_state.goi_y_latex:
                 st.latex(st.session_state.goi_y_latex)
+            st.markdown('</div>', unsafe_allow_html=True)
+                
+            # THÊM PHẦN DỊCH GỢI Ý TIẾNG MÔNG (TỰ ĐỘNG HIỆN, KHÔNG CẦN BẤM XEM THÊM)
+            translation = dich_sang_mong(st.session_state.goi_y_text)
+            st.markdown('<div class="hmong-hint">', unsafe_allow_html=True)
+            st.markdown(f"**🗣️ H'Mông:** {translation}")
+            st.markdown('</div>', unsafe_allow_html=True)
 
     else:
         st.info("👈 Chọn bài học và nhấn nút 'Tạo câu hỏi mới'.")
@@ -400,4 +432,3 @@ with col_phai:
 # Footer
 st.markdown("---")
 st.caption("© 2025 Trường PTDTBT TH&THCS Na Ư - Bản Mường.")
-
