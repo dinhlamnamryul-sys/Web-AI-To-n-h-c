@@ -166,14 +166,29 @@ def tao_de_toan(lop, bai_hoc):
 
     # === LỚP 6 ===
     elif "Lớp 6" in lop:
-        if "Lũy thừa" in bai_hoc:
+        # Bổ sung logic cho "Thứ tự thực hiện phép tính"
+        if "thứ tự" in bai_lower or "phép tính" in bai_lower:
+            # Dạng bài a + b x c
+            a, b, c = random.randint(2, 10), random.randint(2, 10), random.randint(2, 10)
+            op1, op2 = random.choice(['+', '-']), '\\times'
+            de_latex = f"Tính giá trị biểu thức: ${a} {op1} {b} {op2} {c} = ?$"
+            
+            # Tính toán kết quả
+            if op1 == '+': dap_an = a + b * c
+            else: dap_an = a - b * c
+            
+            goi_y_text = "Thực hiện phép nhân chia trước, cộng trừ sau."
+            goi_y_latex = f"{a} {op1} ({b} \\times {c}) = {a} {op1} {b*c}"
+
+        elif "lũy thừa" in bai_lower:
             base = random.randint(2, 5)
             exp = random.randint(2, 4)
             de_latex = f"Tính giá trị: ${base}^{exp} = ?$"
             dap_an = base ** exp
             goi_y_text = f"Nhân {base} với chính nó {exp} lần."
             goi_y_latex = f"{base}^{exp} = " + "\\times".join([str(base)]*exp)
-        elif "Số nguyên" in bai_hoc:
+            
+        elif "số nguyên" in bai_lower:
             a = random.randint(-20, 20)
             b = random.randint(-20, 20)
             if "cộng" in bai_lower:
@@ -188,7 +203,8 @@ def tao_de_toan(lop, bai_hoc):
                 de_latex = f"Tính: ${a} \\cdot ({b}) = ?$"
                 dap_an = a * b
                 goi_y_text = "Nhân hai số nguyên: cùng dấu là dương, trái dấu là âm."
-        elif "Phân số" in bai_hoc:
+                
+        elif "phân số" in bai_lower:
             tu1, mau = random.randint(1, 5), random.randint(2, 6)
             tu2 = random.randint(1, 5)
             if "cộng" in bai_lower:
@@ -200,31 +216,60 @@ def tao_de_toan(lop, bai_hoc):
                 options = [ans_correct, f"${abs(tu1-tu2)}/{mau}$", f"${correct_tu}/{mau*2}$", f"${tu1*tu2}/{mau}$"]
                 random.shuffle(options)
                 goi_y_text = "Cộng tử giữ nguyên mẫu."
+            elif "nhân" in bai_lower:
+                mau2 = random.randint(2, 6)
+                de_latex = f"Tính: $\\frac{{{tu1}}}{{{mau}}} \\cdot \\frac{{{tu2}}}{{{mau2}}} = ?$"
+                question_type = "mcq"
+                ans_correct = f"${tu1*tu2}/{mau*mau2}$"
+                dap_an = ans_correct
+                options = [ans_correct, f"${tu1+tu2}/{mau+mau2}$", f"${tu1*mau2}/{mau*tu2}$", f"${tu1*tu2}/{mau+mau2}$"]
+                random.shuffle(options)
+                goi_y_text = "Tử nhân tử, mẫu nhân mẫu."
 
     # === LỚP 7 ===
     elif "Lớp 7" in lop:
-        if "Số hữu tỉ" in bai_lower:
-            a = round(random.uniform(-10, 10), 1)
-            b = round(random.uniform(-10, 10), 1)
-            de_latex = f"Tính: ${a} + ({b}) = ?$"
-            dap_an = round(a + b, 1)
-            goi_y_text = "Cộng trừ số thập phân hữu tỉ."
-        elif "Căn bậc hai" in bai_hoc:
+        # Bổ sung logic cho "Làm tròn số"
+        if "làm tròn" in bai_lower:
+            val = random.uniform(10, 100)
+            precision = random.choice([1, 2])
+            de_latex = f"Làm tròn số ${val:.4f}$ đến chữ số thập phân thứ {precision}."
+            dap_an = round(val, precision)
+            goi_y_text = f"Nếu chữ số thứ {precision+1} sau dấu phẩy >= 5 thì cộng 1 vào chữ số trước nó."
+            
+        elif "số hữu tỉ" in bai_lower:
+            if "lũy thừa" in bai_lower:
+                base = random.randint(1, 3)
+                exp = 2
+                de_latex = f"Tính: $({base}/2)^{exp} = ?$"
+                question_type = "mcq"
+                ans_correct = f"${base**2}/4$"
+                dap_an = ans_correct
+                options = [ans_correct, f"${base*2}/4$", f"${base}/4$", f"${base**2}/2$"]
+                random.shuffle(options)
+                goi_y_text = "Lũy thừa của một thương bằng thương các lũy thừa."
+            else:
+                a = round(random.uniform(-10, 10), 1)
+                b = round(random.uniform(-10, 10), 1)
+                de_latex = f"Tính: ${a} + ({b}) = ?$"
+                dap_an = round(a + b, 1)
+                goi_y_text = "Cộng trừ số thập phân hữu tỉ."
+                
+        elif "căn" in bai_lower:
             res = random.randint(2, 15)
             n = res**2
             de_latex = f"Tính căn bậc hai số học: $\\sqrt{{{n}}} = ?$"
             dap_an = res
             goi_y_text = f"Số dương nào bình phương lên bằng {n}?"
-        elif "Tam giác" in bai_hoc:
+            
+        elif "tam giác" in bai_lower:
             g1 = random.randint(30, 80)
             g2 = random.randint(30, 80)
             de_latex = f"Cho $\\Delta ABC$ có $\\hat{{A}}={g1}^\\circ, \\hat{{B}}={g2}^\\circ$. Tính $\\hat{{C}}$?"
             dap_an = 180 - g1 - g2
             goi_y_text = "Tổng ba góc trong một tam giác bằng $180^\\circ$."
 
-    # === LỚP 9 (ĐÃ SỬA LỖI LOGIC) ===
+    # === LỚP 9 (ĐÃ CẬP NHẬT ĐA DẠNG DẠNG CÂU HỎI) ===
     elif "Lớp 9" in lop:
-        # Sửa lỗi logic: dùng 'in bai_lower' để bắt từ khóa thay vì so sánh chính xác tên bài
         if "hệ phương trình" in bai_lower:
             x = random.randint(1, 5)
             y = random.randint(1, 5)
@@ -244,16 +289,34 @@ def tao_de_toan(lop, bai_hoc):
             dap_an = max(x1, x2)
             goi_y_text = "Sử dụng công thức nghiệm hoặc nhẩm nghiệm theo Vi-ét."
             
-        elif "căn" in bai_lower: # Bắt được cả 'Căn thức' và 'Căn bậc hai'
-            a = random.randint(2, 5)
-            de_latex = f"Rút gọn biểu thức: $\\sqrt{{{a}^2 \\cdot 3}}$ (Nhập hệ số đứng trước căn 3)"
-            dap_an = a
-            goi_y_text = "Đưa thừa số ra ngoài dấu căn: $\\sqrt{A^2B} = |A|\\sqrt{B}$"
+        elif "căn" in bai_lower:
+            # Random 1 trong 4 dạng bài
+            dang_bai = random.randint(1, 4)
+            
+            if dang_bai == 1: # Rút gọn biểu thức
+                a = random.randint(2, 5)
+                de_latex = f"Rút gọn biểu thức: $\\sqrt{{{a}^2 \\cdot 3}}$ (Nhập hệ số đứng trước căn 3)"
+                dap_an = a
+                goi_y_text = "Đưa thừa số ra ngoài dấu căn: $\\sqrt{A^2B} = |A|\\sqrt{B}$"
+            elif dang_bai == 2: # Tính căn bậc hai số học
+                res = random.randint(4, 15)
+                de_latex = f"Tính: $\\sqrt{{{res**2}}} = ?$"
+                dap_an = res
+                goi_y_text = "Tìm số dương mà bình phương lên bằng số trong căn."
+            elif dang_bai == 3: # Tổng hai căn
+                sq1, sq2 = random.choice([4, 9, 16, 25]), random.choice([4, 9, 16, 25])
+                de_latex = f"Tính: $\\sqrt{{{sq1}}} + \\sqrt{{{sq2}}} = ?$"
+                dap_an = math.sqrt(sq1) + math.sqrt(sq2)
+                goi_y_text = "Khai phương từng số hạng rồi cộng lại."
+            elif dang_bai == 4: # Tìm x
+                res = random.randint(2, 10)
+                de_latex = f"Tìm $x$ biết $\\sqrt{{x}} = {res}$"
+                dap_an = res**2
+                goi_y_text = "Bình phương hai vế lên: $x = a^2$"
 
-        elif "phương trình" in bai_lower: # Trường hợp còn lại (Phương trình quy về bậc nhất)
+        elif "phương trình" in bai_lower:
             a = random.randint(2, 5)
             b = random.randint(1, 10)
-            # ax - b = 0 => x = b/a
             de_latex = f"Giải phương trình: ${a}x - {b} = 0$. (Kết quả làm tròn 2 chữ số thập phân)"
             dap_an = round(b/a, 2)
             goi_y_text = "Chuyển vế đổi dấu rồi chia cho hệ số."
