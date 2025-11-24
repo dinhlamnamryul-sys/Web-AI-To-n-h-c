@@ -45,8 +45,12 @@ CHUONG_TRINH_HOC = {
         "Chủ đề 4: Làm quen với một số hình khối": ["Khối lập phương, khối hộp chữ nhật"]
     },
     "Lớp 2": {
-        "Chương 1: Phép cộng, trừ (có nhớ)": ["Phép cộng qua 10", "Phép trừ qua 10"],
-        "Chương 2: Phép nhân, Phép chia": ["Bảng nhân 2, 5", "Bảng chia 2, 5"]
+        "Chủ đề 1: Ôn tập và bổ sung": ["Số hạng - Tổng", "Số bị trừ - Số trừ - Hiệu", "Nhiều hơn - Ít hơn"],
+        "Chủ đề 2: Phép cộng, phép trừ trong phạm vi 20": ["Phép cộng qua 10", "Phép trừ qua 10", "Bài toán thêm bớt"],
+        "Chủ đề 3: Làm quen với khối lượng, dung tích": ["Ki-lô-gam (kg)", "Lít (l)"],
+        "Chủ đề 4: Phép cộng, phép trừ (có nhớ) trong phạm vi 100": ["Phép cộng có nhớ", "Phép trừ có nhớ"],
+        "Chủ đề 5: Làm quen với hình phẳng": ["Điểm - Đoạn thẳng - Đường thẳng", "Đường gấp khúc - Hình tứ giác"],
+        "Chủ đề 6: Ngày giờ, ngày tháng": ["Ngày - Giờ", "Ngày - Tháng"]
     },
     "Lớp 3": {
         "Chương 1: Phép nhân, chia phạm vi 1000": ["Nhân số có 2 chữ số với số có 1 chữ số", "Chia số có 2 chữ số cho số có 1 chữ số"],
@@ -205,10 +209,175 @@ def tao_de_toan(lop, bai_hoc):
     bai_lower = bai_hoc.lower()
 
     # ==========================================
-    # LỚP 1 (ĐÃ ĐIỀU CHỈNH THEO SÁCH GK MỚI)
+    # LỚP 2 (ĐÃ ĐIỀU CHỈNH THEO SGK MỚI)
     # ==========================================
-    if "Lớp 1" in lop:
-        # Chủ đề 1: Các số từ 0 đến 10
+    if "Lớp 2" in lop:
+        # Chủ đề 1: Ôn tập và bổ sung (Số hạng - Tổng, Số bị trừ - Số trừ - Hiệu)
+        if "số hạng" in bai_lower or "tổng" in bai_lower:
+            a = random.randint(10, 50)
+            b = random.randint(10, 40)
+            if random.choice([True, False]):
+                de_latex = f"Tính tổng của ${a}$ và ${b}$."
+                dap_an = a + b
+                goi_y_text = "Thực hiện phép cộng hai số hạng."
+                goi_y_latex = f"{a} + {b} = {a+b}"
+            else:
+                tong = a + b
+                de_latex = f"Tìm số hạng chưa biết: $? + {b} = {tong}$"
+                dap_an = a
+                goi_y_text = "Muốn tìm số hạng chưa biết, ta lấy Tổng trừ đi số hạng kia."
+                goi_y_latex = f"{tong} - {b} = {a}"
+                
+        elif "hiệu" in bai_lower or "số trừ" in bai_lower:
+            a = random.randint(20, 90) # Số bị trừ
+            b = random.randint(10, a)  # Số trừ
+            hieu = a - b
+            dang_toan = random.choice(["tim_hieu", "tim_sbt", "tim_st"])
+            
+            if dang_toan == "tim_hieu":
+                de_latex = f"Số bị trừ là ${a}$, số trừ là ${b}$. Tìm hiệu."
+                dap_an = hieu
+                goi_y_text = "Hiệu = Số bị trừ - Số trừ."
+                goi_y_latex = f"{a} - {b} = {hieu}"
+            elif dang_toan == "tim_sbt":
+                de_latex = f"Tìm số bị trừ: $? - {b} = {hieu}$"
+                dap_an = a
+                goi_y_text = "Muốn tìm Số bị trừ, ta lấy Hiệu cộng với Số trừ."
+                goi_y_latex = f"{hieu} + {b} = {a}"
+            else:
+                de_latex = f"Tìm số trừ: ${a} - ? = {hieu}$"
+                dap_an = b
+                goi_y_text = "Muốn tìm Số trừ, ta lấy Số bị trừ trừ đi Hiệu."
+                goi_y_latex = f"{a} - {hieu} = {b}"
+
+        elif "nhiều hơn" in bai_lower or "ít hơn" in bai_lower:
+            q = random.randint(10, 50)
+            delta = random.randint(5, 20)
+            if "nhiều hơn" in bai_lower:
+                de_latex = f"Mai có ${q}$ bông hoa. Lan có nhiều hơn Mai ${delta}$ bông. Hỏi Lan có bao nhiêu bông hoa?"
+                dap_an = q + delta
+                goi_y_text = "Bài toán về nhiều hơn: Thực hiện phép cộng."
+                goi_y_latex = f"{q} + {delta} = {q+delta}"
+            else:
+                de_latex = f"Bao ngô cân nặng ${q}$ kg. Bao gạo nhẹ hơn bao ngô ${delta}$ kg. Hỏi bao gạo nặng bao nhiêu kg?"
+                dap_an = q - delta
+                goi_y_text = "Bài toán về ít hơn (nhẹ hơn): Thực hiện phép trừ."
+                goi_y_latex = f"{q} - {delta} = {q-delta}"
+
+        # Chủ đề 2: Phép cộng, trừ phạm vi 20 (Qua 10)
+        elif "phép cộng qua 10" in bai_lower:
+            a = random.randint(2, 9)
+            b = random.randint(11-a, 9) # Đảm bảo tổng > 10
+            de_latex = f"Tính nhẩm: ${a} + {b} = ?$"
+            dap_an = a + b
+            goi_y_text = f"Tách số để tròn 10 rồi cộng tiếp. Ví dụ: {a} + {10-a} + {b-(10-a)}"
+            goi_y_latex = f"{a} + {b} = {a+b}"
+            
+        elif "phép trừ qua 10" in bai_lower:
+            a = random.randint(11, 18)
+            b = random.randint(a-9, 9) # Đảm bảo hiệu < 10 và số trừ là 1 chữ số
+            de_latex = f"Tính nhẩm: ${a} - {b} = ?$"
+            dap_an = a - b
+            goi_y_text = f"Tách số ở số bị trừ hoặc số trừ để tính cho dễ."
+            goi_y_latex = f"{a} - {b} = {a-b}"
+
+        # Chủ đề 3: Khối lượng, Dung tích
+        elif "ki-lô-gam" in bai_lower:
+            a = random.randint(5, 40)
+            b = random.randint(5, 40)
+            op = random.choice(['+', '-'])
+            if op == '-':
+                lon, be = max(a, b), min(a, b)
+                de_latex = f"Tính: ${lon} kg - {be} kg = ?$"
+                dap_an = lon - be
+            else:
+                de_latex = f"Tính: ${a} kg + {b} kg = ?$"
+                dap_an = a + b
+            goi_y_text = "Cộng/trừ số đo khối lượng như số tự nhiên."
+
+        elif "lít" in bai_lower:
+            a = random.randint(2, 30)
+            b = random.randint(2, 30)
+            de_latex = f"Can màu xanh đựng ${a}l$ nước. Can màu đỏ đựng ${b}l$ nước. Cả hai can đựng bao nhiêu lít?"
+            dap_an = a + b
+            goi_y_text = "Thực hiện phép cộng đơn vị lít."
+            goi_y_latex = f"{a} + {b} = {a+b}"
+
+        # Chủ đề 4: Phép cộng, trừ có nhớ phạm vi 100
+        elif "cộng có nhớ" in bai_lower:
+            # Sinh số sao cho hàng đơn vị cộng lại > 10
+            u1 = random.randint(1, 9)
+            u2 = random.randint(11-u1, 9) 
+            t1 = random.randint(1, 7)
+            t2 = random.randint(1, 8-t1)
+            num1 = t1*10 + u1
+            num2 = t2*10 + u2
+            
+            de_latex = f"Đặt tính rồi tính: ${num1} + {num2}$"
+            dap_an = num1 + num2
+            goi_y_text = "Cộng từ phải sang trái. Nhớ 1 sang hàng chục."
+            goi_y_latex = f"\\begin{{array}}{{c}} \\phantom{{+}}{num1} \\\\ \\underline{{+{num2}}} \\\\ \\phantom{{+}}{num1+num2} \\end{{array}}"
+
+        elif "trừ có nhớ" in bai_lower:
+            # Sinh số sao cho hàng đơn vị bị trừ < hàng đơn vị trừ
+            u1 = random.randint(0, 8)
+            u2 = random.randint(u1 + 1, 9)
+            t1 = random.randint(2, 9)
+            t2 = random.randint(1, t1 - 1)
+            num1 = t1*10 + u1
+            num2 = t2*10 + u2
+            
+            de_latex = f"Đặt tính rồi tính: ${num1} - {num2}$"
+            dap_an = num1 - num2
+            goi_y_text = "Trừ từ phải sang trái. Mượn 1 ở hàng chục."
+            goi_y_latex = f"\\begin{{array}}{{c}} \\phantom{{-}}{num1} \\\\ \\underline{{-{num2}}} \\\\ \\phantom{{-}}{num1-num2} \\end{{array}}"
+
+        # Chủ đề 5: Hình phẳng
+        elif "hình" in bai_lower:
+            question_type = "mcq"
+            shape_type = random.choice(["doan_thang", "duong_gap_khuc", "tu_giac"])
+            
+            if shape_type == "doan_thang":
+                l1 = random.randint(2, 10)
+                l2 = random.randint(2, 10)
+                de_latex = f"Đoạn thẳng AB dài ${l1}cm$. Đoạn thẳng BC dài ${l2}cm$. Cả hai đoạn thẳng dài bao nhiêu cm?"
+                question_type = "number"
+                dap_an = l1 + l2
+                goi_y_text = "Cộng độ dài hai đoạn thẳng."
+                
+            elif shape_type == "duong_gap_khuc":
+                a, b, c = random.randint(2, 5), random.randint(2, 5), random.randint(2, 5)
+                de_latex = f"Đường gấp khúc ABCD có độ dài các đoạn là ${a}cm, {b}cm, {c}cm$. Tính độ dài đường gấp khúc."
+                question_type = "number"
+                dap_an = a + b + c
+                goi_y_text = "Độ dài đường gấp khúc bằng tổng độ dài các đoạn thẳng thành phần."
+                goi_y_latex = f"{a} + {b} + {c} = {a+b+c}"
+                
+            else:
+                de_latex = "Hình tứ giác có bao nhiêu cạnh?"
+                dap_an = 4
+                options = [3, 4, 5, 2]
+                goi_y_text = "Tứ giác là hình có 4 cạnh và 4 đỉnh."
+
+        # Chủ đề 6: Ngày giờ
+        elif "ngày" in bai_lower or "giờ" in bai_lower:
+            if random.choice([True, False]):
+                start_h = random.randint(7, 10)
+                duration = random.randint(1, 3)
+                de_latex = f"Nam đi học lúc ${start_h}$ giờ sáng. Nam học ở trường ${duration}$ giờ. Hỏi Nam tan học lúc mấy giờ?"
+                dap_an = start_h + duration
+                goi_y_text = "Lấy giờ bắt đầu cộng với thời gian học."
+                goi_y_latex = f"{start_h} + {duration} = {start_h+duration}"
+            else:
+                de_latex = "1 ngày có bao nhiêu giờ?"
+                dap_an = 24
+                question_type = "number"
+                goi_y_text = "Một ngày có 24 giờ (12 giờ ngày và 12 giờ đêm)."
+
+    # ==========================================
+    # LỚP 1 (GIỮ NGUYÊN)
+    # ==========================================
+    elif "Lớp 1" in lop:
         if "các số" in bai_lower:
             a = random.randint(0, 9)
             de_latex = f"Số liền sau của số ${a}$ là số mấy?"
@@ -217,7 +386,7 @@ def tao_de_toan(lop, bai_hoc):
             goi_y_latex = f"{a} + 1 = {a+1}"
         elif "so sánh" in bai_lower:
             a, b = random.randint(0, 10), random.randint(0, 10)
-            while a == b: # Tránh trường hợp bằng nhau quá nhiều
+            while a == b:
                 b = random.randint(0, 10)
             de_latex = f"Điền dấu thích hợp: ${a} \\dots {b}$"
             question_type = "mcq"
@@ -240,19 +409,12 @@ def tao_de_toan(lop, bai_hoc):
             dap_an = b
             goi_y_text = "Dùng phép trừ để tìm số còn thiếu."
             goi_y_latex = f"{tong} - {a} = {b}"
-        
-        # Chủ đề 2: Hình phẳng
         elif "hình" in bai_lower and "phẳng" in bai_lower:
-            shapes = [
-                ("Hình tam giác", 3),
-                ("Hình vuông", 4)
-            ]
+            shapes = [("Hình tam giác", 3), ("Hình vuông", 4)]
             shape_name, sides = random.choice(shapes)
             de_latex = f"{shape_name} có bao nhiêu cạnh?"
             dap_an = sides
             goi_y_text = "Đếm số đường thẳng tạo nên hình đó."
-        
-        # Chủ đề 3: Phép cộng, trừ phạm vi 10
         elif "phép cộng" in bai_lower:
             a = random.randint(1, 5)
             b = random.randint(1, 5)
@@ -267,8 +429,6 @@ def tao_de_toan(lop, bai_hoc):
             dap_an = a - b
             goi_y_text = "Bớt đi số lượng tương ứng."
             goi_y_latex = f"{a} - {b} = {a-b}"
-        
-        # Chủ đề 4: Hình khối (Text based logic)
         elif "khối" in bai_lower:
             question_type = "mcq"
             de_latex = "Viên xúc xắc có dạng khối gì?"
@@ -277,42 +437,35 @@ def tao_de_toan(lop, bai_hoc):
             goi_y_text = "Các mặt của xúc xắc đều là hình vuông."
 
     # ==========================================
-    # CẤP 2: LỚP 8
+    # CẤP 2: LỚP 8 (GIỮ NGUYÊN)
     # ==========================================
     elif "Lớp 8" in lop:
-        question_type = "mcq" # Mặc định trắc nghiệm cho đại số
-        
-        # 1. ĐA THỨC
+        question_type = "mcq"
         if "đa thức" in bai_lower:
             if "cộng trừ" in bai_lower:
                 a1, b1 = random.randint(2, 5), random.randint(1, 9)
                 a2, b2 = random.randint(2, 5), random.randint(1, 9)
                 op = random.choice(['+', '-'])
-                
                 if op == '+':
                     de_latex = f"Rút gọn: $({a1}x^2 + {b1}xy) + ({a2}x^2 + {b2}xy)$"
                     res_a, res_b = a1 + a2, b1 + b2
                 else:
                     de_latex = f"Rút gọn: $({a1}x^2 + {b1}xy) - ({a2}x^2 + {b2}xy)$"
                     res_a, res_b = a1 - a2, b1 - b2
-                
                 ans_correct = f"${res_a}x^2 {res_b:+d}xy$"
                 dap_an = ans_correct
                 options = [ans_correct, f"${res_a}x^2 {-res_b:+d}xy$", f"${a1+a2}x^2 {b1+b2:+d}xy$", f"${res_a}x^2 + {res_b*2}xy$"]
                 goi_y_text = "Cộng/trừ các hạng tử đồng dạng."
                 goi_y_latex = f"({a1}x^2 + {a2}x^2) {op} ({b1}xy {op} {b2}xy)"
-
             elif "nhân đơn thức" in bai_lower:
                 k = random.randint(2, 5) * random.choice([1, -1])
                 a, b = random.randint(1, 5), random.randint(1, 5)
                 de_latex = f"Thực hiện phép tính: ${k}x(x^2 - {a}x + {b})$"
-                
                 c1, c2, c3 = k, -k*a, k*b
                 ans_correct = f"${c1}x^3 {c2:+d}x^2 {c3:+d}x$"
                 dap_an = ans_correct
                 options = [ans_correct, f"${c1}x^3 {c2:+d}x {c3:+d}$", f"${c1}x^3 {-c2:+d}x^2 {c3:+d}x$", f"${k}x^3 - {a}x + {b}$"]
                 goi_y_text = "Nhân phân phối: $A(B+C) = AB + AC$."
-
             elif "nhân đa thức" in bai_lower:
                 a, b = random.randint(1, 5), random.randint(1, 5)
                 de_latex = f"Khai triển: $(x + {a})(x - {b})$"
@@ -322,7 +475,6 @@ def tao_de_toan(lop, bai_hoc):
                 dap_an = ans_correct
                 options = [ans_correct, f"$x^2 {mid:+d}x {abs(end):+d}$", f"$x^2 {a+b:+d}x {end:+d}$", f"$x^2 {-mid:+d}x {end:+d}$"]
                 goi_y_text = "Nhân đa thức với đa thức."
-
             elif "chia" in bai_lower:
                 k = random.randint(2, 4)
                 exp = random.randint(2, 4)
@@ -331,8 +483,6 @@ def tao_de_toan(lop, bai_hoc):
                 dap_an = ans_correct
                 options = [ans_correct, "$3x^2 + 2x$", "$3x - 2$", "$3x^2 - 2$"]
                 goi_y_text = "Chia từng hạng tử cho đơn thức."
-
-        # 2. HẰNG ĐẲNG THỨC
         elif "hằng đẳng thức" in bai_lower or "bình phương" in bai_lower or "lập phương" in bai_lower or "hiệu hai" in bai_lower:
             if "bình phương" in bai_lower and "tổng" in bai_lower:
                 a = random.randint(2, 6)
@@ -360,52 +510,26 @@ def tao_de_toan(lop, bai_hoc):
                 ans_correct = f"$x^2 - {2*a}x + {a**2}$"
                 dap_an = ans_correct
                 options = [ans_correct, f"$x^2+{a**2}$", f"$x^2- {a**2}$", f"$x^2 + {2*a}x + {a**2}$"]
-
-        # 3. PHÂN THỨC ĐẠI SỐ
         elif "phân thức" in bai_lower:
-            question_type = "mcq" # Đảm bảo là trắc nghiệm
-            
-            # Trường hợp: Cộng trừ phân thức
+            question_type = "mcq"
             if "cộng" in bai_lower or "trừ" in bai_lower:
                 tu1 = random.randint(1, 5)
                 tu2 = random.randint(1, 5)
-                # Sinh bài: (x + tu1)/(x-1) + (2x + tu2)/(x-1)
                 de_latex = f"Cộng hai phân thức: $\\frac{{x+{tu1}}}{{x-1}} + \\frac{{2x+{tu2}}}{{x-1}}$"
-                
-                # Đáp án: (3x + tu1 + tu2) / (x-1)
                 res_num = tu1 + tu2
                 ans_correct = f"$\\frac{{3x+{res_num}}}{{x-1}}$"
                 dap_an = ans_correct
-                
-                options = [
-                    ans_correct,
-                    f"$\\frac{{3x+{res_num}}}{{2x-2}}$", # Lỗi sai cộng mẫu
-                    f"$\\frac{{3x}}{{{x-1}}}$",
-                    f"$\\frac{{3x+{abs(tu1-tu2)}}}{{x-1}}$"
-                ]
+                options = [ans_correct, f"$\\frac{{3x+{res_num}}}{{2x-2}}$", f"$\\frac{{3x}}{{{x-1}}}$", f"$\\frac{{3x+{abs(tu1-tu2)}}}{{x-1}}$"]
                 goi_y_text = "Cộng tử thức với tử thức, giữ nguyên mẫu thức chung."
                 goi_y_latex = f"\\frac{{A}}{{M}} + \\frac{{B}}{{M}} = \\frac{{A+B}}{{M}}"
-
-            # Trường hợp: Nhân chia phân thức (hoặc mặc định)
             else: 
                 a = random.randint(2, 6)
-                # Sinh bài: (x^2 - a^2)/x  * x/(x+a)
                 de_latex = f"Rút gọn biểu thức: $\\frac{{x^2 - {a**2}}}{{x}} \\cdot \\frac{{x}}{{x+{a}}}$"
-                
-                # Đáp án: x - a
                 ans_correct = f"$x - {a}$"
                 dap_an = ans_correct
-                
-                options = [
-                    ans_correct,
-                    f"$x + {a}$",
-                    f"$\\frac{{1}}{{x+{a}}}$",
-                    f"$x^2 - {a**2}$"
-                ]
+                options = [ans_correct, f"$x + {a}$", f"$\\frac{{1}}{{x+{a}}}$", f"$x^2 - {a**2}$"]
                 goi_y_text = "Phân tích tử thức thành nhân tử rồi rút gọn."
                 goi_y_latex = f"\\frac{{(x-{a})(x+{a})}}{{x}} \\cdot \\frac{{x}}{{x+{a}}} = x - {a}"
-
-        # 4. HÀM SỐ
         elif "hàm số" in bai_lower or "hệ số góc" in bai_lower:
             if "hệ số góc" in bai_lower:
                 a = random.randint(-5, 5)
@@ -423,8 +547,6 @@ def tao_de_toan(lop, bai_hoc):
                 question_type = "number"
                 dap_an = a * x0 - b
                 goi_y_text = "Thay giá trị của x vào công thức."
-        
-        # FALLBACK (Chống lỗi Crash nếu không khớp logic)
         if not de_latex: 
             a = random.randint(2,5)
             de_latex = f"Phân tích đa thức thành nhân tử: $x^2 - {a}x$"
@@ -432,13 +554,11 @@ def tao_de_toan(lop, bai_hoc):
             dap_an = ans_correct
             options = [ans_correct, f"$x(x+{a})$", f"$x^2(1-{a})$", f"$(x-{a})^2$"]
             goi_y_text = "Đặt nhân tử chung là x."
-            
         random.shuffle(options)
 
     # ==========================================
-    # CÁC LỚP CÒN LẠI
+    # CÁC LỚP CÒN LẠI (GIỮ NGUYÊN)
     # ==========================================
-    
     elif "Lớp 9" in lop:
         if "hệ phương trình" in bai_lower:
             x, y = random.randint(1, 5), random.randint(1, 5)
@@ -649,32 +769,6 @@ def tao_de_toan(lop, bai_hoc):
                 goi_y_text = "Diện tích hình chữ nhật bằng dài nhân rộng."
                 goi_y_latex = f"S = a \\times b = {a} \\times {b}"
 
-    elif "Lớp 2" in lop:
-        a, b = random.randint(10, 50), random.randint(2, 9)
-        if "cộng" in bai_lower:
-            de_latex = f"Tính: ${a} + {b} = ?$"
-            dap_an = a + b
-            goi_y_text = "Thực hiện phép cộng."
-            goi_y_latex = f"{a} + {b} = {a+b}"
-        elif "trừ" in bai_lower:
-            lon, be = max(a, b), min(a, b)
-            de_latex = f"Tính: ${lon} - {be} = ?$"
-            dap_an = lon - be
-            goi_y_text = "Thực hiện phép trừ."
-            goi_y_latex = f"{lon} - {be} = {lon-be}"
-        elif "nhân" in bai_lower:
-            a, b = random.randint(2, 5), random.randint(1, 10)
-            de_latex = f"Tính: ${a} \\times {b} = ?$"
-            dap_an = a * b
-            goi_y_text = "Sử dụng bảng cửu chương."
-        elif "chia" in bai_lower:
-            b = random.choice([2, 5])
-            ans = random.randint(1, 10)
-            a = b * ans
-            de_latex = f"Tính: ${a} : {b} = ?$"
-            dap_an = ans
-            goi_y_text = "Sử dụng bảng chia."
-
     else:
         # Fallback
         a, b = random.randint(1, 10), random.randint(1, 10)
@@ -800,7 +894,7 @@ with col_phai:
                     if user_ans == st.session_state.dap_an:
                         is_correct = True
                 else:
-                    if isinstance(st.session_state.dap_an, str): # Trường hợp đáp án là chuỗi
+                    if isinstance(st.session_state.dap_an, str):
                          if str(user_ans) == st.session_state.dap_an:
                              is_correct = True
                     else:
