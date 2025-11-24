@@ -17,7 +17,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- KHỞI TẠO SESSION STATE (LƯU TRỮ ĐIỂM SỐ & NGÔ) ---
+# --- KHỞI TẠO SESSION STATE ---
 if 'corn_count' not in st.session_state:
     st.session_state.corn_count = 0
 if 'user_rank' not in st.session_state:
@@ -99,7 +99,7 @@ CHUONG_TRINH_HOC = {
     }
 }
 
-# --- CSS PHONG CÁCH THỔ CẨM & GAME ---
+# --- CSS ---
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
@@ -232,7 +232,7 @@ def update_rank():
     else:
         st.session_state.user_rank = "Già làng thông thái (Txwj Laug)"
 
-# --- LOGIC SINH ĐỀ & GIẢI THÍCH CHI TIẾT ---
+# --- LOGIC SINH ĐỀ (ĐÃ SỬA LỖI KHỚP NỘI DUNG) ---
 def tao_de_toan(lop, bai_hoc):
     de_latex = ""
     question_type = "number" 
@@ -240,13 +240,37 @@ def tao_de_toan(lop, bai_hoc):
     options = []
     goi_y_text = ""
     goi_y_latex = ""
-    loai_toan = "" # Dùng để AI giải thích
+    loai_toan = ""
     
     bai_lower = bai_hoc.lower()
 
     # --- LỚP 1 ---
     if "Lớp 1" in lop:
-        if "đếm" in bai_lower or "số lượng" in bai_lower:
+        # Ưu tiên kiểm tra hình học trước để tránh nhầm lẫn
+        if "hình" in bai_lower or "nhận biết" in bai_lower:
+            question_type = "mcq"
+            de_latex = "Hình nào dưới đây có 3 cạnh?"
+            dap_an = "Hình tam giác"
+            # Đáp án dạng chữ rõ ràng
+            options = ["Hình tam giác", "Hình vuông", "Hình tròn", "Hình chữ nhật"]
+            goi_y_text = "Đếm số cạnh của hình. Hình tam giác có 3 cạnh."
+            loai_toan = "hinh_hoc_1"
+        
+        elif "so sánh" in bai_lower:
+            a, b = random.randint(0, 10), random.randint(0, 10)
+            while a == b: b = random.randint(0, 10)
+            de_latex = f"Điền dấu thích hợp: ${a} \\dots {b}$"
+            question_type = "mcq"
+            # Đáp án hiển thị đầy đủ chữ và dấu
+            if a > b:
+                dap_an = "Dấu lớn ( > )"
+            else:
+                dap_an = "Dấu bé ( < )"
+            options = ["Dấu lớn ( > )", "Dấu bé ( < )", "Dấu bằng ( = )"]
+            goi_y_text = "Số nào đứng sau trong dãy số thì lớn hơn."
+            loai_toan = "so_sanh"
+            
+        elif "đếm" in bai_lower or "số lượng" in bai_lower:
             n = random.randint(3, 9)
             items = ["bông hoa", "con gà", "viên bi", "cái kẹo"]
             item = random.choice(items)
@@ -254,25 +278,32 @@ def tao_de_toan(lop, bai_hoc):
             dap_an = n
             goi_y_text = "Đếm số lượng đồ vật."
             loai_toan = "dem_so"
-        elif "phép cộng" in bai_lower:
+            
+        elif "tách gộp" in bai_lower:
+            total = random.randint(4, 10)
+            part1 = random.randint(1, total - 1)
+            de_latex = f"Gộp ${part1}$ và mấy thì được ${total}$?"
+            dap_an = total - part1
+            goi_y_text = f"Thực hiện phép trừ: ${total} - {part1}$"
+            loai_toan = "tach_gop"
+            
+        else: # Mặc định là cộng trừ nếu không khớp chủ đề trên
             a, b = random.randint(1, 5), random.randint(0, 4)
             de_latex = f"Tính: ${a} + {b} = ?$"
             dap_an = a + b
             goi_y_text = "Gộp hai nhóm lại với nhau."
             loai_toan = "cong_don_gian"
-        else:
-             a, b = random.randint(0, 10), random.randint(0, 10)
-             de_latex = f"So sánh: ${a} \\dots {b}$"
-             question_type = "mcq"
-             ans_correct = ">" if a > b else ("<" if a < b else "=")
-             dap_an = ans_correct
-             options = [">", "<", "="]
-             goi_y_text = "Số nào đếm sau thì lớn hơn."
-             loai_toan = "so_sanh"
 
     # --- LỚP 2 ---
     elif "Lớp 2" in lop:
-        if "cộng" in bai_lower:
+        if "hình" in bai_lower:
+            question_type = "mcq"
+            de_latex = "Hình tứ giác có bao nhiêu cạnh?"
+            dap_an = "4 cạnh"
+            options = ["3 cạnh", "4 cạnh", "5 cạnh", "2 cạnh"]
+            goi_y_text = "Tứ giác là hình có 4 cạnh."
+            loai_toan = "hinh_hoc"
+        elif "cộng" in bai_lower:
             a = random.randint(6, 9)
             b = random.randint(5, 9)
             de_latex = f"Tính nhẩm: ${a} + {b} = ?$"
@@ -333,7 +364,7 @@ def tao_de_toan(lop, bai_hoc):
              de_latex = f"Làm tròn số ${a}$ đến hàng trăm:"
              question_type = "mcq"
              res = round(a, -2)
-             dap_an = res
+             dap_an = str(res)
              options = [str(res), str(res+100), str(res-100)]
              loai_toan = "lam_tron"
 
@@ -480,52 +511,56 @@ def tao_de_toan(lop, bai_hoc):
               
     return de_latex, question_type, dap_an, options, goi_y_text, goi_y_latex, loai_toan
 
-# --- HÀM GIẢI THÍCH CHI TIẾT (SIMULATED AI TUTOR) ---
+# --- HÀM GIẢI THÍCH CHI TIẾT (AI TUTOR) ---
 def ai_giai_thich_chi_tiet(loai_toan, de_bai, dap_an):
     explanation = "### 🤖 Gia sư AI giải thích chi tiết:\n"
     
-    if loai_toan == "cong_co_ban" or loai_toan == "cong_don_gian":
+    if loai_toan == "so_sanh":
+        explanation += "- Hãy đếm và so sánh hai số.\n- Miệng cá sấu luôn quay về phía số lớn hơn."
+    elif loai_toan == "hinh_hoc_1":
+        explanation += "- Quan sát kỹ số cạnh và hình dáng.\n- Tam giác có 3 cạnh. Hình vuông có 4 cạnh bằng nhau."
+    elif loai_toan == "cong_co_ban" or loai_toan == "cong_don_gian":
         explanation += "- Đây là phép cộng cơ bản.\n- Bạn hãy xòe ngón tay hoặc dùng que tính để đếm gộp lại nhé."
     elif loai_toan == "cong_qua_10":
-        explanation += "- Bước 1: Tách số hạng thứ hai để cộng với số hạng đầu cho tròn 10.\n- Bước 2: Cộng phần còn lại.\n- Ví dụ: 8 + 5 = 8 + 2 + 3 = 10 + 3 = 13."
+        explanation += "- Bước 1: Tách số hạng thứ hai để cộng với số hạng đầu cho tròn 10.\n- Bước 2: Cộng phần còn lại."
     elif loai_toan == "thoi_gian":
         explanation += "- Bạn hãy tưởng tượng mặt đồng hồ.\n- Quay kim ngắn thêm số giờ cần cộng theo chiều kim đồng hồ."
     elif loai_toan == "phep_nhan":
         explanation += "- Phép nhân là cách viết gọn của phép cộng nhiều số giống nhau.\n- Hãy học thuộc bảng cửu chương để tính nhanh hơn nhé!"
     elif loai_toan == "chia_co_du":
-        explanation += "- Bước 1: Tìm số gần nhất nhỏ hơn số bị chia mà chia hết cho số chia.\n- Bước 2: Trừ đi để tìm số dư.\n- Lưu ý: Số dư luôn phải nhỏ hơn số chia."
+        explanation += "- Bước 1: Tìm số gần nhất nhỏ hơn số bị chia mà chia hết cho số chia.\n- Bước 2: Trừ đi để tìm số dư."
     elif loai_toan == "trung_binh_cong":
         explanation += "- Bước 1: Cộng tất cả các số lại để tìm Tổng.\n- Bước 2: Đếm xem có bao nhiêu số hạng.\n- Bước 3: Lấy Tổng chia cho số lượng số hạng."
     elif loai_toan == "rut_gon_phan_so":
         explanation += "- Hãy tìm một số mà cả Tử số và Mẫu số đều chia hết (Ước chung).\n- Chia cả tử và mẫu cho số đó đến khi không chia được nữa."
     elif loai_toan == "cong_so_thap_phan":
-        explanation += "- Quan trọng nhất: Đặt dấu phẩy thẳng hàng với nhau.\n- Cộng như số tự nhiên.\n- Đặt dấu phẩy ở kết quả thẳng hàng với dấu phẩy của các số hạng."
+        explanation += "- Quan trọng nhất: Đặt dấu phẩy thẳng hàng với nhau.\n- Cộng như số tự nhiên."
     elif loai_toan == "dien_tich_tam_giac":
-        explanation += "- Công thức: Đáy nhân Cao rồi chia cho 2.\n- Đừng quên chia cho 2 nhé, đây là lỗi sai hay gặp nhất!"
+        explanation += "- Công thức: Đáy nhân Cao rồi chia cho 2.\n- Đừng quên chia cho 2 nhé!"
     elif loai_toan == "luy_thua":
-        explanation += "- Lũy thừa là nhân số đó với chính nó nhiều lần.\n- Ví dụ: $2^3$ không phải là 2 nhân 3, mà là $2 \\times 2 \\times 2$."
+        explanation += "- Lũy thừa là nhân số đó với chính nó nhiều lần.\n- Ví dụ: $2^3$ là $2 \\times 2 \\times 2$."
     elif loai_toan == "so_nguyen_to":
-        explanation += "- Số nguyên tố là số 'khó tính', nó chỉ chia hết cho 1 và chính nó.\n- Số 1 không phải là số nguyên tố."
+        explanation += "- Số nguyên tố chỉ chia hết cho 1 và chính nó.\n- Số 1 không phải là số nguyên tố."
     elif loai_toan == "cong_so_nguyen":
         explanation += "- Hai số cùng dấu: Cộng giá trị tuyệt đối, giữ nguyên dấu.\n- Hai số khác dấu: Lấy số lớn trừ số bé, lấy dấu của số lớn hơn."
     elif loai_toan == "cong_phan_so":
         explanation += "- Nếu cùng mẫu số: Chỉ cộng tử số, giữ nguyên mẫu số.\n- Nếu khác mẫu số: Phải quy đồng mẫu số trước."
     elif loai_toan == "hang_dang_thuc":
-        explanation += "- Hãy nhớ câu thần chú: 'Bình phương số thứ nhất, trừ hai lần tích, cộng bình phương số thứ hai'."
+        explanation += "- Nhớ câu thần chú: 'Bình phương số thứ nhất, trừ hai lần tích, cộng bình phương số thứ hai'."
     elif loai_toan == "rut_gon_da_thuc":
-        explanation += "- Nhân phân phối vào trước: $A(B+C) = AB + AC$.\n- Sau đó cộng trừ các đơn thức đồng dạng (cùng phần biến)."
+        explanation += "- Nhân phân phối vào trước.\n- Sau đó cộng trừ các đơn thức đồng dạng."
     elif loai_toan == "dk_can_thuc":
         explanation += "- Trong căn bậc hai không được là số âm.\n- Hãy giải bất phương trình: Biểu thức trong căn $\\ge 0$."
     elif loai_toan == "he_phuong_trinh":
-        explanation += "- Phương pháp cộng đại số: Cộng hoặc trừ hai phương trình để triệt tiêu mất một ẩn (x hoặc y).\n- Sau đó giải phương trình còn lại."
+        explanation += "- Cộng hoặc trừ hai phương trình để triệt tiêu mất một ẩn (x hoặc y).\n- Sau đó giải phương trình còn lại."
     elif loai_toan == "vi_et":
-        explanation += "- Phương trình $ax^2 + bx + c = 0$.\n- Tổng hai nghiệm $x_1 + x_2 = -\\frac{b}{a}$.\n- Tích hai nghiệm $x_1 \\times x_2 = \\frac{c}{a}$."
+        explanation += "- Tổng hai nghiệm $x_1 + x_2 = -\\frac{b}{a}$."
     else:
-        explanation += f"- Đáp án đúng là: **{dap_an}**.\n- Bạn hãy kiểm tra lại các bước tính toán của mình nhé."
+        explanation += f"- Đáp án đúng là: **{dap_an}**.\n- Bạn hãy kiểm tra lại các bước tính toán nhé."
         
     return explanation
 
-# --- DỊCH THUẬT THÔNG MINH (GIỮ NGUYÊN LaTeX) ---
+# --- DỊCH THUẬT THÔNG MINH ---
 def dich_sang_mong_giu_cong_thuc(text):
     parts = re.split(r'(\$.*?\$)', text)
     translated_parts = []
@@ -593,14 +628,13 @@ st.markdown(f"""
 with st.sidebar:
     st.markdown("<div style='text-align: center; font-size: 80px;'>🏔️</div>", unsafe_allow_html=True)
     
-    # --- FEATURE: GÓC THÀNH TÍCH (GAMIFICATION) ---
+    # --- GAMIFICATION ---
     st.markdown("---")
     st.markdown('<div class="score-card">', unsafe_allow_html=True)
     st.markdown(f'<div class="rank-title">🎖️ {st.session_state.user_rank}</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="corn-icon">🌽 x {st.session_state.corn_count}</div>', unsafe_allow_html=True)
     st.caption("Thu thập ngô để thăng cấp!")
     st.markdown('</div>', unsafe_allow_html=True)
-    # -----------------------------------------------
 
     st.header("📚 CHỌN BÀI HỌC")
     ds_lop = list(CHUONG_TRINH_HOC.keys())
@@ -666,13 +700,12 @@ with col_trai:
                 bd = dich_sang_mong_giu_cong_thuc(st.session_state.de_bai)
                 st.info(f"**H'Mông:** {bd}")
         
-        # --- FEATURE: GIA SƯ AI GIẢI THÍCH ---
+        # --- AI TUTOR ---
         if st.session_state.show_ai_tutor:
             st.markdown('<div class="ai-tutor-box">', unsafe_allow_html=True)
             explanation = ai_giai_thich_chi_tiet(st.session_state.loai_toan, st.session_state.de_bai, st.session_state.dap_an)
             st.markdown(explanation)
             st.markdown('</div>', unsafe_allow_html=True)
-        # -------------------------------------
 
 with col_phai:
     st.subheader("✍️ Làm bài")
@@ -683,6 +716,7 @@ with col_phai:
             if st.session_state.q_type == "mcq":
                 st.markdown("**Chọn đáp án đúng:**")
                 if st.session_state.options: 
+                    # Hiển thị option rõ ràng (Text)
                     user_ans = st.radio("Đáp án:", st.session_state.options, label_visibility="collapsed")
             else:
                 if isinstance(st.session_state.dap_an, int) or (isinstance(st.session_state.dap_an, float) and st.session_state.dap_an.is_integer()):
@@ -704,7 +738,6 @@ with col_phai:
                         if abs(user_ans - float(st.session_state.dap_an)) <= 0.05: is_correct = True
 
                 if is_correct:
-                    # --- UPDATE GAMIFICATION ---
                     st.session_state.corn_count += 1
                     update_rank()
                     st.balloons()
@@ -716,7 +749,6 @@ with col_phai:
                     st.session_state.show_hint = True
         
         if st.session_state.show_hint:
-            # Nút gọi gia sư AI khi làm sai
             if st.button("🤖 Nhờ Gia sư AI giảng bài chi tiết"):
                 st.session_state.show_ai_tutor = True
             
