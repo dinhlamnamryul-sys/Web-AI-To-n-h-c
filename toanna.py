@@ -6,9 +6,9 @@ import os
 import pandas as pd
 import io
 import base64
-import re  # Thêm thư viện xử lý chuỗi
+import re  # Thư viện xử lý chuỗi quan trọng
 from deep_translator import GoogleTranslator
-from gtts import gTTS  # Thư viện giọng nói Google
+from gtts import gTTS
 
 # --- CẤU HÌNH TRANG WEB ---
 st.set_page_config(
@@ -17,7 +17,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- BỘ ĐẾM LƯỢT TRUY CẬP THỰC TẾ ---
+# --- BỘ ĐẾM LƯỢT TRUY CẬP ---
 def update_visit_count():
     count_file = "visit_count.txt"
     if not os.path.exists(count_file):
@@ -93,7 +93,7 @@ CHUONG_TRINH_HOC = {
     }
 }
 
-# --- CSS PHONG CÁCH THỔ CẨM H'MÔNG (GIỮ NGUYÊN) ---
+# --- CSS PHONG CÁCH THỔ CẨM H'MÔNG ---
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
@@ -622,23 +622,58 @@ def phan_tich_loi_sai(user_ans, true_ans, q_type):
         except: pass
     return hint_msg
 
-# Hàm dịch thuật
-def dich_sang_mong(text):
-    try:
-        return GoogleTranslator(source='vi', target='hmn').translate(text)
-    except:
-        return "..."
+# --- DỊCH THUẬT THÔNG MINH (GIỮ NGUYÊN LaTeX) ---
+# Hàm này tách phần text và phần latex, chỉ dịch text.
+def dich_sang_mong_giu_cong_thuc(text):
+    # Tách chuỗi dựa trên dấu $ (ký hiệu LaTeX)
+    # Regex này tách thành: [Text1, $LaTeX1$, Text2, $LaTeX2$...]
+    parts = re.split(r'(\$.*?\$)', text)
+    
+    translated_parts = []
+    for part in parts:
+        # Nếu là phần công thức (bắt đầu và kết thúc bằng $), giữ nguyên
+        if part.startswith('$') and part.endswith('$'):
+            translated_parts.append(part)
+        else:
+            # Nếu là văn bản thường và không rỗng, thì dịch
+            if part.strip():
+                try:
+                    trans = GoogleTranslator(source='vi', target='hmn').translate(part)
+                    translated_parts.append(trans)
+                except:
+                    translated_parts.append(part)
+            else:
+                translated_parts.append(part) # Giữ khoảng trắng
+                
+    return "".join(translated_parts)
 
-# --- TEXT TO SPEECH (ĐÃ CẢI TIẾN) ---
+# --- TEXT TO SPEECH (XỬ LÝ ĐỌC TOÁN HỌC) ---
 def text_to_speech_html(text, lang='vi'):
-    # 1. Loại bỏ các ký tự định dạng LaTeX không cần đọc
+    # 1. Loại bỏ ký tự LaTeX bao quanh
     clean_text = text.replace("$", "")
     
-    # 2. Xử lý Phân số: \frac{a}{b} -> a phần b
-    # Sử dụng Regex để bắt nội dung trong {}
+    # 2. Xử lý đọc Phân số: \frac{a}{b} -> a phần b
     clean_text = re.sub(r'\\frac\{(.+?)\}\{(.+?)\}', r'\1 phần \2', clean_text)
     
-    # 3. Bảng thay thế các ký hiệu Toán học sang tiếng Việt tự nhiên
+    # 3. Xử lý đọc Số mũ và Biến số (QUAN TRỌNG)
+    # x^2 -> x bình phương, x^3 -> x lập phương, x^n -> x mũ n
+    clean_text = re.sub(r'(\w)\^2', r'\1 bình phương ', clean_text)
+    clean_text = re.sub(r'(\w)\^3', r'\1 lập phương ', clean_text)
+    clean_text = re.sub(r'(\w)\^(\d+)', r'\1 mũ \2 ', clean_text) # x^5 -> x mũ 5
+    
+    # 4. Xử lý biến liền nhau: xy -> x y (để không đọc thành từ vô nghĩa)
+    # Thêm khoảng trắng giữa các chữ cái liền nhau trong toán học
+    # Ví dụ: xy -> x y, abc -> a b c
+    # Logic: Tìm 2 chữ cái liền nhau và chèn khoảng trắng
+    # Lưu ý: Chỉ áp dụng cho các biến đơn giản, tránh phá vỡ từ tiếng Việt
+    # Ở đây ta làm đơn giản hóa: thay thế các cụm biến phổ biến trong toán
+    vars_math = ["xy", "xyz", "ab", "abc"]
+    for v in vars_math:
+        if v in clean_text:
+            spaced_v = " ".join(list(v))
+            clean_text = clean_text.replace(v, spaced_v)
+
+    # 5. Bảng thay thế ký hiệu sang tiếng Việt
     replacements = {
         "\\begin{cases}": "hệ phương trình ",
         "\\end{cases}": "",
@@ -657,8 +692,6 @@ def text_to_speech_html(text, lang='vi'):
         "\\sqrt": " căn bậc hai của ",
         "\\pm": " cộng trừ ",
         "\\pi": " pi ",
-        "^2": " bình phương ",
-        "^3": " lập phương ",
         ">": " lớn hơn ",
         "<": " nhỏ hơn ",
         "=": " bằng "
@@ -667,7 +700,7 @@ def text_to_speech_html(text, lang='vi'):
     for k, v in replacements.items():
         clean_text = clean_text.replace(k, v)
     
-    # Xử lý các dấu ngoặc còn sót của LaTeX (nếu có)
+    # Dọn dẹp dấu ngoặc thừa
     clean_text = clean_text.replace("{", "").replace("}", "")
 
     # Tạo audio
@@ -763,8 +796,9 @@ with col_trai:
                 st.markdown(audio_html, unsafe_allow_html=True)
         with col_tool2:
             if st.button("🌏 Dịch H'Mông"):
-                text_to_translate = st.session_state.de_bai.replace("$", "")
-                bd = dich_sang_mong(text_to_translate)
+                # Sử dụng hàm dịch mới giữ nguyên công thức
+                bd = dich_sang_mong_giu_cong_thuc(st.session_state.de_bai)
+                # Hiển thị bằng markdown để render công thức LaTeX
                 st.info(f"**H'Mông:** {bd}")
 
 with col_phai:
@@ -819,8 +853,8 @@ with col_phai:
             if st.session_state.goi_y_latex: st.latex(st.session_state.goi_y_latex)
             st.markdown('</div>', unsafe_allow_html=True)
             
-            # --- GỢI Ý TIẾNG H'MÔNG (ĐỒNG BỘ HIỂN THỊ MATH) ---
-            translation = dich_sang_mong(st.session_state.goi_y_text)
+            # --- GỢI Ý TIẾNG H'MÔNG (DÙNG HÀM MỚI) ---
+            translation = dich_sang_mong_giu_cong_thuc(st.session_state.goi_y_text)
             st.markdown('<div class="hmong-hint">', unsafe_allow_html=True)
             st.markdown(f"**🗣️ H'Mông:** {translation}")
             # Đảm bảo công thức toán học hiển thị giống hệt phần Tiếng Việt
