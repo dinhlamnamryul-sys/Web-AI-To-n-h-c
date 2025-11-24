@@ -36,7 +36,7 @@ def update_visit_count():
 if 'visit_count' not in st.session_state:
     st.session_state.visit_count = update_visit_count()
 
-# --- DỮ LIỆU CHƯƠNG TRÌNH HỌC ---
+# --- DỮ LIỆU CHƯƠNG TRÌNH HỌC (CẬP NHẬT CHUẨN SGK KẾT NỐI TRI THỨC) ---
 CHUONG_TRINH_HOC = {
     "Lớp 1": {
         "Chủ đề 1: Các số từ 0 đến 10": ["Các số 0-10", "So sánh số", "Mấy và mấy"],
@@ -45,20 +45,20 @@ CHUONG_TRINH_HOC = {
         "Chủ đề 4: Làm quen với một số hình khối": ["Khối lập phương, khối hộp chữ nhật"]
     },
     "Lớp 2": {
-        "Chủ đề 1: Ôn tập và bổ sung": ["Số hạng - Tổng", "Số bị trừ - Số trừ - Hiệu", "Nhiều hơn - Ít hơn"],
-        "Chủ đề 2: Phép cộng, phép trừ trong phạm vi 20": ["Phép cộng qua 10", "Phép trừ qua 10", "Bài toán thêm bớt"],
+        "Chủ đề 1: Ôn tập và bổ sung": ["Số hạng - Tổng", "Số bị trừ - Số trừ - Hiệu", "Luyện tập phép cộng trừ", "Tia số - Số liền trước, sau"],
+        "Chủ đề 2: Phép cộng, phép trừ trong phạm vi 20": ["Phép cộng (qua 10) trong phạm vi 20", "Phép trừ (qua 10) trong phạm vi 20", "Bài toán thêm, bớt", "Bài toán nhiều hơn, ít hơn"],
         "Chủ đề 3: Làm quen với khối lượng, dung tích": ["Ki-lô-gam (kg)", "Lít (l)"],
-        "Chủ đề 4: Phép cộng, phép trừ (có nhớ) trong phạm vi 100": ["Phép cộng có nhớ", "Phép trừ có nhớ"],
-        "Chủ đề 5: Làm quen với hình phẳng": ["Điểm - Đoạn thẳng - Đường thẳng", "Đường gấp khúc - Hình tứ giác"],
-        "Chủ đề 6: Ngày giờ, ngày tháng": ["Ngày - Giờ", "Ngày - Tháng"]
+        "Chủ đề 4: Phép cộng, phép trừ (có nhớ) trong phạm vi 100": ["Phép cộng (có nhớ) số có 2 chữ số", "Phép trừ (có nhớ) số có 2 chữ số"],
+        "Chủ đề 5: Làm quen với hình phẳng": ["Điểm - Đoạn thẳng - Đường thẳng - Đường cong", "Đường gấp khúc - Hình tứ giác", "Ba điểm thẳng hàng"],
+        "Chủ đề 6: Ngày giờ, ngày tháng": ["Ngày - Giờ, Giờ - Phút", "Ngày - Tháng", "Xem lịch và đồng hồ"]
     },
     "Lớp 3": {
-        "Chủ đề 1: Ôn tập và bổ sung": ["Ôn tập số đến 1000", "Tìm thành phần phép tính"],
-        "Chủ đề 2: Bảng nhân, bảng chia": ["Bảng nhân 6, 7, 8, 9", "Bảng chia 6, 7, 8, 9", "Một phần mấy"],
-        "Chủ đề 3: Hình phẳng, hình khối": ["Điểm ở giữa - Trung điểm", "Hình tròn (Tâm, bán kính)", "Góc vuông - Góc không vuông"],
-        "Chủ đề 4: Phép nhân, chia phạm vi 100": ["Nhân số 2 chữ số", "Chia số 2 chữ số", "Phép chia có dư", "Gấp/Giảm một số lần"],
-        "Chủ đề 5: Đơn vị đo lường": ["Mi-li-mét (mm)", "Gam (g)", "Mi-li-lít (ml)", "Nhiệt độ"],
-        "Chủ đề 6: Phép nhân, chia phạm vi 1000": ["Nhân số 3 chữ số", "Chia số 3 chữ số", "Tính giá trị biểu thức"]
+        "Chủ đề 1: Ôn tập và bổ sung": ["Ôn tập các số đến 1000", "Ôn tập phép cộng, phép trừ", "Tìm thành phần trong phép cộng, phép trừ", "Ôn tập bảng nhân 2, 5, bảng chia 2, 5", "Bảng nhân 3, 4 - Bảng chia 3, 4"],
+        "Chủ đề 2: Bảng nhân, bảng chia": ["Bảng nhân 6, 7, 8, 9", "Bảng chia 6, 7, 8, 9", "Tìm thành phần trong phép nhân, chia", "Một phần mấy"],
+        "Chủ đề 3: Hình phẳng, hình khối": ["Điểm ở giữa - Trung điểm", "Hình tròn (Tâm, bán kính, đường kính)", "Góc vuông, góc không vuông", "Hình tam giác, tứ giác, chữ nhật, vuông", "Khối lập phương, khối hộp chữ nhật"],
+        "Chủ đề 4: Phép nhân, phép chia trong phạm vi 100": ["Nhân số có 2 chữ số với số có 1 chữ số", "Chia số có 2 chữ số cho số có 1 chữ số", "Phép chia hết, phép chia có dư", "Gấp/Giảm một số đi một số lần", "Bài toán giải bằng hai bước tính"],
+        "Chủ đề 5: Một số đơn vị đo": ["Mi-li-mét (mm)", "Gam (g)", "Mi-li-lít (ml)", "Nhiệt độ"],
+        "Chủ đề 6: Phép nhân, chia trong phạm vi 1000": ["Nhân số có 3 chữ số với số có 1 chữ số", "Chia số có 3 chữ số cho số có 1 chữ số", "Biểu thức số - Giá trị biểu thức"]
     },
     "Lớp 4": {
         "Chương 1: Số tự nhiên": ["Các số có nhiều chữ số", "Làm tròn số"],
@@ -213,155 +213,31 @@ def tao_de_toan(lop, bai_hoc):
     bai_lower = bai_hoc.lower()
 
     # ==========================================
-    # LỚP 3 (ĐIỀU CHỈNH THEO SGK MỚI)
+    # LỚP 2 (CẬP NHẬT THEO SGK MỚI)
     # ==========================================
-    if "Lớp 3" in lop:
-        # Chủ đề 1: Ôn tập và bổ sung
-        if "ôn tập" in bai_lower or "tìm thành phần" in bai_lower:
-            if "số đến 1000" in bai_lower:
-                a = random.randint(100, 899)
-                de_latex = f"Số liền sau của số ${a}$ là số mấy?"
-                dap_an = a + 1
-                goi_y_text = "Đếm thêm 1 đơn vị."
-            else: # Tìm thành phần phép tính
-                a = random.randint(10, 100)
-                b = random.randint(10, 100)
-                tong = a + b
-                de_latex = f"Tìm số hạng chưa biết: $? + {a} = {tong}$"
-                dap_an = b
-                goi_y_text = "Muốn tìm số hạng chưa biết, ta lấy Tổng trừ đi số hạng kia."
-                goi_y_latex = f"{tong} - {a} = {b}"
-
-        # Chủ đề 2: Bảng nhân, bảng chia (6, 7, 8, 9)
-        elif "bảng nhân" in bai_lower or "bảng chia" in bai_lower:
-            base = random.randint(6, 9)
-            mult = random.randint(2, 9)
-            if "nhân" in bai_lower:
-                de_latex = f"Tính nhẩm: ${base} \\times {mult} = ?$"
-                dap_an = base * mult
-                goi_y_text = f"Dựa vào bảng nhân {base}."
-            else:
-                prod = base * mult
-                de_latex = f"Tính nhẩm: ${prod} : {base} = ?$"
-                dap_an = mult
-                goi_y_text = f"Dựa vào bảng chia {base}."
-        
-        elif "một phần mấy" in bai_lower:
-            part = random.randint(2, 9)
-            total = part * random.randint(2, 10)
-            de_latex = f"Một phần {part} của {total} là bao nhiêu?"
-            dap_an = total // part
-            goi_y_text = f"Lấy {total} chia cho {part}."
-            goi_y_latex = f"{total} : {part} = {dap_an}"
-
-        # Chủ đề 3: Hình phẳng, hình khối
-        elif "hình tròn" in bai_lower:
-            r = random.randint(2, 10)
-            de_latex = f"Hình tròn có bán kính ${r}cm$. Đường kính của nó dài bao nhiêu cm?"
-            dap_an = r * 2
-            goi_y_text = "Đường kính dài gấp đôi bán kính."
-            goi_y_latex = f"{r} \\times 2 = {r*2}"
-        elif "góc" in bai_lower:
-            question_type = "mcq"
-            de_latex = "Ê-ke dùng để kiểm tra góc nào?"
-            dap_an = "Góc vuông"
-            options = ["Góc vuông", "Góc không vuông", "Góc bẹt"]
-            goi_y_text = "Ê-ke có một góc vuông."
-        elif "điểm" in bai_lower:
-            l = random.randint(4, 20) * 2 # Đảm bảo chia hết cho 2
-            de_latex = f"Đoạn thẳng AB dài ${l}cm$. M là trung điểm của AB. Đoạn AM dài bao nhiêu?"
-            dap_an = l // 2
-            goi_y_text = "Trung điểm chia đoạn thẳng thành 2 phần bằng nhau."
-
-        # Chủ đề 4: Phép nhân chia phạm vi 100
-        elif "chia có dư" in bai_lower:
-            divisor = random.randint(2, 9)
-            quotient = random.randint(2, 10)
-            remainder = random.randint(1, divisor - 1)
-            dividend = divisor * quotient + remainder
-            de_latex = f"Tính số dư của phép chia: ${dividend} : {divisor}$"
-            dap_an = remainder
-            goi_y_text = "Thực hiện phép chia, số còn lại nhỏ hơn số chia là số dư."
-        elif "gấp" in bai_lower:
-            val = random.randint(2, 20)
-            factor = random.randint(2, 6)
-            de_latex = f"Gấp số ${val}$ lên ${factor}$ lần được bao nhiêu?"
-            dap_an = val * factor
-            goi_y_text = "Thực hiện phép nhân."
-        elif "giảm" in bai_lower:
-            val = random.randint(10, 50)
-            factor = random.randint(2, 5)
-            val = val * factor # Đảm bảo chia hết
-            de_latex = f"Giảm số ${val}$ đi ${factor}$ lần được bao nhiêu?"
-            dap_an = val // factor
-            goi_y_text = "Thực hiện phép chia."
-        elif "nhân số" in bai_lower and "100" in bai_lower:
-             a = random.randint(10, 40)
-             b = random.randint(2, 6)
-             de_latex = f"Đặt tính rồi tính: ${a} \\times {b}$"
-             dap_an = a * b
-             goi_y_text = "Nhân lần lượt từ hàng đơn vị sang hàng chục."
-
-        # Chủ đề 5: Đơn vị đo lường
-        elif "mi-li-mét" in bai_lower:
-            cm = random.randint(1, 20)
-            de_latex = f"Đổi: ${cm}cm = \\dots mm$"
-            dap_an = cm * 10
-            goi_y_text = "1 cm = 10 mm."
-        elif "gam" in bai_lower:
-            kg = random.randint(1, 5)
-            de_latex = f"Đổi: ${kg}kg = \\dots g$"
-            dap_an = kg * 1000
-            goi_y_text = "1 kg = 1000 g."
-        elif "nhiệt độ" in bai_lower:
-             de_latex = "Nhiệt độ cơ thể người bình thường khoảng bao nhiêu độ C?"
-             question_type = "number"
-             dap_an = 37
-             goi_y_text = "Khoảng 37 độ C."
-
-        # Chủ đề 6: Phép nhân chia phạm vi 1000, biểu thức
-        elif "biểu thức" in bai_lower:
-            a = random.randint(2, 10)
-            b = random.randint(2, 10)
-            c = random.randint(2, 50)
-            if random.choice([True, False]):
-                de_latex = f"Tính giá trị biểu thức: ${c} + {a} \\times {b}$"
-                dap_an = c + (a * b)
-                goi_y_text = "Nhân chia trước, cộng trừ sau."
-            else:
-                de_latex = f"Tính giá trị biểu thức: $({c} + {a}) \\times {b}$"
-                dap_an = (c + a) * b
-                goi_y_text = "Tính trong ngoặc trước."
-        elif "nhân số" in bai_lower and "1000" in bai_lower:
-             a = random.randint(100, 200)
-             b = random.randint(2, 5)
-             de_latex = f"Tính: ${a} \\times {b}$"
-             dap_an = a * b
-             goi_y_text = "Nhân lần lượt từ phải sang trái."
-
-    # ==========================================
-    # LỚP 2 (GIỮ NGUYÊN)
-    # ==========================================
-    elif "Lớp 2" in lop:
+    if "Lớp 2" in lop:
+        # --- Chủ đề 1: Ôn tập và bổ sung ---
         if "số hạng" in bai_lower or "tổng" in bai_lower:
             a = random.randint(10, 50)
             b = random.randint(10, 40)
             if random.choice([True, False]):
                 de_latex = f"Tính tổng của ${a}$ và ${b}$."
                 dap_an = a + b
-                goi_y_text = "Thực hiện phép cộng hai số hạng."
+                goi_y_text = "Thực hiện phép cộng: Số hạng + Số hạng = Tổng."
                 goi_y_latex = f"{a} + {b} = {a+b}"
             else:
                 tong = a + b
                 de_latex = f"Tìm số hạng chưa biết: $? + {b} = {tong}$"
                 dap_an = a
-                goi_y_text = "Muốn tìm số hạng chưa biết, ta lấy Tổng trừ đi số hạng kia."
+                goi_y_text = "Muốn tìm số hạng chưa biết, lấy Tổng trừ đi số hạng kia."
                 goi_y_latex = f"{tong} - {b} = {a}"
-        elif "hiệu" in bai_lower or "số trừ" in bai_lower:
-            a = random.randint(20, 90)
-            b = random.randint(10, a)
+                
+        elif "số trừ" in bai_lower or "hiệu" in bai_lower or "phép trừ" in bai_lower and "ôn tập" in bai_lower:
+            a = random.randint(20, 90) # Số bị trừ
+            b = random.randint(10, a)  # Số trừ
             hieu = a - b
             dang_toan = random.choice(["tim_hieu", "tim_sbt", "tim_st"])
+            
             if dang_toan == "tim_hieu":
                 de_latex = f"Số bị trừ là ${a}$, số trừ là ${b}$. Tìm hiệu."
                 dap_an = hieu
@@ -370,40 +246,55 @@ def tao_de_toan(lop, bai_hoc):
             elif dang_toan == "tim_sbt":
                 de_latex = f"Tìm số bị trừ: $? - {b} = {hieu}$"
                 dap_an = a
-                goi_y_text = "Muốn tìm Số bị trừ, ta lấy Hiệu cộng với Số trừ."
+                goi_y_text = "Muốn tìm Số bị trừ, lấy Hiệu cộng với Số trừ."
                 goi_y_latex = f"{hieu} + {b} = {a}"
             else:
                 de_latex = f"Tìm số trừ: ${a} - ? = {hieu}$"
                 dap_an = b
-                goi_y_text = "Muốn tìm Số trừ, ta lấy Số bị trừ trừ đi Hiệu."
+                goi_y_text = "Muốn tìm Số trừ, lấy Số bị trừ trừ đi Hiệu."
                 goi_y_latex = f"{a} - {hieu} = {b}"
-        elif "nhiều hơn" in bai_lower or "ít hơn" in bai_lower:
-            q = random.randint(10, 50)
-            delta = random.randint(5, 20)
-            if "nhiều hơn" in bai_lower:
-                de_latex = f"Mai có ${q}$ bông hoa. Lan có nhiều hơn Mai ${delta}$ bông. Hỏi Lan có bao nhiêu bông hoa?"
-                dap_an = q + delta
-                goi_y_text = "Bài toán về nhiều hơn: Thực hiện phép cộng."
-                goi_y_latex = f"{q} + {delta} = {q+delta}"
-            else:
-                de_latex = f"Bao ngô cân nặng ${q}$ kg. Bao gạo nhẹ hơn bao ngô ${delta}$ kg. Hỏi bao gạo nặng bao nhiêu kg?"
-                dap_an = q - delta
-                goi_y_text = "Bài toán về ít hơn (nhẹ hơn): Thực hiện phép trừ."
-                goi_y_latex = f"{q} - {delta} = {q-delta}"
-        elif "phép cộng qua 10" in bai_lower:
+
+        elif "tia số" in bai_lower or "liền trước" in bai_lower:
+            val = random.randint(10, 90)
+            de_latex = f"Số liền trước và số liền sau của ${val}$ là?"
+            question_type = "mcq"
+            ans_correct = f"{val-1} và {val+1}"
+            dap_an = ans_correct
+            options = [f"{val-1} và {val+1}", f"{val-2} và {val+2}", f"{val} và {val+2}"]
+            goi_y_text = "Số liền trước bớt 1 đơn vị, số liền sau thêm 1 đơn vị."
+        
+        # --- Chủ đề 2: Phép cộng trừ qua 10 (phạm vi 20) ---
+        elif "qua 10" in bai_lower and "cộng" in bai_lower:
             a = random.randint(2, 9)
-            b = random.randint(11-a, 9)
+            b = random.randint(11-a, 9) 
             de_latex = f"Tính nhẩm: ${a} + {b} = ?$"
             dap_an = a + b
-            goi_y_text = f"Tách số để tròn 10 rồi cộng tiếp."
+            goi_y_text = f"Gộp cho đủ 10 rồi cộng số còn lại. Ví dụ: {a} + {10-a} + ..."
             goi_y_latex = f"{a} + {b} = {a+b}"
-        elif "phép trừ qua 10" in bai_lower:
+
+        elif "qua 10" in bai_lower and "trừ" in bai_lower:
             a = random.randint(11, 18)
-            b = random.randint(a-9, 9)
+            b = random.randint(a-9, 9) 
             de_latex = f"Tính nhẩm: ${a} - {b} = ?$"
             dap_an = a - b
-            goi_y_text = f"Tách số ở số bị trừ hoặc số trừ để tính cho dễ."
+            goi_y_text = "Trừ để được 10 rồi trừ tiếp số còn lại."
             goi_y_latex = f"{a} - {b} = {a-b}"
+
+        elif "thêm" in bai_lower or "bớt" in bai_lower or "nhiều hơn" in bai_lower or "ít hơn" in bai_lower:
+            val = random.randint(5, 15)
+            delta = random.randint(2, 5)
+            if "thêm" in bai_lower or "nhiều hơn" in bai_lower:
+                de_latex = f"Trên sân có ${val}$ con gà. Có thêm ${delta}$ con chạy tới. Hỏi có tất cả bao nhiêu con?"
+                dap_an = val + delta
+                goi_y_text = "Thực hiện phép cộng."
+                goi_y_latex = f"{val} + {delta} = {val+delta}"
+            else:
+                de_latex = f"Mẹ có ${val}$ quả cam. Mẹ biếu bà ${delta}$ quả. Hỏi mẹ còn lại bao nhiêu quả?"
+                dap_an = val - delta
+                goi_y_text = "Thực hiện phép trừ."
+                goi_y_latex = f"{val} - {delta} = {val-delta}"
+
+        # --- Chủ đề 3: Khối lượng, dung tích ---
         elif "ki-lô-gam" in bai_lower:
             a = random.randint(5, 40)
             b = random.randint(5, 40)
@@ -416,70 +307,204 @@ def tao_de_toan(lop, bai_hoc):
                 de_latex = f"Tính: ${a} kg + {b} kg = ?$"
                 dap_an = a + b
             goi_y_text = "Cộng/trừ số đo khối lượng như số tự nhiên."
+
         elif "lít" in bai_lower:
             a = random.randint(2, 30)
             b = random.randint(2, 30)
-            de_latex = f"Can màu xanh đựng ${a}l$ nước. Can màu đỏ đựng ${b}l$ nước. Cả hai can đựng bao nhiêu lít?"
+            de_latex = f"Can xanh đựng ${a}l$, can đỏ đựng ${b}l$. Cả hai can đựng bao nhiêu lít?"
             dap_an = a + b
-            goi_y_text = "Thực hiện phép cộng đơn vị lít."
+            goi_y_text = "Cộng dung tích hai can lại."
             goi_y_latex = f"{a} + {b} = {a+b}"
-        elif "cộng có nhớ" in bai_lower:
-            u1 = random.randint(1, 9)
-            u2 = random.randint(11-u1, 9) 
-            t1 = random.randint(1, 7)
-            t2 = random.randint(1, 8-t1)
-            num1 = t1*10 + u1
-            num2 = t2*10 + u2
-            de_latex = f"Đặt tính rồi tính: ${num1} + {num2}$"
-            dap_an = num1 + num2
-            goi_y_text = "Cộng từ phải sang trái. Nhớ 1 sang hàng chục."
-            goi_y_latex = f"\\begin{{array}}{{c}} \\phantom{{+}}{num1} \\\\ \\underline{{+{num2}}} \\\\ \\phantom{{+}}{num1+num2} \\end{{array}}"
-        elif "trừ có nhớ" in bai_lower:
-            u1 = random.randint(0, 8)
-            u2 = random.randint(u1 + 1, 9)
-            t1 = random.randint(2, 9)
-            t2 = random.randint(1, t1 - 1)
-            num1 = t1*10 + u1
-            num2 = t2*10 + u2
-            de_latex = f"Đặt tính rồi tính: ${num1} - {num2}$"
-            dap_an = num1 - num2
-            goi_y_text = "Trừ từ phải sang trái. Mượn 1 ở hàng chục."
-            goi_y_latex = f"\\begin{{array}}{{c}} \\phantom{{-}}{num1} \\\\ \\underline{{-{num2}}} \\\\ \\phantom{{-}}{num1-num2} \\end{{array}}"
-        elif "hình" in bai_lower:
-            question_type = "mcq"
-            shape_type = random.choice(["doan_thang", "duong_gap_khuc", "tu_giac"])
-            if shape_type == "doan_thang":
-                l1 = random.randint(2, 10)
-                l2 = random.randint(2, 10)
-                de_latex = f"Đoạn thẳng AB dài ${l1}cm$. Đoạn thẳng BC dài ${l2}cm$. Cả hai đoạn thẳng dài bao nhiêu cm?"
-                question_type = "number"
-                dap_an = l1 + l2
-                goi_y_text = "Cộng độ dài hai đoạn thẳng."
-            elif shape_type == "duong_gap_khuc":
-                a, b, c = random.randint(2, 5), random.randint(2, 5), random.randint(2, 5)
-                de_latex = f"Đường gấp khúc ABCD có độ dài các đoạn là ${a}cm, {b}cm, {c}cm$. Tính độ dài đường gấp khúc."
-                question_type = "number"
+
+        # --- Chủ đề 4: Phép cộng trừ có nhớ (phạm vi 100) ---
+        elif "có nhớ" in bai_lower:
+            if "cộng" in bai_lower:
+                u1 = random.randint(5, 9)
+                u2 = random.randint(10-u1, 9) 
+                t1 = random.randint(1, 7)
+                t2 = random.randint(1, 8-t1)
+                de_latex = f"Đặt tính rồi tính: ${t1*10+u1} + {t2*10+u2}$"
+                dap_an = (t1*10+u1) + (t2*10+u2)
+                goi_y_text = "Cộng hàng đơn vị trước, nhớ 1 sang hàng chục."
+            else: # Trừ có nhớ
+                u1 = random.randint(0, 8)
+                u2 = random.randint(u1+1, 9)
+                t1 = random.randint(3, 9)
+                t2 = random.randint(1, t1-1)
+                num1 = t1*10 + u1
+                num2 = t2*10 + u2
+                de_latex = f"Đặt tính rồi tính: ${num1} - {num2}$"
+                dap_an = num1 - num2
+                goi_y_text = "Hàng đơn vị không trừ được, mượn 1 ở hàng chục."
+
+        # --- Chủ đề 5: Hình phẳng ---
+        elif "đoạn thẳng" in bai_lower or "đường gấp khúc" in bai_lower:
+            if "gấp khúc" in bai_lower:
+                a = random.randint(2, 6)
+                b = random.randint(2, 6)
+                c = random.randint(2, 6)
+                de_latex = f"Đường gấp khúc ABC có đoạn AB dài ${a}cm$, đoạn BC dài ${b}cm$, đoạn CD dài ${c}cm$. Tính độ dài đường gấp khúc."
                 dap_an = a + b + c
-                goi_y_text = "Độ dài đường gấp khúc bằng tổng độ dài các đoạn thẳng thành phần."
-                goi_y_latex = f"{a} + {b} + {c} = {a+b+c}"
-            else:
-                de_latex = "Hình tứ giác có bao nhiêu cạnh?"
-                dap_an = 4
-                options = [3, 4, 5, 2]
-                goi_y_text = "Tứ giác là hình có 4 cạnh và 4 đỉnh."
-        elif "ngày" in bai_lower or "giờ" in bai_lower:
-            if random.choice([True, False]):
-                start_h = random.randint(7, 10)
-                duration = random.randint(1, 3)
-                de_latex = f"Nam đi học lúc ${start_h}$ giờ sáng. Nam học ở trường ${duration}$ giờ. Hỏi Nam tan học lúc mấy giờ?"
-                dap_an = start_h + duration
-                goi_y_text = "Lấy giờ bắt đầu cộng với thời gian học."
-                goi_y_latex = f"{start_h} + {duration} = {start_h+duration}"
-            else:
-                de_latex = "1 ngày có bao nhiêu giờ?"
-                dap_an = 24
+                goi_y_text = "Cộng độ dài tất cả các đoạn thẳng thành phần."
+            else: # Đoạn thẳng, 3 điểm thẳng hàng
+                de_latex = "Ba điểm thẳng hàng là ba điểm như thế nào?"
+                question_type = "mcq"
+                dap_an = "Cùng nằm trên một đường thẳng"
+                options = ["Cùng nằm trên một đường thẳng", "Tạo thành hình tam giác", "Cách đều nhau"]
+                goi_y_text = "Ba điểm cùng nằm trên một đường thẳng gọi là 3 điểm thẳng hàng."
+
+        elif "tứ giác" in bai_lower:
+            de_latex = "Hình tứ giác có mấy cạnh và mấy đỉnh?"
+            question_type = "mcq"
+            dap_an = "4 cạnh, 4 đỉnh"
+            options = ["3 cạnh, 3 đỉnh", "4 cạnh, 4 đỉnh", "5 cạnh, 5 đỉnh"]
+            goi_y_text = "Tứ giác là hình có 4 cạnh."
+
+        # --- Chủ đề 6: Ngày giờ ---
+        elif "ngày" in bai_lower or "giờ" in bai_lower or "lịch" in bai_lower:
+            if "lịch" in bai_lower or "tháng" in bai_lower:
+                de_latex = "Tháng 12 có bao nhiêu ngày?"
+                dap_an = 31
                 question_type = "number"
-                goi_y_text = "Một ngày có 24 giờ (12 giờ ngày và 12 giờ đêm)."
+                goi_y_text = "Ghi nhớ số ngày trong các tháng (Dùng quy tắc nắm tay)."
+            else:
+                h = random.randint(1, 11)
+                de_latex = f"Đồng hồ chỉ ${h}$ giờ. 30 phút sau là mấy giờ?"
+                question_type = "mcq"
+                dap_an = f"{h} giờ 30 phút"
+                options = [f"{h} giờ 30 phút", f"{h+1} giờ", f"{h} giờ 15 phút"]
+                goi_y_text = "Kim phút chỉ số 6 là 30 phút."
+
+    # ==========================================
+    # LỚP 3 (CẬP NHẬT THEO SGK MỚI)
+    # ==========================================
+    elif "Lớp 3" in lop:
+        # --- Chủ đề 1: Ôn tập và bổ sung ---
+        if "ôn tập" in bai_lower or "tìm thành phần" in bai_lower:
+            if "phép cộng" in bai_lower or "phép trừ" in bai_lower:
+                a = random.randint(100, 500)
+                b = random.randint(100, 400)
+                if random.choice([True, False]):
+                    de_latex = f"Tính nhẩm: ${a} + {b} = ?$"
+                    dap_an = a + b
+                else:
+                    de_latex = f"Tìm x biết: $x - {b} = {a}$"
+                    dap_an = a + b
+                    goi_y_text = "Muốn tìm số bị trừ, lấy hiệu cộng số trừ."
+                    goi_y_latex = f"x = {a} + {b}"
+            else: # Bảng nhân chia 2-5
+                base = random.randint(2, 5)
+                mult = random.randint(2, 9)
+                de_latex = f"Tính: ${base} \\times {mult} = ?$"
+                dap_an = base * mult
+                goi_y_text = f"Dựa vào bảng nhân {base}."
+
+        # --- Chủ đề 2: Bảng nhân, bảng chia (6,7,8,9) ---
+        elif "bảng nhân" in bai_lower or "bảng chia" in bai_lower:
+            base = random.randint(6, 9)
+            if "nhân" in bai_lower:
+                mult = random.randint(2, 9)
+                de_latex = f"Tính: ${base} \\times {mult} = ?$"
+                dap_an = base * mult
+                goi_y_text = f"Dựa vào bảng nhân {base}."
+            else:
+                quotient = random.randint(2, 9)
+                product = base * quotient
+                de_latex = f"Tính: ${product} : {base} = ?$"
+                dap_an = quotient
+                goi_y_text = f"Dựa vào bảng chia {base}."
+        
+        elif "một phần mấy" in bai_lower:
+            k = random.randint(2, 9)
+            val = k * random.randint(2, 9)
+            de_latex = f"Một phần {k} của số {val} là bao nhiêu?"
+            dap_an = val // k
+            goi_y_text = f"Lấy {val} chia cho {k}."
+            goi_y_latex = f"{val} : {k} = {dap_an}"
+
+        # --- Chủ đề 3: Hình phẳng, hình khối ---
+        elif "trung điểm" in bai_lower:
+            l = random.randint(4, 20) * 2
+            de_latex = f"Đoạn thẳng AB dài ${l}cm$. M là trung điểm của AB. Tính độ dài đoạn AM."
+            dap_an = l // 2
+            goi_y_text = "Trung điểm chia đoạn thẳng làm 2 phần bằng nhau."
+        elif "hình tròn" in bai_lower:
+            r = random.randint(2, 9)
+            de_latex = f"Hình tròn tâm O có bán kính ${r}cm$. Đường kính của hình tròn dài bao nhiêu?"
+            dap_an = r * 2
+            goi_y_text = "Đường kính dài gấp 2 lần bán kính."
+        elif "góc" in bai_lower:
+            question_type = "mcq"
+            de_latex = "Góc vuông có đỉnh và cạnh như thế nào?"
+            dap_an = "Đỉnh vuông góc, hai cạnh vuông góc"
+            options = ["Đỉnh vuông góc, hai cạnh vuông góc", "Đỉnh nhọn", "Đỉnh tù"]
+            goi_y_text = "Sử dụng ê-ke để kiểm tra góc vuông."
+
+        # --- Chủ đề 4: Phép nhân chia phạm vi 100 ---
+        elif "nhân số" in bai_lower and "100" in bai_lower: # Nhân 2 chữ số với 1 chữ số
+            a = random.randint(12, 49)
+            b = random.randint(2, 5)
+            de_latex = f"Đặt tính rồi tính: ${a} \\times {b}$"
+            dap_an = a * b
+            goi_y_text = "Nhân từ phải sang trái, có nhớ."
+        elif "chia số" in bai_lower and "100" in bai_lower:
+            a = random.randint(20, 99)
+            b = random.randint(2, 9)
+            de_latex = f"Tính: ${a} : {b}$ (Lấy phần nguyên)"
+            dap_an = a // b
+            goi_y_text = "Chia từ trái sang phải."
+        elif "chia có dư" in bai_lower:
+            a = random.randint(10, 50)
+            b = random.randint(2, 5)
+            rem = a % b
+            if rem == 0: a += 1; rem = 1 # Đảm bảo có dư
+            de_latex = f"Tìm số dư của phép chia: ${a} : {b}$"
+            dap_an = rem
+            goi_y_text = "Thực hiện chia, phần còn lại nhỏ hơn số chia là số dư."
+        elif "gấp" in bai_lower or "giảm" in bai_lower:
+            val = random.randint(4, 20)
+            k = random.randint(2, 5)
+            if "gấp" in bai_lower:
+                de_latex = f"Gấp số ${val}$ lên ${k}$ lần được bao nhiêu?"
+                dap_an = val * k
+                goi_y_text = "Thực hiện phép nhân."
+            else:
+                val = val * k # Đảm bảo chia hết
+                de_latex = f"Giảm số ${val}$ đi ${k}$ lần được bao nhiêu?"
+                dap_an = val // k
+                goi_y_text = "Thực hiện phép chia."
+
+        # --- Chủ đề 5: Đơn vị đo lường ---
+        elif "mi-li-mét" in bai_lower:
+            cm = random.randint(1, 10)
+            de_latex = f"Đổi: ${cm}cm = ... mm$"
+            dap_an = cm * 10
+            goi_y_text = "1 cm = 10 mm"
+        elif "gam" in bai_lower:
+            kg = random.randint(1, 5)
+            de_latex = f"Đổi: ${kg}kg = ... g$"
+            dap_an = kg * 1000
+            goi_y_text = "1 kg = 1000 g"
+        elif "nhiệt độ" in bai_lower:
+             de_latex = "Nước sôi ở bao nhiêu độ C?"
+             dap_an = 100
+             goi_y_text = "Nước sôi ở 100 độ C."
+
+        # --- Chủ đề 6: Phép nhân chia phạm vi 1000 ---
+        elif "biểu thức" in bai_lower:
+            a = random.randint(2, 9)
+            b = random.randint(2, 9)
+            c = random.randint(10, 50)
+            de_latex = f"Tính giá trị biểu thức: ${c} + {a} \\times {b}$"
+            dap_an = c + (a * b)
+            goi_y_text = "Nhân chia trước, cộng trừ sau."
+            goi_y_latex = f"{c} + {a*b} = {c + a*b}"
+        elif "nhân số" in bai_lower and "1000" in bai_lower:
+            a = random.randint(101, 200)
+            b = random.randint(2, 4)
+            de_latex = f"Tính: ${a} \\times {b}$"
+            dap_an = a * b
+            goi_y_text = "Nhân từ phải sang trái."
 
     # ==========================================
     # LỚP 1 (GIỮ NGUYÊN)
