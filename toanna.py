@@ -3,8 +3,11 @@ import random
 import math
 import time
 import os
-import pandas as pd # Thêm thư viện này để vẽ biểu đồ cho giáo viên
+import pandas as pd
+import io
+import base64
 from deep_translator import GoogleTranslator
+from gtts import gTTS  # Thư viện giọng nói Google
 
 # --- CẤU HÌNH TRANG WEB ---
 st.set_page_config(
@@ -18,7 +21,7 @@ def update_visit_count():
     count_file = "visit_count.txt"
     if not os.path.exists(count_file):
         with open(count_file, "w") as f:
-            f.write("5383") # Bắt đầu từ con số trong ảnh của bạn cho đẹp
+            f.write("5383") 
             return 5383
     try:
         with open(count_file, "r") as f:
@@ -37,7 +40,7 @@ def update_visit_count():
 if 'visit_count' not in st.session_state:
     st.session_state.visit_count = update_visit_count()
 
-# --- DỮ LIỆU CHƯƠNG TRÌNH HỌC (GIỮ NGUYÊN) ---
+# --- DỮ LIỆU CHƯƠNG TRÌNH HỌC ---
 CHUONG_TRINH_HOC = {
     "Lớp 1": {
         "Chủ đề 1: Các số từ 0 đến 10": ["Các số 0-10", "So sánh số", "Mấy và mấy"],
@@ -101,7 +104,7 @@ CHUONG_TRINH_HOC = {
     }
 }
 
-# --- CSS PHONG CÁCH THỔ CẨM H'MÔNG (ĐÃ ĐIỀU CHỈNH ĐỂ NỔI BẬT HƠN) ---
+# --- CSS PHONG CÁCH THỔ CẨM H'MÔNG ---
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
@@ -193,9 +196,8 @@ st.markdown("""
     .stButton>button:hover { transform: scale(1.05); color: white; }
     .stRadio > div { background-color: white; padding: 20px; border-radius: 15px; border: 1px solid #eeeeee; }
     
-    /* Giao diện gợi ý/lỗi mới nổi bật hơn */
     .hint-container {
-        background-color: #e8f5e9; /* Màu xanh nhạt */
+        background-color: #e8f5e9;
         border-left: 5px solid #4caf50;
         padding: 15px;
         border-radius: 8px;
@@ -224,7 +226,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- LOGIC SINH ĐỀ (GIỮ NGUYÊN) ---
+# --- LOGIC SINH ĐỀ ---
 
 def tao_de_toan(lop, bai_hoc):
     de_latex = ""
@@ -579,22 +581,14 @@ def phan_tich_loi_sai(user_ans, true_ans, q_type):
             diff = abs(user_ans - true_ans)
             if diff == 0:
                 return "Tuyệt vời!"
-            
-            # Trường hợp sai dấu (Ví dụ: -5 vs 5)
             if user_ans == -true_ans:
                 hint_msg = "Bạn bị nhầm dấu rồi! Kiểm tra lại âm/dương nhé. (Tsis yog, saib dua)"
-            
-            # Trường hợp sai số nhỏ (Ví dụ: 10 vs 11)
             elif diff <= 2:
                 hint_msg = "Bạn tính gần đúng rồi! Thử tính lại cẩn thận hơn chút nữa xem. (Xam dua)"
-            
-            # Trường hợp sai nhiều (Ví dụ: 10 vs 100)
             elif diff > 10:
                 hint_msg = "Kết quả còn xa quá. Hãy xem lại công thức gợi ý bên dưới nhé!"
-                
         except:
             pass
-            
     return hint_msg
 
 # Hàm dịch thuật
@@ -604,9 +598,25 @@ def dich_sang_mong(text):
     except:
         return "..."
 
+# --- TÍNH NĂNG MỚI: AI ĐỌC ĐỀ (TEXT TO SPEECH) ---
+def text_to_speech_html(text, lang='vi'):
+    # Xử lý text để loại bỏ ký tự LaTeX
+    clean_text = text.replace("$", "").replace("\\begin{cases}", "hệ phương trình ").replace("\\end{cases}", "").replace("\\\\", " và ")
+    # Tạo file audio ảo trong bộ nhớ
+    tts = gTTS(text=clean_text, lang=lang)
+    fp = io.BytesIO()
+    tts.write_to_fp(fp)
+    # Mã hóa base64 để hiển thị
+    b64 = base64.b64encode(fp.getvalue()).decode()
+    md = f"""
+        <audio controls autoplay>
+        <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
+        </audio>
+        """
+    return md
+
 # --- GIAO DIỆN CHÍNH ---
 
-# Header
 st.markdown(f"""
 <div class="hmong-header-container">
     <div class="hmong-top-bar">SỞ GIÁO DỤC VÀ ĐÀO TẠO TỈNH ĐIỆN BIÊN</div>
@@ -639,20 +649,17 @@ with st.sidebar:
             del st.session_state[key]
         st.rerun()
 
-    # --- DASHBOARD QUẢN LÝ CHO GIÁO VIÊN (TÍNH NĂNG MỚI) ---
+    # DASHBOARD QUẢN LÝ (ẨN)
     st.markdown("---")
     with st.expander("👨‍🏫 Khu vực Giáo viên (Admin)"):
         st.write("**Thống kê lớp học (Giả lập):**")
         st.info(f"Tổng lượt truy cập: {st.session_state.visit_count}")
-        
-        # Biểu đồ giả lập tình hình làm bài
         data = pd.DataFrame({
             'Trạng thái': ['Đúng ngay', 'Sai lần 1', 'Cần gợi ý'],
             'Số lượng': [45, 15, 10]
         })
         st.bar_chart(data.set_index('Trạng thái'))
         st.caption("*Dữ liệu hỗ trợ quản lý dạy học số*")
-
 
 col_trai, col_phai = st.columns([1.6, 1])
 
@@ -664,7 +671,7 @@ if 'de_bai' not in st.session_state:
     st.session_state.goi_y_text = ""
     st.session_state.goi_y_latex = ""
     st.session_state.show_hint = False
-    st.session_state.adaptive_msg = "" # Lưu thông báo lỗi thông minh
+    st.session_state.adaptive_msg = "" 
 
 def click_sinh_de():
     db, qt, da, ops, gyt, gyl = tao_de_toan(lop_chon, bai_chon)
@@ -690,9 +697,18 @@ with col_trai:
         st.markdown(f"## {st.session_state.de_bai}")
         st.markdown('</div>', unsafe_allow_html=True)
 
-        col_d1, col_d2 = st.columns(2)
-        with col_d1:
-            if st.button("🗣️ Dịch H'Mông (Translate)"):
+        # --- CÔNG CỤ AI MỚI ---
+        st.markdown("### 🤖 Công cụ hỗ trợ AI:")
+        col_tool1, col_tool2 = st.columns(2)
+        
+        with col_tool1:
+            if st.button("🗣️ Đọc đề (Giọng AI)"):
+                # Gọi hàm AI đọc và hiển thị
+                audio_html = text_to_speech_html(st.session_state.de_bai)
+                st.markdown(audio_html, unsafe_allow_html=True)
+                
+        with col_tool2:
+            if st.button("🌏 Dịch H'Mông"):
                 text_to_translate = st.session_state.de_bai.replace("$", "")
                 bd = dich_sang_mong(text_to_translate)
                 st.info(f"**H'Mông:** {bd}")
@@ -703,7 +719,6 @@ with col_phai:
     if st.session_state.de_bai:
         with st.form("form_lam_bai"):
             user_ans = None
-            
             if st.session_state.q_type == "mcq":
                 st.markdown("**Chọn đáp án đúng:**")
                 if st.session_state.options: 
@@ -725,7 +740,6 @@ with col_phai:
             if btn_nop and user_ans is not None:
                 st.session_state.submitted = True
                 is_correct = False
-                
                 if st.session_state.q_type == "mcq":
                     if user_ans == st.session_state.dap_an:
                         is_correct = True
@@ -742,10 +756,8 @@ with col_phai:
                     st.success("CHÍNH XÁC! (Yog lawm) 👏")
                     st.session_state.show_hint = False
                 else:
-                    # GỌI HÀM PHÂN TÍCH LỖI SAI (AI)
                     adaptive_msg = phan_tich_loi_sai(user_ans, st.session_state.dap_an, st.session_state.q_type)
                     st.markdown(f'<div class="error-box">{adaptive_msg}</div>', unsafe_allow_html=True)
-                    
                     if st.session_state.q_type == "mcq":
                         st.markdown(f"Đáp án đúng là: {st.session_state.dap_an}")
                     else:
@@ -760,11 +772,9 @@ with col_phai:
             st.markdown("---")
             st.markdown('<div class="hint-container">', unsafe_allow_html=True)
             st.markdown(f"**💡 Gợi ý:** {st.session_state.goi_y_text}")
-            
             if st.session_state.goi_y_latex:
                 st.latex(st.session_state.goi_y_latex)
             st.markdown('</div>', unsafe_allow_html=True)
-                
             translation = dich_sang_mong(st.session_state.goi_y_text)
             st.markdown('<div class="hmong-hint">', unsafe_allow_html=True)
             st.markdown(f"**🗣️ H'Mông:** {translation}")
