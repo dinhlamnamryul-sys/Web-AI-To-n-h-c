@@ -439,6 +439,33 @@ def tao_de_toan(lop, bai_hoc):
             dap_an = ans_correct
             options = [ans_correct, f"$x^2 + {a**2}$", f"$x^2 - {2*a}x + {a**2}$", f"$x^2 + {2*a}x$"]
             goi_y_text = "Bình phương số thứ nhất + 2 lần tích + bình phương số thứ hai."
+        elif "phân thức" in bai_lower:
+            # Logic mới cho phân thức đại số
+            a = random.randint(2, 5)
+            de_latex = f"Rút gọn phân thức: $\\frac{{{a}x^2}}{{{a}x}}$ (với $x \\neq 0$)"
+            ans_correct = "$x$"
+            dap_an = ans_correct
+            options = ["$x$", f"${a}x$", "$x^2$", "1"]
+            goi_y_text = "Chia cả tử và mẫu cho nhân tử chung."
+        elif "hàm số" in bai_lower or "đồ thị" in bai_lower:
+            # Logic mới cho hàm số bậc nhất
+            a = random.randint(2, 5)
+            b = random.randint(1, 10)
+            de_latex = f"Cho hàm số $y = {a}x + {b}$. Tính giá trị của y tại x = 1."
+            ans_correct = f"{a + b}"
+            dap_an = ans_correct
+            options = [f"{a + b}", f"{a - b}", f"{a * b}", f"{b}"]
+            goi_y_text = "Thay x = 1 vào công thức y."
+        else:
+             # Fallback cho trường hợp khác của lớp 8
+            a = random.randint(2, 9)
+            de_latex = f"Giải phương trình: $x - {a} = 0$"
+            ans_correct = f"{a}"
+            dap_an = ans_correct
+            options = [f"{a}", f"-{a}", "0", "1"]
+            goi_y_text = "Chuyển vế đổi dấu."
+        
+        random.shuffle(options)
 
     elif "Lớp 3" in lop:
         if "ôn tập" in bai_lower:
@@ -724,7 +751,7 @@ with col_phai:
                 if st.session_state.options: 
                     user_ans = st.radio("Đáp án:", st.session_state.options, label_visibility="collapsed")
                 else:
-                     st.error("Lỗi: Không tìm thấy đáp án phù hợp.")
+                      st.error("Lỗi: Không tìm thấy đáp án phù hợp.")
             else:
                 is_integer_answer = False
                 if isinstance(st.session_state.dap_an, int) or (isinstance(st.session_state.dap_an, float) and st.session_state.dap_an.is_integer()):
