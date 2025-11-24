@@ -6,6 +6,7 @@ import os
 import pandas as pd
 import io
 import base64
+import re  # Thêm thư viện xử lý chuỗi
 from deep_translator import GoogleTranslator
 from gtts import gTTS  # Thư viện giọng nói Google
 
@@ -40,7 +41,7 @@ def update_visit_count():
 if 'visit_count' not in st.session_state:
     st.session_state.visit_count = update_visit_count()
 
-# --- DỮ LIỆU CHƯƠNG TRÌNH HỌC (ĐÃ CHUẨN HÓA KEY ĐỂ KHỚP LOGIC) ---
+# --- DỮ LIỆU CHƯƠNG TRÌNH HỌC ---
 CHUONG_TRINH_HOC = {
     "Lớp 1": {
         "Chủ đề 1: Các số từ 0 đến 10": ["Đếm số lượng", "So sánh số", "Tách gộp số (Mấy và mấy)"],
@@ -214,8 +215,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- LOGIC SINH ĐỀ TOÀN DIỆN (LỚP 1 - LỚP 9) ---
-
+# --- LOGIC SINH ĐỀ TOÀN DIỆN ---
 def tao_de_toan(lop, bai_hoc):
     de_latex = ""
     question_type = "number" 
@@ -229,7 +229,6 @@ def tao_de_toan(lop, bai_hoc):
     # --- LỚP 1 ---
     if "Lớp 1" in lop:
         if "đếm" in bai_lower or "số lượng" in bai_lower:
-            # Vì không có ảnh, dùng text mô tả
             n = random.randint(3, 9)
             items = ["bông hoa", "con gà", "viên bi", "cái kẹo"]
             item = random.choice(items)
@@ -322,7 +321,7 @@ def tao_de_toan(lop, bai_hoc):
         elif "chia" in bai_lower and "dư" in bai_lower:
             b = random.randint(2, 8)
             a = random.randint(10, 50)
-            while a % b == 0: a += 1 # Đảm bảo có dư
+            while a % b == 0: a += 1 
             de_latex = f"Tìm số dư trong phép chia: ${a} : {b}$"
             dap_an = a % b
             goi_y_text = "Thực hiện phép chia và lấy phần dư."
@@ -362,7 +361,6 @@ def tao_de_toan(lop, bai_hoc):
             goi_y_text = "Viết lần lượt từng lớp số."
         elif "trung bình cộng" in bai_lower:
             a, b, c = random.randint(10, 50), random.randint(10, 50), random.randint(10, 50)
-            # Điều chỉnh để chia hết cho 3
             total = a + b + c
             rem = total % 3
             c -= rem
@@ -372,7 +370,6 @@ def tao_de_toan(lop, bai_hoc):
         elif "phân số" in bai_lower:
             tu, mau = random.randint(1, 10), random.randint(2, 10)
             k = random.randint(2, 5)
-            # Tạo phân số chưa tối giản
             tu_k, mau_k = tu * k, mau * k
             de_latex = f"Rút gọn phân số: $\\frac{{{tu_k}}}{{{mau_k}}}$ về tối giản (Nhập tử số của phân số tối giản)"
             dap_an = tu // math.gcd(tu, mau)
@@ -417,12 +414,14 @@ def tao_de_toan(lop, bai_hoc):
             h = random.randint(5, 20)
             de_latex = f"Diện tích tam giác có đáy ${a}$cm và chiều cao ${h}$cm là bao nhiêu $cm^2$?"
             dap_an = (a * h) / 2
-            goi_y_text = "$S = \\frac{a \\times h}{2}$"
+            goi_y_text = "Công thức diện tích tam giác:"
+            goi_y_latex = "S = \\frac{a \\times h}{2}"
         elif "tròn" in bai_lower:
             r = random.randint(1, 10)
             de_latex = f"Chu vi hình tròn bán kính r=${r}$cm là (lấy $\\pi=3.14$):"
             dap_an = round(r * 2 * 3.14, 2)
-            goi_y_text = "$C = r \\times 2 \\times 3.14$"
+            goi_y_text = "Công thức chu vi hình tròn:"
+            goi_y_latex = "C = r \\times 2 \\times 3.14"
         else:
              a = round(random.uniform(1, 10), 1)
              de_latex = f"Tính: ${a} \\times 10$"
@@ -508,7 +507,6 @@ def tao_de_toan(lop, bai_hoc):
     elif "Lớp 8" in lop:
         question_type = "mcq"
         if "đa thức" in bai_lower:
-            # Rút gọn đơn giản
             a = random.randint(2, 5)
             de_latex = f"Rút gọn biểu thức: $x(x + {a}) - x^2$"
             ans_correct = f"${a}x$"
@@ -522,14 +520,16 @@ def tao_de_toan(lop, bai_hoc):
             ans_correct = f"$x^2 - {2*a}x + {a**2}$"
             dap_an = ans_correct
             options = [ans_correct, f"$x^2 + {2*a}x + {a**2}$", f"$x^2 - {a**2}$", f"$x^2 + {a**2}$"]
-            goi_y_text = "$(A-B)^2 = A^2 - 2AB + B^2$"
+            goi_y_text = "Bình phương một hiệu:"
+            goi_y_latex = "(A-B)^2 = A^2 - 2AB + B^2"
         elif "phân thức" in bai_lower:
             a = random.randint(2, 5)
             de_latex = f"Rút gọn phân thức: $\\frac{{x^2 - {a**2}}}{{x + {a}}}$"
             ans_correct = f"$x - {a}$"
             dap_an = ans_correct
             options = [f"$x - {a}$", f"$x + {a}$", f"$x^2 - {a}$", f"$1$"]
-            goi_y_text = "Phân tích tử số thành nhân tử: $x^2 - a^2 = (x-a)(x+a)$"
+            goi_y_text = "Phân tích tử số thành nhân tử:"
+            goi_y_latex = f"x^2 - {a}^2 = (x-{a})(x+{a})"
         elif "hàm số" in bai_lower:
             a = random.randint(2, 5)
             b = random.randint(1, 9)
@@ -538,7 +538,7 @@ def tao_de_toan(lop, bai_hoc):
             ans_correct = f"{a*x_val + b}"
             dap_an = ans_correct
             options = [f"{a*x_val + b}", f"{a*x_val - b}", f"{a + b}", f"{b}"]
-            goi_y_text = "Thay giá trị x vào công thức."
+            goi_y_text = "Thay giá trị x vào công thức hàm số."
         else:
             de_latex = "Bậc của đa thức $x^2y + xy^3$ là?"
             dap_an = "4"
@@ -555,6 +555,7 @@ def tao_de_toan(lop, bai_hoc):
             dap_an = ans_correct
             options = [ans_correct, f"$x > {a}$", f"$x \\le {a}$", f"$x < {a}$"]
             goi_y_text = "Biểu thức trong căn bậc hai phải không âm."
+            goi_y_latex = f"x - {a} \\ge 0 \\Leftrightarrow x \\ge {a}"
         elif "hệ phương trình" in bai_lower:
             x = random.randint(1, 3)
             y = random.randint(1, 3)
@@ -566,7 +567,6 @@ def tao_de_toan(lop, bai_hoc):
             options = [ans_correct, f"$({y}; {x})$", f"$({x}; -{y})$", f"$(-{x}; {y})$"]
             goi_y_text = "Cộng đại số hai phương trình."
         elif "phương trình bậc hai" in bai_lower or "vi-ét" in bai_lower:
-            # x^2 - Sx + P = 0
             x1 = random.randint(1, 5)
             x2 = random.randint(1, 5)
             S = x1 + x2
@@ -575,7 +575,8 @@ def tao_de_toan(lop, bai_hoc):
             ans_correct = f"{S}"
             dap_an = ans_correct
             options = [f"{S}", f"-{S}", f"{P}", f"-{P}"]
-            goi_y_text = "Theo định lý Vi-ét: $x_1 + x_2 = -\\frac{b}{a}$"
+            goi_y_text = "Theo định lý Vi-ét:"
+            goi_y_latex = "x_1 + x_2 = -\\frac{b}{a}"
         elif "hàm số" in bai_lower:
             a = random.randint(2, 5)
             de_latex = f"Đường thẳng $y = {a}x + 1$ song song với đường thẳng nào?"
@@ -588,9 +589,9 @@ def tao_de_toan(lop, bai_hoc):
             ans_correct = "$\\frac{\\text{Đối}}{\\text{Huyền}}$"
             dap_an = ans_correct
             options = [ans_correct, "$\\frac{\\text{Kề}}{\\text{Huyền}}$", "$\\frac{\\text{Đối}}{\\text{Kề}}$", "$\\frac{\\text{Kề}}{\\text{Đối}}$"]
-            goi_y_text = "Sin đi học (Đối/Huyền)."
+            goi_y_text = "Công thức Sin:"
+            goi_y_latex = "\\sin = \\frac{\\text{Đối}}{\\text{Huyền}}"
         else:
-            # Giải pt bậc 2 đơn giản
             de_latex = "Giải phương trình $x^2 - 4 = 0$"
             ans_correct = "$x = \\pm 2$"
             dap_an = ans_correct
@@ -628,9 +629,48 @@ def dich_sang_mong(text):
     except:
         return "..."
 
-# --- TEXT TO SPEECH ---
+# --- TEXT TO SPEECH (ĐÃ CẢI TIẾN) ---
 def text_to_speech_html(text, lang='vi'):
-    clean_text = text.replace("$", "").replace("\\begin{cases}", "hệ phương trình ").replace("\\end{cases}", "").replace("\\\\", " và ").replace("\\frac", "phân số ").replace("\\times", " nhân ").replace("\\dots", "ba chấm")
+    # 1. Loại bỏ các ký tự định dạng LaTeX không cần đọc
+    clean_text = text.replace("$", "")
+    
+    # 2. Xử lý Phân số: \frac{a}{b} -> a phần b
+    # Sử dụng Regex để bắt nội dung trong {}
+    clean_text = re.sub(r'\\frac\{(.+?)\}\{(.+?)\}', r'\1 phần \2', clean_text)
+    
+    # 3. Bảng thay thế các ký hiệu Toán học sang tiếng Việt tự nhiên
+    replacements = {
+        "\\begin{cases}": "hệ phương trình ",
+        "\\end{cases}": "",
+        "\\\\": " và ",
+        "\\times": " nhân ",
+        "\\cdot": " nhân ",
+        ":": " chia ",
+        "+": " cộng ",
+        "-": " trừ ",
+        "\\le": " nhỏ hơn hoặc bằng ",
+        "\\ge": " lớn hơn hoặc bằng ",
+        "\\neq": " khác ",
+        "\\approx": " xấp xỉ ",
+        "\\circ": " độ ",
+        "\\hat": " góc ",
+        "\\sqrt": " căn bậc hai của ",
+        "\\pm": " cộng trừ ",
+        "\\pi": " pi ",
+        "^2": " bình phương ",
+        "^3": " lập phương ",
+        ">": " lớn hơn ",
+        "<": " nhỏ hơn ",
+        "=": " bằng "
+    }
+    
+    for k, v in replacements.items():
+        clean_text = clean_text.replace(k, v)
+    
+    # Xử lý các dấu ngoặc còn sót của LaTeX (nếu có)
+    clean_text = clean_text.replace("{", "").replace("}", "")
+
+    # Tạo audio
     tts = gTTS(text=clean_text, lang=lang)
     fp = io.BytesIO()
     tts.write_to_fp(fp)
@@ -646,7 +686,7 @@ def text_to_speech_html(text, lang='vi'):
 
 st.markdown(f"""
 <div class="hmong-header-container">
-    <div class="hmong-top-bar">SỞ GIÁO DỤC VÀ ĐÀO TẠO TỈNH ĐIỆN BIÊN</div>
+    <div class="hmong-top-bar">SỞ GIÁO DỤC VÀ ĐÀO TỈNH ĐIỆN BIÊN</div>
     <div class="hmong-main-title">
         <h1>🏫 TRƯỜNG PTDTBT TH&THCS NA Ư</h1>
         <h2>🚀 GIA SƯ TOÁN AI - BẢN MƯỜNG</h2>
@@ -773,14 +813,17 @@ with col_phai:
         
         if st.session_state.show_hint:
             st.markdown("---")
+            # --- GỢI Ý TIẾNG VIỆT ---
             st.markdown('<div class="hint-container">', unsafe_allow_html=True)
-            st.markdown(f"**💡 Gợi ý:** {st.session_state.goi_y_text}")
+            st.markdown(f"**💡 Gợi ý (Tiếng Việt):** {st.session_state.goi_y_text}")
             if st.session_state.goi_y_latex: st.latex(st.session_state.goi_y_latex)
             st.markdown('</div>', unsafe_allow_html=True)
             
+            # --- GỢI Ý TIẾNG H'MÔNG (ĐỒNG BỘ HIỂN THỊ MATH) ---
             translation = dich_sang_mong(st.session_state.goi_y_text)
             st.markdown('<div class="hmong-hint">', unsafe_allow_html=True)
             st.markdown(f"**🗣️ H'Mông:** {translation}")
+            # Đảm bảo công thức toán học hiển thị giống hệt phần Tiếng Việt
             if st.session_state.goi_y_latex: st.latex(st.session_state.goi_y_latex)
             st.markdown('</div>', unsafe_allow_html=True)
     else:
