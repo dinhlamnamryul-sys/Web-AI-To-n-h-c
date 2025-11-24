@@ -36,11 +36,13 @@ def update_visit_count():
 if 'visit_count' not in st.session_state:
     st.session_state.visit_count = update_visit_count()
 
-# --- DỮ LIỆU CHƯƠNG TRÌNH HỌC (LỚP 8 CHUẨN SGK MỚI) ---
+# --- DỮ LIỆU CHƯƠNG TRÌNH HỌC ---
 CHUONG_TRINH_HOC = {
     "Lớp 1": {
-        "Chương 1: Các số từ 0 đến 10": ["Các số 0-10", "Tách - Gộp số", "So sánh số"],
-        "Chương 2: Phép cộng, trừ trong phạm vi 10": ["Phép cộng trong phạm vi 10", "Phép trừ trong phạm vi 10"]
+        "Chủ đề 1: Các số từ 0 đến 10": ["Các số 0-10", "So sánh số", "Mấy và mấy"],
+        "Chủ đề 2: Làm quen với một số hình phẳng": ["Hình vuông, tròn, tam giác, chữ nhật"],
+        "Chủ đề 3: Phép cộng, phép trừ trong phạm vi 10": ["Phép cộng trong phạm vi 10", "Phép trừ trong phạm vi 10"],
+        "Chủ đề 4: Làm quen với một số hình khối": ["Khối lập phương, khối hộp chữ nhật"]
     },
     "Lớp 2": {
         "Chương 1: Phép cộng, trừ (có nhớ)": ["Phép cộng qua 10", "Phép trừ qua 10"],
@@ -203,9 +205,81 @@ def tao_de_toan(lop, bai_hoc):
     bai_lower = bai_hoc.lower()
 
     # ==========================================
+    # LỚP 1 (ĐÃ ĐIỀU CHỈNH THEO SÁCH GK MỚI)
+    # ==========================================
+    if "Lớp 1" in lop:
+        # Chủ đề 1: Các số từ 0 đến 10
+        if "các số" in bai_lower:
+            a = random.randint(0, 9)
+            de_latex = f"Số liền sau của số ${a}$ là số mấy?"
+            dap_an = a + 1
+            goi_y_text = "Đếm thêm 1 đơn vị."
+            goi_y_latex = f"{a} + 1 = {a+1}"
+        elif "so sánh" in bai_lower:
+            a, b = random.randint(0, 10), random.randint(0, 10)
+            while a == b: # Tránh trường hợp bằng nhau quá nhiều
+                b = random.randint(0, 10)
+            de_latex = f"Điền dấu thích hợp: ${a} \\dots {b}$"
+            question_type = "mcq"
+            if a > b: 
+                ans_correct = "$>$"
+                options = [">", "<", "="]
+            elif a < b: 
+                ans_correct = "$<$"
+                options = ["<", ">", "="]
+            else: 
+                ans_correct = "$=$"
+                options = ["=", ">", "<"]
+            dap_an = ans_correct
+            goi_y_text = "So sánh số lượng xem bên nào nhiều hơn."
+        elif "mấy và mấy" in bai_lower:
+            tong = random.randint(3, 9)
+            a = random.randint(1, tong - 1)
+            b = tong - a
+            de_latex = f"Số ${tong}$ gồm ${a}$ và mấy?"
+            dap_an = b
+            goi_y_text = "Dùng phép trừ để tìm số còn thiếu."
+            goi_y_latex = f"{tong} - {a} = {b}"
+        
+        # Chủ đề 2: Hình phẳng
+        elif "hình" in bai_lower and "phẳng" in bai_lower:
+            shapes = [
+                ("Hình tam giác", 3),
+                ("Hình vuông", 4)
+            ]
+            shape_name, sides = random.choice(shapes)
+            de_latex = f"{shape_name} có bao nhiêu cạnh?"
+            dap_an = sides
+            goi_y_text = "Đếm số đường thẳng tạo nên hình đó."
+        
+        # Chủ đề 3: Phép cộng, trừ phạm vi 10
+        elif "phép cộng" in bai_lower:
+            a = random.randint(1, 5)
+            b = random.randint(1, 5)
+            de_latex = f"Tính: ${a} + {b} = ?$"
+            dap_an = a + b
+            goi_y_text = "Gộp hai nhóm lại với nhau."
+            goi_y_latex = f"{a} + {b} = {a+b}"
+        elif "phép trừ" in bai_lower:
+            a = random.randint(2, 10)
+            b = random.randint(1, a)
+            de_latex = f"Tính: ${a} - {b} = ?$"
+            dap_an = a - b
+            goi_y_text = "Bớt đi số lượng tương ứng."
+            goi_y_latex = f"{a} - {b} = {a-b}"
+        
+        # Chủ đề 4: Hình khối (Text based logic)
+        elif "khối" in bai_lower:
+            question_type = "mcq"
+            de_latex = "Viên xúc xắc có dạng khối gì?"
+            dap_an = "Khối lập phương"
+            options = ["Khối lập phương", "Khối hộp chữ nhật", "Khối cầu"]
+            goi_y_text = "Các mặt của xúc xắc đều là hình vuông."
+
+    # ==========================================
     # CẤP 2: LỚP 8
     # ==========================================
-    if "Lớp 8" in lop:
+    elif "Lớp 8" in lop:
         question_type = "mcq" # Mặc định trắc nghiệm cho đại số
         
         # 1. ĐA THỨC
@@ -287,7 +361,7 @@ def tao_de_toan(lop, bai_hoc):
                 dap_an = ans_correct
                 options = [ans_correct, f"$x^2+{a**2}$", f"$x^2- {a**2}$", f"$x^2 + {2*a}x + {a**2}$"]
 
-        # 3. PHÂN THỨC ĐẠI SỐ (ĐÃ SỬA LỖI)
+        # 3. PHÂN THỨC ĐẠI SỐ
         elif "phân thức" in bai_lower:
             question_type = "mcq" # Đảm bảo là trắc nghiệm
             
@@ -362,7 +436,7 @@ def tao_de_toan(lop, bai_hoc):
         random.shuffle(options)
 
     # ==========================================
-    # CÁC LỚP CÒN LẠI (GIỮ NGUYÊN)
+    # CÁC LỚP CÒN LẠI
     # ==========================================
     
     elif "Lớp 9" in lop:
@@ -575,11 +649,8 @@ def tao_de_toan(lop, bai_hoc):
                 goi_y_text = "Diện tích hình chữ nhật bằng dài nhân rộng."
                 goi_y_latex = f"S = a \\times b = {a} \\times {b}"
 
-    elif "Lớp 1" in lop or "Lớp 2" in lop:
-        a, b = random.randint(1, 10), random.randint(1, 10)
-        if "Lớp 1" in lop: a, b = random.randint(1, 5), random.randint(0, 5)
-        elif "Lớp 2" in lop: a, b = random.randint(10, 50), random.randint(2, 9)
-
+    elif "Lớp 2" in lop:
+        a, b = random.randint(10, 50), random.randint(2, 9)
         if "cộng" in bai_lower:
             de_latex = f"Tính: ${a} + {b} = ?$"
             dap_an = a + b
@@ -603,26 +674,13 @@ def tao_de_toan(lop, bai_hoc):
             de_latex = f"Tính: ${a} : {b} = ?$"
             dap_an = ans
             goi_y_text = "Sử dụng bảng chia."
-        elif "so sánh" in bai_lower:
-            question_type = "mcq"
-            de_latex = f"So sánh: ${a} \\dots {b}$"
-            if a > b: ans_correct = "$>$"
-            elif a < b: ans_correct = "$<$"
-            else: ans_correct = "$=$"
-            dap_an = ans_correct
-            options = ["$>$", "$<$", "$=$"]
-            goi_y_text = "So sánh giá trị hai số."
-        elif "số" in bai_lower: 
-             de_latex = f"Số liền sau của ${a}$ là?"
-             dap_an = a + 1
-             goi_y_text = "Đếm thêm 1 đơn vị."
 
     else:
         # Fallback
         a, b = random.randint(1, 10), random.randint(1, 10)
         de_latex = f"Tính: ${a} + {b} = ?$"
         dap_an = a + b
-             
+              
     return de_latex, question_type, dap_an, options, goi_y_text, goi_y_latex
 
 # Hàm dịch thuật
@@ -704,7 +762,9 @@ with col_trai:
         col_d1, col_d2 = st.columns(2)
         with col_d1:
             if st.button("🗣️ Dịch H'Mông"):
-                bd = dich_sang_mong(st.session_state.de_bai.replace("$", ""))
+                # Chỉ dịch phần text, không dịch phần công thức LaTeX (phần trong dấu $)
+                text_to_translate = st.session_state.de_bai.replace("$", "")
+                bd = dich_sang_mong(text_to_translate)
                 st.info(f"**H'Mông:** {bd}")
 
 with col_phai:
@@ -740,8 +800,12 @@ with col_phai:
                     if user_ans == st.session_state.dap_an:
                         is_correct = True
                 else:
-                    if abs(user_ans - float(st.session_state.dap_an)) <= 0.05:
-                        is_correct = True
+                    if isinstance(st.session_state.dap_an, str): # Trường hợp đáp án là chuỗi
+                         if str(user_ans) == st.session_state.dap_an:
+                             is_correct = True
+                    else:
+                        if abs(user_ans - float(st.session_state.dap_an)) <= 0.05:
+                            is_correct = True
 
                 if is_correct:
                     st.balloons()
@@ -751,7 +815,10 @@ with col_phai:
                     if st.session_state.q_type == "mcq":
                         st.markdown(f"Đáp án đúng là: {st.session_state.dap_an}")
                     else:
-                        ans_display = int(st.session_state.dap_an) if float(st.session_state.dap_an).is_integer() else st.session_state.dap_an
+                        if isinstance(st.session_state.dap_an, (int, float)):
+                             ans_display = int(st.session_state.dap_an) if float(st.session_state.dap_an).is_integer() else st.session_state.dap_an
+                        else:
+                             ans_display = st.session_state.dap_an
                         st.markdown(f"Đáp án đúng là: **{ans_display}**")
                     st.session_state.show_hint = True
         
@@ -764,9 +831,11 @@ with col_phai:
                 st.latex(st.session_state.goi_y_latex)
             st.markdown('</div>', unsafe_allow_html=True)
                 
+            # Dịch phần gợi ý sang tiếng Mông
             translation = dich_sang_mong(st.session_state.goi_y_text)
             st.markdown('<div class="hmong-hint">', unsafe_allow_html=True)
             st.markdown(f"**🗣️ H'Mông:** {translation}")
+            # Hiển thị công thức toán riêng để không bị lỗi dịch
             if st.session_state.goi_y_latex:
                 st.latex(st.session_state.goi_y_latex)
             st.markdown('</div>', unsafe_allow_html=True)
