@@ -223,133 +223,152 @@ def tao_de_toan(lop, bai_hoc):
     bai_lower = bai_hoc.lower()
 
     # ==========================================
-    # LỚP 6 (CẬP NHẬT THEO SGK KNTT)
+    # LỚP 9 (CẬP NHẬT THEO SGK MỚI KNTT)
     # ==========================================
-    if "Lớp 6" in lop:
-        if "lũy thừa" in bai_lower:
-            base = random.randint(2, 5)
-            exp = random.randint(2, 4)
-            de_latex = f"Tính giá trị của lũy thừa: ${base}^{exp}$"
-            dap_an = base ** exp
-            goi_y_text = f"Nhân số {base} với chính nó {exp} lần."
-            goi_y_latex = f"{base}^{exp} = " + " \\times ".join([str(base)]*exp)
-        elif "thứ tự" in bai_lower or "phép tính" in bai_lower:
-            a = random.randint(2, 10)
-            b = random.randint(2, 5)
-            c = random.randint(2, 5)
-            de_latex = f"Tính: ${a} + {b} \\times {c}^2$"
-            dap_an = a + b * (c**2)
-            goi_y_text = "Lũy thừa -> Nhân chia -> Cộng trừ."
-            goi_y_latex = f"{a} + {b} \\times {c**2} = {a} + {b*c**2}"
-        elif "chia hết" in bai_lower or "ước" in bai_lower or "bội" in bai_lower:
-            num = random.randint(10, 50)
-            de_latex = f"Tìm số dư khi chia ${num}$ cho 5."
-            dap_an = num % 5
-            goi_y_text = "Xét chữ số tận cùng."
-        elif "số nguyên" in bai_lower:
-            a = random.randint(-20, 20)
-            b = random.randint(-20, 20)
-            if "cộng" in bai_lower or "trừ" in bai_lower:
-                op = "+" if "cộng" in bai_lower else "-"
-                de_latex = f"Tính: ${a} {op} ({b})$"
-                dap_an = a + b if op == "+" else a - b
-                goi_y_text = "Cộng/trừ hai số nguyên."
-            else:
-                de_latex = f"Tính: ${a} \\times ({b})$"
-                dap_an = a * b
-                goi_y_text = "Nhân hai số nguyên (cùng dấu dương, khác dấu âm)."
-        elif "hình phẳng" in bai_lower or "tam giác đều" in bai_lower:
-             de_latex = "Tam giác đều có mấy trục đối xứng?"
-             question_type = "number"
-             dap_an = 3
-             goi_y_text = "Tam giác đều có 3 trục đối xứng đi qua 3 đỉnh."
-
-    # ==========================================
-    # LỚP 7 (CẬP NHẬT THEO SGK KNTT)
-    # ==========================================
-    elif "Lớp 7" in lop:
-        if "số hữu tỉ" in bai_lower:
-            if "lũy thừa" in bai_lower:
-                base = random.randint(1, 4)
-                exp = 2
-                de_latex = f"Tính: $\\left(\\frac{{-{base}}}{{3}}\\right)^{exp}$"
-                question_type = "mcq"
-                ans_correct = f"$\\frac{{{base**2}}}{{9}}$"
-                dap_an = ans_correct
-                options = [ans_correct, f"$\\frac{{-{base**2}}}{{9}}$", f"$\\frac{{{base*2}}}{{6}}$", f"$\\frac{{{base}}}{{9}}$"]
-                goi_y_text = "Bình phương của số âm là số dương."
-            else: # Cộng trừ nhân chia
-                a = random.randint(1, 5)
-                b = random.randint(1, 5)
-                de_latex = f"Tính: $\\frac{{{a}}}{{2}} + \\frac{{{b}}}{{2}}$"
-                question_type = "mcq"
-                ans_correct = f"$\\frac{{{a+b}}}{{2}}$"
-                dap_an = ans_correct
-                options = [ans_correct, f"$\\frac{{{a+b}}}{{4}}$", f"$\\frac{{{a*b}}}{{2}}$", f"$\\frac{{{a-b}}}{{2}}$"]
-                goi_y_text = "Cộng tử số, giữ nguyên mẫu số."
-        elif "căn bậc hai" in bai_lower or "số thực" in bai_lower:
-            sq = random.choice([4, 9, 16, 25, 36, 49, 64, 81, 100])
-            de_latex = f"Tìm căn bậc hai số học của {sq}."
-            dap_an = int(math.sqrt(sq))
-            goi_y_text = f"Số nào bình phương lên bằng {sq}?"
-            goi_y_latex = f"\\sqrt{{{sq}}} = {dap_an}"
-        elif "góc" in bai_lower:
-            angle = random.randint(30, 150)
-            de_latex = f"Cho góc $xOy = {angle}^\\circ$. Tính góc đối đỉnh với nó."
-            dap_an = angle
-            goi_y_text = "Hai góc đối đỉnh thì bằng nhau."
-        elif "tam giác" in bai_lower:
-            a = random.randint(30, 80)
-            b = random.randint(30, 80)
-            de_latex = f"Tam giác ABC có $\\hat{{A}}={a}^\\circ, \\hat{{B}}={b}^\\circ$. Tính $\\hat{{C}}$."
-            dap_an = 180 - a - b
-            goi_y_text = "Tổng ba góc trong tam giác bằng 180 độ."
-
-    # ==========================================
-    # LỚP 9 (CẬP NHẬT THEO SGK KNTT)
-    # ==========================================
-    elif "Lớp 9" in lop:
-        if "hệ phương trình" in bai_lower:
+    if "Lớp 9" in lop:
+        question_type = "mcq" # Mặc định trắc nghiệm cho lớp 9
+        
+        # Chương 1: Hệ phương trình bậc nhất hai ẩn
+        if "hệ phương trình" in bai_lower or "hệ hai phương trình" in bai_lower:
+            # Sinh hệ phương trình đơn giản
             x = random.randint(1, 5)
             y = random.randint(1, 5)
+            a1, b1 = 1, 1
             c1 = x + y
+            a2, b2 = 1, -1
             c2 = x - y
-            de_latex = f"Giải hệ phương trình: $\\begin{{cases}} x + y = {c1} \\\\ x - y = {c2} \\end{{cases}}$. Tìm x."
-            dap_an = x
-            goi_y_text = "Cộng hai phương trình lại để tìm x."
-            goi_y_latex = f"2x = {c1} + {c2} \\Rightarrow x = {x}"
+            de_latex = f"Giải hệ phương trình: $\\begin{{cases}} x + y = {c1} \\\\ x - y = {c2} \\end{{cases}}$"
+            ans_correct = f"x={x}, y={y}"
+            dap_an = ans_correct
+            options = [
+                f"x={x}, y={y}", 
+                f"x={x+1}, y={y-1}", 
+                f"x={y}, y={x}", 
+                f"x={x}, y={-y}"
+            ]
+            goi_y_text = "Cộng đại số hai phương trình để tìm x, sau đó thay vào tìm y."
+            goi_y_latex = f"2x = {c1+c2} \\Rightarrow x = {x}"
+            
+        elif "phương trình bậc nhất hai ẩn" in bai_lower:
+            a = random.randint(1, 5)
+            b = random.randint(1, 5)
+            c = random.randint(10, 20)
+            de_latex = f"Cặp số nào sau đây là nghiệm của phương trình ${a}x + {b}y = {c}$?"
+            # Tạo nghiệm đúng (giả sử x=1, tính y) hoặc chọn c sao cho có nghiệm nguyên
+            x_sol = 1
+            y_sol = (c - a*x_sol) / b
+            # Để đơn giản, chọn x, y trước rồi tính c
+            x_true, y_true = random.randint(0,3), random.randint(0,3)
+            c_true = a*x_true + b*y_true
+            de_latex = f"Cặp số nào là nghiệm của phương trình ${a}x + {b}y = {c_true}$?"
+            ans_correct = f"({x_true}; {y_true})"
+            dap_an = ans_correct
+            options = [
+                f"({x_true}; {y_true})", 
+                f"({x_true+1}; {y_true})", 
+                f"({x_true}; {y_true+1})", 
+                f"(0; 0)"
+            ]
+            goi_y_text = "Thay cặp số (x; y) vào phương trình xem có thỏa mãn không."
+            
+        elif "phương trình quy về" in bai_lower:
+            a = random.randint(2, 5)
+            b = random.randint(1, 10)
+            de_latex = f"Giải phương trình: ${a}x - {b} = 0$ (Làm tròn 2 số thập phân)"
+            ans_val = round(b/a, 2)
+            dap_an = ans_val
+            question_type = "number"
+            goi_y_text = "Chuyển vế đổi dấu rồi chia cho hệ số."
+            goi_y_latex = f"x = \\frac{{{b}}}{{{a}}}"
+
+        # Chương 2: Phương trình và bất phương trình bậc nhất một ẩn
+        elif "bất đẳng thức" in bai_lower:
+            a = random.randint(2, 9)
+            de_latex = f"Nếu $a > b$ thì khẳng định nào sau đây đúng?"
+            ans_correct = f"$a + {a} > b + {a}$"
+            dap_an = ans_correct
+            options = [
+                ans_correct, 
+                f"$a - {a} < b - {a}$", 
+                f"$-{a}a > -{a}b$", 
+                f"$a < b$"
+            ]
+            goi_y_text = "Cộng cả hai vế với cùng một số thì chiều bất đẳng thức không đổi."
+
         elif "bất phương trình" in bai_lower:
             a = random.randint(2, 5)
             b = random.randint(1, 10)
             de_latex = f"Giải bất phương trình: ${a}x > {a*b}$"
-            question_type = "mcq"
             ans_correct = f"$x > {b}$"
             dap_an = ans_correct
             options = [ans_correct, f"$x < {b}$", f"$x > {a}$", f"$x > {a*b}$"]
-            goi_y_text = "Chia cả hai vế cho số dương, chiều bất đẳng thức không đổi."
-        elif "căn thức" in bai_lower:
-            num = random.choice([4, 9, 16, 25]) * random.randint(2, 5)
-            de_latex = f"Rút gọn biểu thức: $\\sqrt{{{num}}}$ (Dạng a\\sqrt{{b}})"
-            # Đây là dạng bài tự luận khó check chính xác số, chuyển sang trắc nghiệm
-            question_type = "mcq"
-            sq_part = 4 if num % 4 == 0 else (9 if num % 9 == 0 else (16 if num % 16 == 0 else 25))
-            rem_part = num // sq_part
-            ans_correct = f"${int(math.sqrt(sq_part))}\\sqrt{{{rem_part}}}$"
+            goi_y_text = "Chia cả hai vế cho số dương, chiều bất đẳng thức giữ nguyên."
+
+        # Chương 3: Căn thức
+        elif "căn bậc hai" in bai_lower and "căn bậc ba" not in bai_lower:
+            sq = random.choice([4, 9, 16, 25, 36, 49, 64, 81, 100])
+            de_latex = f"Tính: $\\sqrt{{{sq}}}$"
+            dap_an = int(math.sqrt(sq))
+            question_type = "number"
+            goi_y_text = "Tìm số dương bình phương lên bằng số trong căn."
+            
+        elif "căn bậc ba" in bai_lower:
+            cb = random.choice([8, 27, 64, 125, -8, -27])
+            de_latex = f"Tính: $\\sqrt[3]{{{cb}}}$"
+            dap_an = int(cb**(1/3)) if cb > 0 else -int(abs(cb)**(1/3))
+            question_type = "number"
+            goi_y_text = "Tìm số lập phương lên bằng số trong căn."
+
+        elif "biến đổi" in bai_lower or "căn thức" in bai_lower:
+            # Rút gọn căn a^2 * b
+            a = random.randint(2, 5)
+            b = random.randint(2, 5)
+            de_latex = f"Rút gọn biểu thức: $\\sqrt{{{a**2 * b}}}$"
+            ans_correct = f"${a}\\sqrt{{{b}}}$"
             dap_an = ans_correct
-            options = [ans_correct, f"$\\sqrt{{{num}}}$", f"${rem_part}\\sqrt{{{int(math.sqrt(sq_part))}}}$", f"${sq_part}\\sqrt{{{rem_part}}}$"]
-            goi_y_text = "Phân tích số trong căn thành tích của số chính phương và số còn lại."
-        elif "hệ thức lượng" in bai_lower or "tam giác vuông" in bai_lower:
-            b = 3; c = 4
-            de_latex = f"Tam giác vuông có hai cạnh góc vuông là 3cm và 4cm. Tính cạnh huyền."
+            options = [ans_correct, f"${b}\\sqrt{{{a}}}$", f"$\\sqrt{{{a*b}}}$", f"${a*b}$"]
+            goi_y_text = "Đưa thừa số ra ngoài dấu căn: $\\sqrt{A^2B} = |A|\\sqrt{B}$"
+
+        # Chương 4: Hệ thức lượng trong tam giác vuông
+        elif "tỉ số lượng giác" in bai_lower:
+            de_latex = "Trong tam giác vuông, tỉ số giữa cạnh đối và cạnh huyền là?"
+            ans_correct = "Sin"
+            dap_an = ans_correct
+            options = ["Sin", "Cos", "Tan", "Cot"]
+            goi_y_text = "Sin = Đối / Huyền"
+            
+        elif "hệ thức" in bai_lower or "tam giác vuông" in bai_lower:
+            # Py-ta-go
+            c1 = 3
+            c2 = 4
+            de_latex = f"Tam giác vuông có hai cạnh góc vuông là {c1}cm và {c2}cm. Tính cạnh huyền."
             dap_an = 5
-            goi_y_text = "Sử dụng định lý Pythagoras: $a^2 = b^2 + c^2$."
-            goi_y_latex = f"\\sqrt{{3^2 + 4^2}} = \\sqrt{{9+16}} = \\sqrt{{25}} = 5"
+            question_type = "number"
+            goi_y_text = "Định lý Pythagoras: $a^2 = b^2 + c^2$"
+
+        # Chương 5: Đường tròn
+        elif "đường tròn" in bai_lower:
+            r = random.randint(3, 10)
+            de_latex = f"Đường tròn tâm O bán kính R={r}cm. Điểm M cách O một khoảng {r-1}cm. Vị trí của M?"
+            ans_correct = "Nằm trong đường tròn"
+            dap_an = ans_correct
+            options = ["Nằm trong đường tròn", "Nằm trên đường tròn", "Nằm ngoài đường tròn", "Trùng với tâm O"]
+            goi_y_text = "Khoảng cách d < R thì điểm nằm trong đường tròn."
+            
+        else:
+             # Fallback cho lớp 9
+            x = random.randint(1, 10)
+            de_latex = f"Tìm x biết $\\sqrt{{x}} = {x}$"
+            dap_an = x**2
+            question_type = "number"
+            goi_y_text = "Bình phương hai vế."
+        
+        if question_type == "mcq":
+            random.shuffle(options)
 
     # ==========================================
-    # CÁC LỚP CÒN LẠI (1, 2, 3, 4, 5, 8) - GIỮ NGUYÊN
+    # CÁC LỚP CÒN LẠI (GIỮ NGUYÊN NHƯ CODE TRƯỚC)
     # ==========================================
-    
-    # ... (Giữ nguyên logic cho Lớp 1, 2, 3, 4, 5, 8 như code trước)
     elif "Lớp 4" in lop:
         if "ôn tập" in bai_lower:
             a = random.randint(10000, 90000)
@@ -535,6 +554,90 @@ def tao_de_toan(lop, bai_hoc):
             dap_an = a + 1
             goi_y_text = "Đếm thêm 1."
 
+    # ==========================================
+    # LỚP 6 (CẬP NHẬT THEO SGK KNTT)
+    # ==========================================
+    elif "Lớp 6" in lop:
+        if "lũy thừa" in bai_lower:
+            base = random.randint(2, 5)
+            exp = random.randint(2, 4)
+            de_latex = f"Tính giá trị của lũy thừa: ${base}^{exp}$"
+            dap_an = base ** exp
+            goi_y_text = f"Nhân số {base} với chính nó {exp} lần."
+            goi_y_latex = f"{base}^{exp} = " + " \\times ".join([str(base)]*exp)
+        elif "thứ tự" in bai_lower or "phép tính" in bai_lower:
+            a = random.randint(2, 10)
+            b = random.randint(2, 5)
+            c = random.randint(2, 5)
+            de_latex = f"Tính: ${a} + {b} \\times {c}^2$"
+            dap_an = a + b * (c**2)
+            goi_y_text = "Lũy thừa -> Nhân chia -> Cộng trừ."
+            goi_y_latex = f"{a} + {b} \\times {c**2} = {a} + {b*c**2}"
+        elif "chia hết" in bai_lower or "ước" in bai_lower or "bội" in bai_lower:
+            num = random.randint(10, 50)
+            de_latex = f"Tìm số dư khi chia ${num}$ cho 5."
+            dap_an = num % 5
+            goi_y_text = "Xét chữ số tận cùng."
+        elif "số nguyên" in bai_lower:
+            a = random.randint(-20, 20)
+            b = random.randint(-20, 20)
+            if "cộng" in bai_lower or "trừ" in bai_lower:
+                op = "+" if "cộng" in bai_lower else "-"
+                de_latex = f"Tính: ${a} {op} ({b})$"
+                dap_an = a + b if op == "+" else a - b
+                goi_y_text = "Cộng/trừ hai số nguyên."
+            else:
+                de_latex = f"Tính: ${a} \\times ({b})$"
+                dap_an = a * b
+                goi_y_text = "Nhân hai số nguyên (cùng dấu dương, khác dấu âm)."
+        elif "hình phẳng" in bai_lower or "tam giác đều" in bai_lower:
+             de_latex = "Tam giác đều có mấy trục đối xứng?"
+             question_type = "mcq"
+             dap_an = "3"
+             options = ["3", "1", "0", "6"]
+             goi_y_text = "Tam giác đều có 3 trục đối xứng đi qua 3 đỉnh."
+
+    # ==========================================
+    # LỚP 7 (CẬP NHẬT THEO SGK KNTT)
+    # ==========================================
+    elif "Lớp 7" in lop:
+        if "số hữu tỉ" in bai_lower:
+            if "lũy thừa" in bai_lower:
+                base = random.randint(1, 4)
+                exp = 2
+                de_latex = f"Tính: $\\left(\\frac{{-{base}}}{{3}}\\right)^{exp}$"
+                question_type = "mcq"
+                ans_correct = f"$\\frac{{{base**2}}}{{9}}$"
+                dap_an = ans_correct
+                options = [ans_correct, f"$\\frac{{-{base**2}}}{{9}}$", f"$\\frac{{{base*2}}}{{6}}$", f"$\\frac{{{base}}}{{9}}$"]
+                goi_y_text = "Bình phương của số âm là số dương."
+            else: # Cộng trừ nhân chia
+                a = random.randint(1, 5)
+                b = random.randint(1, 5)
+                de_latex = f"Tính: $\\frac{{{a}}}{{2}} + \\frac{{{b}}}{{2}}$"
+                question_type = "mcq"
+                ans_correct = f"$\\frac{{{a+b}}}{{2}}$"
+                dap_an = ans_correct
+                options = [ans_correct, f"$\\frac{{{a+b}}}{{4}}$", f"$\\frac{{{a*b}}}{{2}}$", f"$\\frac{{{a-b}}}{{2}}$"]
+                goi_y_text = "Cộng tử số, giữ nguyên mẫu số."
+        elif "căn bậc hai" in bai_lower or "số thực" in bai_lower:
+            sq = random.choice([4, 9, 16, 25, 36, 49, 64, 81, 100])
+            de_latex = f"Tìm căn bậc hai số học của {sq}."
+            dap_an = int(math.sqrt(sq))
+            goi_y_text = f"Số nào bình phương lên bằng {sq}?"
+            goi_y_latex = f"\\sqrt{{{sq}}} = {dap_an}"
+        elif "góc" in bai_lower:
+            angle = random.randint(30, 150)
+            de_latex = f"Cho góc $xOy = {angle}^\\circ$. Tính góc đối đỉnh với nó."
+            dap_an = angle
+            goi_y_text = "Hai góc đối đỉnh thì bằng nhau."
+        elif "tam giác" in bai_lower:
+            a = random.randint(30, 80)
+            b = random.randint(30, 80)
+            de_latex = f"Tam giác ABC có $\\hat{{A}}={a}^\\circ, \\hat{{B}}={b}^\\circ$. Tính $\\hat{{C}}$."
+            dap_an = 180 - a - b
+            goi_y_text = "Tổng ba góc trong tam giác bằng 180 độ."
+    
     else:
         # Fallback
         a, b = random.randint(1, 10), random.randint(1, 10)
