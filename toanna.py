@@ -71,6 +71,18 @@ def stream_gemini(code_input, yeu_cau, api_key):
 # --- SIDEBAR (THANH BÊN) ---
 with st.sidebar:
     st.header("⚙️ Cài đặt hệ thống")
+    
+    # --- PHẦN HƯỚNG DẪN LẤY KEY (MỚI THÊM) ---
+    with st.expander("❓ Chưa có Key? Xem hướng dẫn"):
+        st.markdown("""
+        **Cách lấy API Key miễn phí (Google):**
+        1. Truy cập [Google AI Studio](https://aistudio.google.com/).
+        2. Đăng nhập bằng Gmail.
+        3. Nhấn nút **Get API key** (góc trái).
+        4. Nhấn **Create API key**.
+        5. Copy đoạn mã (bắt đầu bằng `AIza...`) và dán vào ô bên dưới.
+        """)
+    
     api_key_input = st.text_input("🔑 Nhập API Key", type="password")
     if api_key_input:
         st.session_state.api_key_configured = True
