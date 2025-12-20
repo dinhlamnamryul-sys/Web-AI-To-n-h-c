@@ -2,15 +2,16 @@ import streamlit as st
 import google.generativeai as genai
 import sys
 import io
+import time
 
 # --- CẤU HÌNH TRANG WEB ---
 st.set_page_config(
-    page_title="Trợ lý Tin học 9 - Python AI",
-    page_icon="🐍",
+    page_title="Học Python Lớp 9 - AI Fast",
+    page_icon="⚡",
     layout="wide"
 )
 
-# --- KHỞI TẠO BIẾN (Lưu điểm số & trạng thái) ---
+# --- KHỞI TẠO BIẾN (SESSION STATE) ---
 if 'user_coins' not in st.session_state:
     st.session_state.user_coins = 0
 if 'streak' not in st.session_state:
@@ -18,154 +19,143 @@ if 'streak' not in st.session_state:
 if 'api_key_configured' not in st.session_state:
     st.session_state.api_key_configured = False
 
-# --- DỮ LIỆU BÀI HỌC CƠ BẢN ---
+# --- DỮ LIỆU BÀI HỌC ---
 BAI_HOC = {
     "Bài 1: Hello World": {
         "mota": "Lệnh in ra màn hình đầu tiên",
-        "code_mau": "print('Xin chào thế giới!')\nprint('Em yêu Tin học 9')"
+        "code_mau": "print('Xin chào lớp 9A!')"
     },
-    "Bài 2: Biến số & Phép tính": {
-        "mota": "Lưu trữ số và tính toán đơn giản",
-        "code_mau": "a = 15\nb = 5\ntong = a + b\nhieu = a - b\nprint('Tổng là:', tong)\nprint('Hiệu là:', hieu)"
+    "Bài 2: Biến số": {
+        "mota": "Lưu trữ dữ liệu vào bộ nhớ",
+        "code_mau": "ten = 'Na Ư'\ntuoi = 15\nprint('Trường:', ten)\nprint('Tuổi:', tuoi)"
     },
-    "Bài 3: Câu lệnh điều kiện (If-Else)": {
-        "mota": "Kiểm tra điều kiện đúng hay sai",
-        "code_mau": "diem_so = 8\n\nif diem_so >= 5:\n    print('Chúc mừng! Bạn đã đậu.')\nelse:\n    print('Rất tiếc, bạn cần cố gắng hơn.')"
+    "Bài 3: Tính toán": {
+        "mota": "Cộng trừ nhân chia cơ bản",
+        "code_mau": "a = 10\nb = 5\ntong = a + b\nprint('Tổng hai số là:', tong)"
     },
     "Bài 4: Vòng lặp For": {
-        "mota": "Lặp lại một hành động nhiều lần",
-        "code_mau": "print('Bảng cửu chương 2:')\nfor i in range(1, 11):\n    ket_qua = 2 * i\n    print('2 x', i, '=', ket_qua)"
+        "mota": "Lặp lại hành động",
+        "code_mau": "print('Đếm số:')\nfor i in range(1, 6):\n    print('Số thứ:', i)"
     }
 }
 
-# --- HÀM GỌI AI GEMINI ---
-def goi_gemini(code_input, yeu_cau, api_key):
+# --- HÀM GỌI AI (CHẾ ĐỘ STREAMING) ---
+def stream_gemini(code_input, yeu_cau, api_key):
+    """Hàm này trả về từng từ một (Generator) thay vì trả cả đoạn"""
     try:
         genai.configure(api_key=api_key)
-        # Sử dụng model Flash mới nhất cho nhanh và miễn phí
-        model = genai.GenerativeModel('gemini-2.5-flash')
+        model = genai.GenerativeModel('gemini-1.5-flash')
         
         prompt = f"""
-        Bạn là một giáo viên dạy lập trình Python lớp 9 thân thiện, dễ hiểu.
-        Học sinh đang viết đoạn code sau:
+        Bạn là giáo viên Tin học lớp 9 thân thiện.
+        Học sinh viết code:
         ```python
         {code_input}
         ```
-        Yêu cầu của học sinh: {yeu_cau}
+        Yêu cầu: {yeu_cau}
         
-        Hãy trả lời ngắn gọn theo cấu trúc:
-        1. ✅ **Nhận xét:** Code đúng hay sai? (Nếu sai chỉ rõ dòng nào).
-        2. 📖 **Giải thích:** Giải thích code chạy như thế nào bằng tiếng Việt đơn giản.
-        3. 💡 **Gợi ý:** Nếu code đúng, hãy gợi ý một cách viết khác hay hơn hoặc bài tập nâng cao nhỏ.
+        Hãy trả lời ngắn gọn, chia thành các ý:
+        1. ✅ Nhận xét (Đúng/Sai)
+        2. 📖 Giải thích code chạy thế nào (Dễ hiểu)
+        3. 💡 Gợi ý sửa hoặc nâng cao
         """
         
-        response = model.generate_content(prompt)
-        return response.text
+        # stream=True là chìa khóa để chạy nhanh
+        response = model.generate_content(prompt, stream=True)
+        
+        for chunk in response:
+            if chunk.text:
+                yield chunk.text
+                
     except Exception as e:
-        return f"⚠️ Lỗi kết nối AI: {str(e)}. (Vui lòng kiểm tra lại API Key)"
+        yield f"⚠️ Lỗi kết nối: {str(e)}"
 
-# --- GIAO DIỆN THANH BÊN (SIDEBAR) ---
+# --- SIDEBAR (THANH BÊN) ---
 with st.sidebar:
-    st.title("⚙️ Cài đặt")
-    
-    # Ô nhập API Key
-    api_key_input = st.text_input("🔑 Nhập Gemini API Key", type="password")
+    st.header("⚙️ Cài đặt")
+    api_key_input = st.text_input("🔑 Nhập API Key", type="password")
     if api_key_input:
         st.session_state.api_key_configured = True
-        st.success("Đã nhận Key!")
     
-    st.divider()
-    
-    # Bảng thành tích
-    st.subheader("🏆 Thành tích của em")
-    st.write(f"💰 Điểm tích lũy: **{st.session_state.user_coins}**")
+    st.markdown("---")
+    st.subheader("🏆 Bảng Vàng")
+    st.write(f"💰 Xu tích lũy: **{st.session_state.user_coins}**")
     st.write(f"🔥 Chuỗi thắng: **{st.session_state.streak}**")
     
-    st.divider()
-    
-    # Menu chọn bài
-    st.subheader("📚 Chọn bài mẫu")
-    bai_chon = st.selectbox("Danh sách bài học:", list(BAI_HOC.keys()))
-    if st.button("Dán code mẫu này vào khung"):
+    st.markdown("---")
+    st.subheader("📚 Chọn Bài Mẫu")
+    bai_chon = st.selectbox("Bài học:", list(BAI_HOC.keys()))
+    if st.button("📝 Nạp code mẫu"):
         st.session_state.code_input = BAI_HOC[bai_chon]["code_mau"]
         st.rerun()
 
 # --- GIAO DIỆN CHÍNH ---
-st.header("🐍 Trợ lý Lập trình Python Lớp 9")
-st.info(f"Đang học: **{bai_chon}** - {BAI_HOC[bai_chon]['mota']}")
+st.header("⚡ Trợ lý Python Lớp 9 (AI Tốc Độ Cao)")
+st.caption(f"Đang học: {BAI_HOC[bai_chon]['mota']}")
 
-# Chia màn hình làm 2 cột
-col1, col2 = st.columns([1.5, 1])
+col1, col2 = st.columns([1.3, 1])
 
 with col1:
-    st.subheader("⌨️ Khung Soạn Thảo (Code Editor)")
-    
-    # Lấy code từ session hoặc dùng mặc định
+    st.subheader("⌨️ Nhập Code")
     default_text = st.session_state.get('code_input', "print('Xin chào!')")
-    code_input = st.text_area("Viết code Python của em vào đây:", value=default_text, height=350)
+    code_input = st.text_area("Code của em:", value=default_text, height=350)
     
-    # Hàng nút bấm
     c1, c2 = st.columns(2)
     with c1:
-        btn_run = st.button("▶️ CHẠY THỬ CODE", type="primary", use_container_width=True)
+        btn_run = st.button("▶️ CHẠY CODE", type="primary", use_container_width=True)
     with c2:
-        btn_ai = st.button("🤖 AI GIẢI THÍCH & SỬA LỖI", use_container_width=True)
+        btn_ai = st.button("🤖 AI GIẢI THÍCH", use_container_width=True)
 
-    # --- XỬ LÝ CHẠY CODE ---
+    # XỬ LÝ CHẠY CODE
     if btn_run:
         st.write("---")
-        st.markdown("### 🖥️ Kết quả chạy trên màn hình:")
-        
+        st.markdown("**🖥️ Kết quả chạy:**")
         try:
-            # 1. Chuẩn bị hứng kết quả in ra (Capture stdout)
             old_stdout = sys.stdout
             redirected_output = sys.stdout = io.StringIO()
             
-            # 2. Chạy code
+            # Chạy code
             exec(code_input, {})
             
-            # 3. Lấy kết quả
-            sys.stdout = old_stdout # Trả lại trạng thái bình thường
+            sys.stdout = old_stdout
             ket_qua = redirected_output.getvalue()
             
-            # 4. Kiểm tra xem có kết quả không
             if ket_qua.strip():
                 st.code(ket_qua)
-                st.success("Chương trình chạy thành công! 🎉")
+                st.success("Tuyệt vời! Code chạy tốt.")
                 st.session_state.user_coins += 2
             else:
-                st.warning("⚠️ Code đã chạy xong nhưng không in gì ra cả!")
-                st.markdown("""
-                **Gợi ý:** Máy tính đã tính xong nhưng em chưa bảo nó in ra.
-                👉 Em hãy dùng lệnh `print(...)` để xem kết quả nhé.
-                """)
-                
+                st.warning("⚠️ Code chạy xong nhưng không hiện gì cả!")
+                st.info("💡 Gợi ý: Em nhớ dùng lệnh `print(...)` nhé.")
         except Exception as e:
-            sys.stdout = old_stdout # Trả lại stdout nếu lỗi
-            st.error(f"❌ Lỗi cú pháp: {e}")
+            sys.stdout = old_stdout
+            st.error(f"❌ Lỗi: {e}")
 
 with col2:
-    st.subheader("💬 Phản hồi từ Giáo viên AI")
+    st.subheader("💬 Phản hồi AI")
+    
+    # Khung chứa nội dung AI
+    chat_container = st.container(border=True)
     
     if btn_ai:
         if not st.session_state.api_key_configured:
-            st.warning("⚠️ Em chưa nhập API Key ở thanh bên trái kìa!")
+            st.warning("⚠️ Hãy nhập API Key trước nhé!")
         else:
-            with st.spinner("Thầy giáo đang đọc bài của em..."):
-                phan_hoi = goi_gemini(code_input, "Kiểm tra code và giải thích", api_key_input)
-                
-                # Hiển thị kết quả trong khung đẹp
-                st.markdown(f"""
-                <div style="background-color: #f0f2f6; padding: 20px; border-radius: 10px; border: 1px solid #ddd; color: #333;">
-                    {phan_hoi}
-                </div>
-                """, unsafe_allow_html=True)
-                
-                # Cộng điểm khuyến khích
-                st.session_state.user_coins += 5
-                st.toast("Đã cộng +5 điểm chuyên cần! 🎓")
+            with chat_container:
+                # Dùng st.write_stream để hiển thị hiệu ứng gõ chữ
+                try:
+                    stream_obj = stream_gemini(code_input, "Giải thích code", api_key_input)
+                    st.write_stream(stream_obj)
+                    
+                    # Cộng điểm
+                    st.session_state.user_coins += 5
+                    st.toast("Đã cộng +5 Xu! 🎓")
+                except Exception as e:
+                    st.error("Lỗi khi gọi AI.")
+    else:
+        with chat_container:
+            st.write("🤖 *Thầy giáo AI đang chờ em hỏi bài...*")
 
 # --- FOOTER ---
 st.markdown("---")
-st.caption("Ứng dụng được xây dựng với Streamlit & Google Gemini AI.")
-
+st.caption("Phiên bản v3: Tối ưu tốc độ phản hồi (Streaming Response).")
