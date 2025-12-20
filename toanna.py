@@ -64,7 +64,7 @@ def goi_gemini(code_input, yeu_cau, api_key):
     try:
         genai.configure(api_key=api_key)
         # SỬ DỤNG MODEL 1.5 FLASH (Mới nhất, nhanh, free tier tốt)
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-2.5-flash')
         
         prompt = f"""
         Bạn là một thầy giáo dạy Tin học lớp 9 tại vùng cao Việt Nam. 
@@ -186,3 +186,4 @@ with col2:
 # --- FOOTER ---
 st.markdown("---")
 st.caption("Ứng dụng hỗ trợ học tập môn Tin học 9 - Chương trình GDPT mới.")
+
