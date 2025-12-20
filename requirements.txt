@@ -2,3 +2,8 @@ streamlit
 pandas
 gTTS
 deep-translator
+streamlit
+google-generativeai
+deep-translator
+gtts
+pandas
