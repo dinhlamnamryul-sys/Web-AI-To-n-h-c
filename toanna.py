@@ -43,7 +43,7 @@ def goi_gemini(code_input, yeu_cau, api_key):
     try:
         genai.configure(api_key=api_key)
         # Sử dụng model Flash mới nhất cho nhanh và miễn phí
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-2.5-flash')
         
         prompt = f"""
         Bạn là một giáo viên dạy lập trình Python lớp 9 thân thiện, dễ hiểu.
@@ -168,3 +168,4 @@ with col2:
 # --- FOOTER ---
 st.markdown("---")
 st.caption("Ứng dụng được xây dựng với Streamlit & Google Gemini AI.")
+
