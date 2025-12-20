@@ -44,7 +44,7 @@ def stream_gemini(code_input, yeu_cau, api_key):
     """Hàm này trả về từng từ một (Generator) thay vì trả cả đoạn"""
     try:
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-2.5-flash')
         
         prompt = f"""
         Bạn là giáo viên Tin học lớp 9 thân thiện.
@@ -159,3 +159,4 @@ with col2:
 # --- FOOTER ---
 st.markdown("---")
 st.caption("Phiên bản v3: Tối ưu tốc độ phản hồi (Streaming Response).")
+
